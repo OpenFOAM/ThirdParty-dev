@@ -18,8 +18,8 @@
 *** Optional
     + AllwmakeLibccmio (Only required for conversion of STAR-CCM+ meshes)
     + Allclean (Only required to save disk space)
-* Versions and locations for the third party packages used
-*** Compiler
+* Versions and locations to download the third party packages
+*** Gcc C++ Compiler
     The minimum version of gcc required is 4.5.0
     + gcc   http://gcc.gnu.org/releases.html
     + gmp   http://gmplib.org/
@@ -29,11 +29,9 @@
     + mpc   http://www.multiprecision.org/
             http://www.multiprecision.org/mpc/download/mpc-1.0.1.tar.gz
 *** Parallel Processing
-    + openmpi
-      - http://www.open-mpi.org/software/ompi/v1.8/downloads/openmpi-1.8.3.tar.bz2
-    + scotch
-      - https://gforge.inria.fr/frs/download.php/31831/scotch_6.0.0.tar.gz
-*** Misc
+    + OpenMPI:  http://www.open-mpi.org/software/ompi/v1.8/downloads/openmpi-1.8.3.tar.bz2
+    + Scotch/PtScotch: https://gforge.inria.fr/frs/download.php/31831/scotch_6.0.0.tar.gz
+*** Miscellaneous
     + cmake       http://www.cmake.org/files/v2.8/cmake-2.8.12.1.tar.gz
     + paraview    http://www.paraview.org/files/v4.1/ParaView-v4.1.0-source.tar.gz
     + libccmio    https://svn.scorec.rpi.edu/wsvn/TSTT/Tools/iMeshIO/libccmio-2.6.1.tar.gz?op=file&rev=2303&sc=0
