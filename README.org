@@ -1,0 +1,48 @@
+#                            -*- mode: org; -*-
+#
+#+TITLE:              OpenFOAM-dev Third-Party packages
+#+AUTHOR:                  The OpenFOAM Foundation
+#+DATE:                       31st December 2014
+#+LINK:                     http://www.openfoam.org
+#+OPTIONS: author:nil ^:{}
+# Copyright (c) 2014 OpenFOAM Foundation.
+
+* Description
+  Scripts for building third-party packages.
+
+* The approximate order of execution:
+  + makeGcc
+  + Allwmake
+  + makeCmake (if the system cmake version is < 2.8.8)
+  + makeParaView4
+*** Optional
+    + AllwmakeLibccmio
+    + Allclean
+* Versions and locations for the third party packages used
+*** Compiler
+    The minimum version of gcc required is 4.5.0
+    + gcc   http://gcc.gnu.org/releases.html
+    + gmp   http://gmplib.org/
+            ftp://ftp.gnu.org/gnu/gmp/gmp-5.1.2.tar.bz2
+    + mpfr  http://www.mpfr.org/
+            ftp://ftp.gnu.org/gnu/mpfr/mpfr-3.1.2.tar.bz2
+    + mpc   http://www.multiprecision.org/
+            http://www.multiprecision.org/mpc/download/mpc-1.0.1.tar.gz
+*** Parallel Processing
+    + openmpi
+      - http://www.open-mpi.org/software/ompi/v1.8/downloads/openmpi-1.8.3.tar.bz2
+    + scotch
+      - https://gforge.inria.fr/frs/download.php/31831/scotch_6.0.0.tar.gz
+*** Misc
+    + cmake       http://www.cmake.org/files/v2.8/cmake-2.8.12.1.tar.gz
+    + paraview    http://www.paraview.org/files/v4.1/ParaView-v4.1.0-source.tar.gz
+    + libccmio    https://svn.scorec.rpi.edu/wsvn/TSTT/Tools/iMeshIO/libccmio-2.6.1.tar.gz?op=file&rev=2303&sc=0
+    + CGAL        https://gforge.inria.fr/frs/download.php/31175/CGAL-4.5.1.tar.gz
+    + boost       http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.bz2/download
+* Notes
+*** Buiding ParaView
+    The ParaView sources provided with the OpenFOAM-2.3.1 source-pack includes
+    minor changes compared to the official version 4.1.0 distribution to enable
+    building on Ubuntu-14.10.
+
+# --------------------------------------------------------------------------
