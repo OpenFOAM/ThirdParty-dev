@@ -3,7 +3,7 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+#   \\  /    A nd           | Copyright (C) 2011-2015 OpenFOAM Foundation
 #    \\/     M anipulation  |
 #------------------------------------------------------------------------------
 # License
@@ -23,16 +23,16 @@
 #     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 #
 # Script
-#     makeGcc
+#     makeGcc48
 #
 # Description
-#     Build script for gmp, mpfr and gcc
+#     Build script for gmp, mpfr and gcc-4.8.?
 #
 #------------------------------------------------------------------------------
 gmpPACKAGE=gmp-5.1.2
 mpfrPACKAGE=mpfr-3.1.2
 mpcPACKAGE=mpc-1.0.1
-gccPACKAGE=gcc-4.8.3
+gccPACKAGE=gcc-4.8.4
 
 #------------------------------------------------------------------------------
 # run from third-party directory only
