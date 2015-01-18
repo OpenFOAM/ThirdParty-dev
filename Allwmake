@@ -142,7 +142,12 @@ MPICH)
             --with-device=ch_p4 \
             ;
 
+        # For MPICH2 below 1.5a1 uncomment this line and comment next
+        # make && make install
+
+        # For MPICH2 1.5a1 or above
         make -j $WM_NCOMPPROCS && make install
+
         make distclean
 
         if [ -r $MPI_ARCH_PATH ]
@@ -325,11 +330,13 @@ then
         echo "    metis libs   in $FOAM_EXT_LIBBIN"
         echo
     else
+    (
         set -x
         cd $METIS_VERSION  || exit 1
         make config shared=1 prefix=$METIS_ARCH_PATH
         make -j $WM_NCOMPPROCS install
         cp $METIS_ARCH_PATH/lib/libmetis.so $FOAM_EXT_LIBBIN
+    )
     fi
 else
     echo "    optional component Metis was not found"
