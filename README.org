@@ -34,7 +34,7 @@
 *** Miscellaneous
     + cmake       http://www.cmake.org/files/v2.8/cmake-2.8.12.1.tar.gz
     + paraview    http://www.paraview.org/files/v4.1/ParaView-v4.1.0-source.tar.gz
-    + libccmio    https://svn.scorec.rpi.edu/wsvn/TSTT/Tools/iMeshIO/libccmio-2.6.1.tar.gz?op=file&rev=2303&sc=0
+    + libccmio    http://portal.nersc.gov/svn/visit/trunk/third_party/libccmio-2.6.1.tar.gz
     + CGAL        https://gforge.inria.fr/frs/download.php/file/34403/CGAL-4.5.1.tar.bz2
     + boost       http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.bz2/download
 * Notes
