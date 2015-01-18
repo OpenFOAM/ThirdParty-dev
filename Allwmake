@@ -98,7 +98,6 @@ OPENMPI)
             --libdir=$MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH} \
             --disable-mpi-f77 \
             --disable-mpi-f90 \
-            --disable-mpi-cxx \
             --disable-mpi-profile \
             $configOpt \
             ;
@@ -134,7 +133,6 @@ MPICH)
             --disable-f77 \
             --disable-f90 \
             --disable-f90modules \
-            --disable-c++ \
             --disable-mpedbg \
             --disable-devdebug \
             --disable-debug \
