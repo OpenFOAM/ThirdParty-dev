@@ -2,7 +2,7 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+#   \\  /    A nd           | Copyright (C) 2011-2015 OpenFOAM Foundation
 #    \\/     M anipulation  |
 #------------------------------------------------------------------------------
 # License
@@ -166,10 +166,10 @@ addMpiSupport()
 
     addCMakeVariable  "PARAVIEW_USE_MPI=ON VTK_USE_MPI=ON"
     addCMakeVariable  "MPI_INCLUDE_PATH=$MPI_ARCH_PATH/include"
-    addCMakeVariable  "MPI_LIBRARY=$MPI_ARCH_PATH/lib/libmpi.so"
-    if [ -e $MPI_ARCH_PATH/lib/libmpi_cxx.so ]
+    addCMakeVariable  "MPI_LIBRARY=$MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH}/libmpi.so"
+    if [ -e $MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH}/libmpi_cxx.so ]
     then
-        addCMakeVariable  "MPI_EXTRA_LIBRARY=$MPI_ARCH_PATH/lib/libmpi_cxx.so"
+        addCMakeVariable  "MPI_EXTRA_LIBRARY=$MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH}/libmpi_cxx.so"
     fi
     addCMakeVariable  "VTK_MPIRUN_EXE=$MPI_ARCH_PATH/bin/mpirun"
     addCMakeVariable  "VTK_MPI_MAX_NUMPROCS=$MPI_MAX_PROCS"
