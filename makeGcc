@@ -3,7 +3,7 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+#   \\  /    A nd           | Copyright (C) 2011-2015 OpenFOAM Foundation
 #    \\/     M anipulation  |
 #------------------------------------------------------------------------------
 # License
@@ -26,19 +26,16 @@
 #     makeGcc
 #
 # Description
-#     Build script for gmp, mpfr and gcc
-#
-# Note
-#     gcc 4.3.2 is known to miscompile GMP 4.3.x on 64-bit machines
+#     Build script for gmp, mpfr and gcc-[4-9].?.?
 #
 #------------------------------------------------------------------------------
-gmpPACKAGE=gmp-5.0.4
-mpfrPACKAGE=mpfr-3.1.0
-mpcPACKAGE=mpc-0.9
-gccPACKAGE=gcc-4.6.2
+gmpPACKAGE=gmp-5.1.2
+mpfrPACKAGE=mpfr-3.1.2
+mpcPACKAGE=mpc-1.0.1
+gccPACKAGE=
 
 #------------------------------------------------------------------------------
-# run from third-party directory only
+# Run from third-party directory only
 wmakeCheckPwd "$WM_THIRD_PARTY_DIR" || {
     echo "Error: Current directory is not \$WM_THIRD_PARTY_DIR"
     echo "    The environment variables are inconsistent with the installation."
@@ -53,7 +50,7 @@ usage() {
     while [ "$#" -ge 1 ]; do echo "$1"; shift; done
     cat<<USAGE
 
-usage: ${0##*/} [gmp-VERSION] [mpfr-VERSION] [mpc-VERSION] [gcc-VERSION]
+usage: ${0##*/} [gmp-VERSION] [mpfr-VERSION] [mpc-VERSION] <gcc-VERSION>
 
 * build combinations of gmp, mpfr, mpc and gcc
       $gmpPACKAGE
@@ -66,7 +63,7 @@ USAGE
 }
 
 
-# parse options
+# Parse options
 while [ "$#" -gt 0 ]
 do
     case "$1" in
@@ -95,8 +92,14 @@ do
     esac
 done
 
+if [ -z "$gccPACKAGE" ]
+then
+    usage "Please specify gcc-VERSION"
+    exit 1
+fi
 
-# set 32 or 64 bit ABI
+
+# Set 32 or 64 bit ABI
 case "$WM_ARCH_OPTION" in
 32 | 64)
     ABI=$WM_ARCH_OPTION
@@ -108,7 +111,7 @@ esac
 
 
 #------------------------------------------------------------------------------
-# build/install without compiler name
+# Build/install without compiler name
 buildBASE=$WM_THIRD_PARTY_DIR/build/$WM_ARCH$WM_COMPILER_ARCH
 installBASE=$WM_THIRD_PARTY_DIR/platforms/$WM_ARCH$WM_COMPILER_ARCH
 
