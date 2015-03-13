@@ -31,16 +31,29 @@
 *** Parallel Processing
     + OpenMPI:  http://www.open-mpi.org/software/ompi/v1.8/downloads/openmpi-1.8.3.tar.bz2
     + Scotch/PtScotch: https://gforge.inria.fr/frs/download.php/31831/scotch_6.0.0.tar.gz
-*** Miscellaneous
-    + cmake       http://www.cmake.org/files/v2.8/cmake-2.8.12.1.tar.gz
-    + paraview    http://www.paraview.org/files/v4.1/ParaView-v4.1.0-source.tar.gz
-    + libccmio    http://portal.nersc.gov/svn/visit/trunk/third_party/libccmio-2.6.1.tar.gz
+*** ParaView
+    + cmake       http://www.cmake.org/files/v3.2/cmake-3.2.1.tar.gz
+    + paraview    http://www.paraview.org/files/v4.3/ParaView-v4.3.1-source.tar.gz
+*** CGAL
     + CGAL        https://gforge.inria.fr/frs/download.php/file/34403/CGAL-4.5.1.tar.bz2
     + boost       http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.bz2/download
+*** Miscellaneous
+    + libccmio    http://portal.nersc.gov/svn/visit/trunk/third_party/libccmio-2.6.1.tar.gz
 * Notes
 *** Buiding ParaView
-    The ParaView sources provided with the OpenFOAM-2.3.1 source-pack includes
-    minor changes compared to the official version 4.1.0 distribution to enable
-    building on Ubuntu-14.10.
+    The ParaView-4.3.1 source-pack provided by KitWare will not build and
+    install correctly without a minor correction: lines 653-656 must be removed
+    or commented from file
+    /ThirdParty-dev/ParaView-4.3.1/Qt/Components/CMakeLists.txt/ after unpacking
+    and renaming the ParaView-4.3.1 directory.  This is because the file
+    ui_pqExportStateWizard.h referred to in the lines 653-656:
+    #+begin_src C
+    if(PARAVIEW_INSTALL_DEVELOPMENT_FILES)
+      install(FILES "${CMAKE_CURRENT_BINARY_DIR}/ui_pqExportStateWizard.h"
+              DESTINATION "${VTK_INSTALL_INCLUDE_DIR}")
+    endif()
+    #+end_src
+    does not exist and cannot be installed causing the build and installation to
+    fail.
 
 # --------------------------------------------------------------------------
