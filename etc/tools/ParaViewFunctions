@@ -325,10 +325,10 @@ addQtSupport()
         QtMajor=$1
         QtMinor=$2
 
-        if [ $QtMajor -lt 4 -o $QtMinor -lt 5 ]
+        if [[ ($QtMajor -lt 4) || ($QtMajor -eq 4  && $QtMinor -lt 5) ]]
         then
             echo "*** Error: Qt version provided < 4.5"
-            echo "***     Please use the -qmake option to specify the location of a version of Qt >= 4.3 "
+            echo "***     Please use the -qmake option to specify the location of a version of Qt >= 4.5 "
             echo "***     e.g."
             echo "***         -qmake /usr/local/qt-4.6.2/bin/qmake"
             echo "***         -qmake $installBASE/qt-4.6.2/bin/qmake"
