@@ -483,8 +483,5 @@ addCMakeVariable  "PARAVIEW_INSTALL_DEVELOPMENT_FILES:BOOL=ON"
 # don't build test tree
 addCMakeVariable  "BUILD_TESTING:BOOL=OFF"
 
-# remove dependency on WebKit
-# addCMakeVariable  VTK_QT_USE_WEBKIT:BOOL=OFF
-
 
 # ----------------------------------------------------------------- end-of-file
