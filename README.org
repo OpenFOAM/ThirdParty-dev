@@ -5,11 +5,10 @@
 #+DATE:                       18th May 2015
 #+LINK:                     http://www.openfoam.org
 #+OPTIONS: author:nil ^:{}
-# Copyright (c) 2014 OpenFOAM Foundation.
+# Copyright (c) 2014-2015 OpenFOAM Foundation.
 
 * Description
   Scripts for building third-party packages.
-
 * Order of execution:
   + makeGcc   (recommended if the system gcc is < 4.7)
   + Allwmake  (Builds OpenMPI, Scotch etc.)
@@ -31,7 +30,6 @@
 *** Parallel Processing
     + OpenMPI: http://www.open-mpi.org/software/ompi/v1.8/downloads/openmpi-1.8.5.tar.bz2
     + Scotch/PtScotch: https://gforge.inria.fr/frs/download.php/file/34099/scotch_6.0.3.tar.gz
-
 *** ParaView
     + cmake       http://www.cmake.org/files/v3.2/cmake-3.2.1.tar.gz
     + paraview    http://www.paraview.org/files/v4.3/ParaView-v4.3.1-source.tar.gz
