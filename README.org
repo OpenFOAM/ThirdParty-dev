@@ -39,7 +39,7 @@
 *** Miscellaneous
     + libccmio    http://portal.nersc.gov/svn/visit/trunk/third_party/libccmio-2.6.1.tar.gz
 * Notes
-*** Buiding ParaView
+*** Buiding ParaView-4.3.1
     The ParaView-4.3.1 source-pack provided by KitWare will not build and
     install correctly without a minor correction: lines 653-656 must be removed
     or commented from file
@@ -54,14 +54,11 @@
     #+end_src
     does not exist and cannot be installed causing the build and installation to
     fail.
-
+*** Building ParaView-4.1.0
     On Ubuntu 14.10 and higher, OpenSuSE 13.2 and probably other recent
     GNU/Linux distributions there is an issue in the GL libraries requiring a
     change to the vtkXOpenGLRenderWindow.cxx file in ParaView: Uncomment line 30
 
     #define GLX_GLXEXT_LEGACY
-
-    This change has not been applied to the source-pack as it is not yet
-    clear if it is always applicable.
 
 # --------------------------------------------------------------------------
