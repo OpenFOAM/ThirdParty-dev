@@ -55,4 +55,13 @@
     does not exist and cannot be installed causing the build and installation to
     fail.
 
+    On Ubuntu 14.10 and higher, OpenSuSE 13.2 and probably other recent
+    GNU/Linux distributions there is an issue in the GL libraries requiring a
+    change to the vtkXOpenGLRenderWindow.cxx file in ParaView: Uncomment line 30
+
+    #define GLX_GLXEXT_LEGACY
+
+    This change has not been applied to the source-pack as it is not yet
+    clear if it is always applicable.
+
 # --------------------------------------------------------------------------

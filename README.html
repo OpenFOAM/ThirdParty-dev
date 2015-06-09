@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>OpenFOAM-dev Third-Party packages</title>
-<!-- 2015-05-19 Tue 14:20 -->
+<!-- 2015-06-09 Tue 12:03 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <style type="text/css">
@@ -292,14 +292,29 @@ endif()
 does not exist and cannot be installed causing the build and installation to
 fail.
 </p>
+
+<p>
+On Ubuntu 14.10 and higher, OpenSuSE 13.2 and probably other recent
+GNU/Linux distributions there is an issue in the GL libraries requiring a
+change to the vtkXOpenGLRenderWindow.cxx file in ParaView: Uncomment line 30
+</p>
+
+<p>
+#define GLX_GLXEXT_LEGACY
+</p>
+
+<p>
+This change has not been applied to the source-pack as it is not yet
+clear if it is always applicable.
+</p>
 </div>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="date">Date: 18th May 2015</p>
-<p class="date">Created: 2015-05-19 Tue 14:20</p>
-<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.4 (<a href="http://orgmode.org">Org</a> mode 8.2.10)</p>
+<p class="date">Created: 2015-06-09 Tue 12:03</p>
+<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.5 (<a href="http://orgmode.org">Org</a> mode 8.2.10)</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
