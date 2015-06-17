@@ -96,8 +96,7 @@ OPENMPI)
             --disable-orterun-prefix-by-default \
             --enable-shared --disable-static \
             --libdir=$MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH} \
-            --disable-mpi-f77 \
-            --disable-mpi-f90 \
+            --enable-mpi-fortran=none \
             --disable-mpi-profile \
             $configOpt \
             ;
