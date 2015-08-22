@@ -39,7 +39,7 @@
 *** Miscellaneous
     + libccmio    http://portal.nersc.gov/svn/visit/trunk/third_party/libccmio-2.6.1.tar.gz
 * Notes
-*** Buiding ParaView-4.3.1
+*** Building ParaView-4.3.1
     The ParaView-4.3.1 source-pack provided by KitWare will not build and
     install correctly without a minor correction: lines 653-656 must be removed
     or commented from file
