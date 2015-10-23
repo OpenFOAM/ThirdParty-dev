@@ -39,7 +39,7 @@
 #------------------------------------------------------------------------------
 set -x
 
-cgalPACKAGE=CGAL-4.6
+cgalPACKAGE=CGAL-4.7
 boostPACKAGE=boost-system
 gmpPACKAGE=gmp-system
 mpfrPACKAGE=mpfr-system
