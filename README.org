@@ -32,19 +32,19 @@
     + Scotch/PtScotch: https://gforge.inria.fr/frs/download.php/file/34099/scotch_6.0.3.tar.gz
 *** ParaView
     + cmake       http://www.cmake.org/files/v3.2/cmake-3.2.1.tar.gz
-    + paraview    http://www.paraview.org/files/v4.3/ParaView-v4.3.1-source.tar.gz
+    + ParaView    http://www.paraview.org/files/v4.4/ParaView-v4.4.0-source.tar.gz
 *** CGAL
     + CGAL        https://github.com/CGAL/cgal/releases/download/releases%2FCGAL-4.7/CGAL-4.7.tar.xz
     + boost       http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.bz2/download
 *** Miscellaneous
     + libccmio    http://portal.nersc.gov/svn/visit/trunk/third_party/libccmio-2.6.1.tar.gz
 * Notes
-*** Building ParaView-4.3.1
-    The ParaView-4.3.1 source-pack provided by KitWare will not build and
+*** Building ParaView-4.3.1/4.4.0
+    The ParaView-4.3.1/4.4.0 source-pack provided by KitWare will not build and
     install correctly without a minor correction: lines 653-656 must be removed
     or commented from file
-    /ThirdParty-dev/ParaView-4.3.1/Qt/Components/CMakeLists.txt/ after unpacking
-    and renaming the ParaView-4.3.1 directory.  This is because the file
+    /ThirdParty-dev/ParaView-4.?.?/Qt/Components/CMakeLists.txt/ after unpacking
+    and renaming the ParaView-4.?.? directory.  This is because the file
     ui_pqExportStateWizard.h referred to in the lines 653-656:
     #+begin_src C
     if(PARAVIEW_INSTALL_DEVELOPMENT_FILES)
