@@ -54,6 +54,13 @@
     #+end_src
     does not exist and cannot be installed causing the build and installation to
     fail.
+
+    Additionally for ParaView-4.4.0 there is a bug in the STL reader which can
+    be patched by running the following command from within the ThirdParty-???
+    directory:
+    + wget https://raw.githubusercontent.com/Kitware/VTK/40937e934308e5009e80769dc0c451ee4f157749/IO/Geometry/vtkSTLReader.cxx -O ParaView-4.4.0/VTK/IO/Geometry/vtkSTLReader.cxx
+    See also http://www.openfoam.org/mantisbt/view.php?id=1887
+
 *** Building ParaView-4.1.0
     On Ubuntu 14.10 and higher, OpenSuSE 13.2 and probably other recent
     GNU/Linux distributions there is an issue in the GL libraries requiring a
