@@ -120,13 +120,6 @@ GMP_ARCH_PATH=$installBASE/$gmpPACKAGE
 MPFR_ARCH_PATH=$installBASE/$mpfrPACKAGE
 MPC_ARCH_PATH=$installBASE/$mpcPACKAGE
 
-# mpc is not needed for gcc older than 4.5
-case "$gccPACKAGE" in
-gcc-4.[0-4].*)
-   mpcPACKAGE=false
-   ;;
-esac
-
 #
 # Build GMP
 #
@@ -206,9 +199,6 @@ echo "---------------"
 if [ -d $MPC_ARCH_PATH ]
 then
     echo "Already built: $mpcPACKAGE"
-elif [ "$mpcPACKAGE" = false ]
-then
-    echo "Skip building mpc - not needed for older gcc versions"
 else
     echo "Starting build: $mpcPACKAGE"
     echo
@@ -263,9 +253,6 @@ else
     cd $sourceDIR || exit 1
     make distclean 2>/dev/null
 
-    unset withMpc
-    [ -d "$MPC_ARCH_PATH" ] && withMpc="--with-mpc=$MPC_ARCH_PATH"
-
     rm -rf $buildDIR
     mkdir -p $buildDIR
     cd $buildDIR
@@ -275,7 +262,7 @@ else
         --prefix=$GCC_ARCH_PATH \
         --with-gmp=$GMP_ARCH_PATH \
         --with-mpfr=$MPFR_ARCH_PATH \
-        $withMpc \
+        --with-mpc=$MPC_ARCH_PATH \
         --with-pkgversion=OpenFOAM \
         --enable-languages=c,c++ \
         --enable-__cxa_atexit \
