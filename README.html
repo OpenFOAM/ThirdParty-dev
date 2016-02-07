@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>OpenFOAM-dev Third-Party packages</title>
-<!-- 2015-11-02 Mon 20:00 -->
+<!-- 2016-02-07 Sun 10:27 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <style type="text/css">
@@ -228,7 +228,7 @@ The minimum version of gcc required is 4.5.0
 <h3 id="sec-3-2"><span class="section-number-3">3.2</span> Parallel Processing</h3>
 <div class="outline-text-3" id="text-3-2">
 <ul class="org-ul">
-<li>OpenMPI: <a href="http://www.open-mpi.org/software/ompi/v1.8/downloads/openmpi-1.8.5.tar.bz2">http://www.open-mpi.org/software/ompi/v1.8/downloads/openmpi-1.8.5.tar.bz2</a>
+<li>OpenMPI: <a href="http://www.open-mpi.org/software/ompi/v1.10/downloads/openmpi-1.10.0.tar.bz2">http://www.open-mpi.org/software/ompi/v1.10/downloads/openmpi-1.10.0.tar.bz2</a>
 </li>
 <li>Scotch/PtScotch: <a href="https://gforge.inria.fr/frs/download.php/file/34099/scotch_6.0.3.tar.gz">https://gforge.inria.fr/frs/download.php/file/34099/scotch_6.0.3.tar.gz</a>
 </li>
@@ -274,12 +274,12 @@ The minimum version of gcc required is 4.5.0
 <h3 id="sec-4-1"><span class="section-number-3">4.1</span> Building ParaView-4.3.1/4.4.0</h3>
 <div class="outline-text-3" id="text-4-1">
 <p>
-The ParaView-4.3.1/4.4.0 source-pack provided by KitWare will not build and
-install correctly without a minor correction: lines 653-656 must be removed
-or commented from file
-<i>ThirdParty-dev/ParaView-4.?.?/Qt/Components/CMakeLists.txt</i> after unpacking
-and renaming the ParaView-4.?.? directory.  This is because the file
-ui_pqExportStateWizard.h referred to in the lines 653-656:
+The ParaView-4.3.1/4.4.0/5.0.0 source-pack provided by KitWare will not
+build and install correctly without a minor correction: lines 653-656
+(650-653 in ParaView-5.0.0) must be removed or commented from file
+<i>ThirdParty-dev/ParaView-<sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup>.?.?/Qt/Components/CMakeLists.txt</i> after
+unpacking and renaming the ParaView-<sup><a id="fnr.1.100" name="fnr.1.100" class="footref" href="#fn.1">1</a></sup>.?.? directory.  This is because the
+file ui_pqExportStateWizard.h referred to in
 </p>
 <div class="org-src-container">
 
@@ -324,10 +324,18 @@ change to the vtkXOpenGLRenderWindow.cxx file in ParaView: Uncomment line 30
 </div>
 </div>
 </div>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p>DEFINITION NOT FOUND.</p></div>
+
+
 </div>
+</div></div>
 <div id="postamble" class="status">
-<p class="date">Date: 23th October 2015</p>
-<p class="date">Created: 2015-11-02 Mon 20:00</p>
+<p class="date">Date: 7th February 2016</p>
+<p class="date">Created: 2016-02-07 Sun 10:27</p>
 <p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.5 (<a href="http://orgmode.org">Org</a> mode 8.2.10)</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
