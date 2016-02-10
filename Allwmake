@@ -173,12 +173,12 @@ esac
 
 
 # get SCOTCH_VERSION, SCOTCH_ARCH_PATH
-if settings=`$WM_PROJECT_DIR/bin/foamEtcFile config/scotch.sh`
+if settings=`$WM_PROJECT_DIR/bin/foamEtcFile config.sh/scotch`
 then
     . $settings
 else
     echo
-    echo "Error: no config/scotch.sh settings"
+    echo "Error: no config.sh/scotch settings"
     echo
 fi
 
@@ -313,7 +313,7 @@ echo ========================================
 echo Build Metis decomposition
 
 # get METIS_VERSION, METIS_ARCH_PATH
-if settings=`$WM_PROJECT_DIR/bin/foamEtcFile config/metis.sh`
+if settings=`$WM_PROJECT_DIR/bin/foamEtcFile config.sh/metis`
 then
     . $settings
 fi
