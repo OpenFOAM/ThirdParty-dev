@@ -325,7 +325,7 @@ addQtSupport()
         QtMajor=$1
         QtMinor=$2
 
-        if [[ ($QtMajor -lt 4) || ($QtMajor -eq 4  && $QtMinor -lt 5) ]]
+        if [ $QtMajor -lt 4 ] || [ $QtMajor -eq 4 -a $QtMinor -lt 5 ]
         then
             echo "*** Error: Qt version provided < 4.5"
             echo "***     Please use the -qmake option to specify the location of a version of Qt >= 4.5 "
@@ -391,6 +391,8 @@ configParaView()
     fi
     mkdir -p $ParaView_BINARY_DIR
 
+    addCMakeVariable  "CMAKE_BUILD_TYPE:STRING=$buildType"
+
     cd $ParaView_BINARY_DIR || exit 1  # change to build folder
 
     echo "----"
@@ -402,6 +404,7 @@ configParaView()
     echo "    Source         : $ParaView_SOURCE_DIR"
     echo "    Build          : $ParaView_BINARY_DIR"
     echo "    Target         : $ParaView_DIR"
+    echo "    Build type     : $buildType"
     echo "----"
     echo
     echo "$cmakeExe" \
@@ -447,19 +450,6 @@ installParaView()
 
     make install
 
-# hack for missing files after install of version 3.14.1
-    echo "Copying missing files to install folder"
-    CMAKE_SRC_DIR=$ParaView_SOURCE_DIR/CMake
-    CMAKE_INSTALL_DIR=$ParaView_DIR/lib/paraview-$ParaView_MAJOR/CMake
-    cp -f $ParaView_SOURCE_DIR/ParaViewUse.cmake $CMAKE_INSTALL_DIR
-    cp -f $CMAKE_SRC_DIR/generate_proxydocumentation.cmake $CMAKE_INSTALL_DIR
-    cp -f $CMAKE_SRC_DIR/smxml_to_xml.xsl $CMAKE_INSTALL_DIR
-    cp -f $CMAKE_SRC_DIR/xml_to_html.xsl $CMAKE_INSTALL_DIR
-    cp -f $CMAKE_SRC_DIR/xml_to_wiki.xsl.in $CMAKE_INSTALL_DIR
-    cp -f $CMAKE_SRC_DIR/generate_qhp.cmake $CMAKE_INSTALL_DIR
-    unset CMAKE_SRC_DIR CMAKE_INSTALL_DIR
-# --- end hack
-
 cat<< INFO
     ---
     Installation complete for paraview-$ParaView_VERSION
@@ -482,20 +472,16 @@ unset withMESA    MESA_INCLUDE    MESA_LIBRARY
 unset withPYTHON  PYTHON_INCLUDE  PYTHON_LIBRARY
 unset CMAKE_VARIABLES
 unset OBJ_ADD
-
+unset buildType
 
 # start with these general settings
-addCMakeVariable  "VTK_USE_TK:BOOL=OFF"
 addCMakeVariable  "BUILD_SHARED_LIBS:BOOL=ON  VTK_USE_RPATH:BOOL=OFF"
-addCMakeVariable  "CMAKE_BUILD_TYPE:STRING=Release"
 
 # include development files in "make install"
-addCMakeVariable  "PARAVIEW_INSTALL_DEVELOPMENT:BOOL=ON"
+addCMakeVariable  "PARAVIEW_INSTALL_DEVELOPMENT_FILES:BOOL=ON"
 
 # don't build test tree
 addCMakeVariable  "BUILD_TESTING:BOOL=OFF"
 
-# remove dependency on WebKit
-# addCMakeVariable  VTK_QT_USE_WEBKIT:BOOL=OFF
 
 # ----------------------------------------------------------------- end-of-file

@@ -13,7 +13,7 @@
   + makeGcc   (recommended if the system gcc is < 4.7)
   + Allwmake  (Builds OpenMPI, Scotch etc.)
   + makeCmake (if the system cmake version is < 2.8.8)
-  + makeParaView4
+  + makeParaView
 *** Optional
     + AllwmakeLibccmio (Only required for conversion of STAR-CCM+ meshes)
     + Allclean (Only required to save disk space)

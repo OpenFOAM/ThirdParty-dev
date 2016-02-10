@@ -3,7 +3,7 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+#   \\  /    A nd           | Copyright (C) 2011-2016 OpenFOAM Foundation
 #    \\/     M anipulation  |
 #------------------------------------------------------------------------------
 # License
@@ -23,10 +23,10 @@
 #     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 #
 # Script
-#     makeParaView
+#     makeParaView3
 #
 # Description
-#     Make and install paraview
+#     Make and install paraview for version 3.14.1 and higher
 #     - place the paraview source under $WM_THIRD_PARTY_DIR/ParaView-VERSION
 #       (note capitalisation)
 #
@@ -40,7 +40,7 @@ wmakeCheckPwd "$WM_THIRD_PARTY_DIR" || {
     exit 1
 }
 . etc/tools/ThirdPartyFunctions
-. etc/tools/ParaView4Functions
+. etc/tools/ParaView3Functions
 #------------------------------------------------------------------------------
 #
 # USER OPTIONS:
@@ -107,8 +107,8 @@ The -no-FEATURE option can be disable these features (if not already disabled):
 
 CMake options start with a capital letter and contain an '='.
 For example,
-    $Script BUILD_TESTING=ON
-to add tests
+    $Script BUILD_TESTING=ON PARAVIEW_GENERATE_PROXY_DOCUMENTATION=OFF
+to add tests and avoid building documentation
 
 For finer control, the build stages can be selected or deselected individually:
   -config    -no-config
@@ -146,7 +146,6 @@ setVersion
 #
 unset runCONFIG runMAKE runINSTALL
 runDEFAULT=true
-buildType=Release
 
 # parse options
 while [ "$#" -gt 0 ]
@@ -271,11 +270,6 @@ do
         export ParaView_MAJOR="$2"
         shift 2
         ;;
-    -buildType)
-        [ "$#" -ge 2 ] || usage "'$1' option requires an argument"
-        buildType="$2"
-        shift 2
-        ;;
     *)
         usage "unknown option/argument: '$*'"
         ;;
@@ -323,7 +317,6 @@ Version information
     qt        ${QtVersion:-none}
     version   ${ParaView_VERSION:-unknown}
     major     ${ParaView_MAJOR:-unknown}
-    build     ${buildType:-Release}
 $(checkVersion)
 ---------------------
 SUMMARY
@@ -334,4 +327,5 @@ SUMMARY
 
 echo
 echo Done
+
 #------------------------------------------------------------------------------
