@@ -3,7 +3,7 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 2012-2014 OpenFOAM Foundation
+#   \\  /    A nd           | Copyright (C) 2012-2016 OpenFOAM Foundation
 #    \\/     M anipulation  |
 #------------------------------------------------------------------------------
 # License
@@ -37,15 +37,21 @@
 #     Mixing system and ThirdParty for gmp/mpfr is not supported.
 #
 #------------------------------------------------------------------------------
+
+# Get CGAL, scotch and gmp/mpfr versions
+. $WM_PROJECT_DIR/etc/config.sh/functions
+_foamEval SOURCE_CGAL_VERSIONS_ONLY=yes $($WM_PROJECT_DIR/bin/foamEtcFile config.sh/CGAL)
+_foamSource $($WM_PROJECT_DIR/bin/foamEtcFile config.sh/compiler)
+
 set -x
 
-cgalPACKAGE=CGAL-4.7
-boostPACKAGE=boost-system
-gmpPACKAGE=gmp-system
-mpfrPACKAGE=mpfr-system
+cgalPACKAGE=${cgal_version:-CGAL-4.7}
+boostPACKAGE=${boost_version:-boost-system}
+gmpPACKAGE=${gmp_version:-gmp-system}
+mpfrPACKAGE=${mpfr_version:-mpfr-system}
 
 #------------------------------------------------------------------------------
-# run from third-party directory only
+# Run from third-party directory only
 wmakeCheckPwd "$WM_THIRD_PARTY_DIR" || {
     echo "Error: Current directory is not \$WM_THIRD_PARTY_DIR"
     echo "    The environment variables are inconsistent with the installation."
@@ -83,11 +89,11 @@ USAGE
 }
 
 
-# ensure CMake gets the correct C++ compiler
+# Ensure CMake gets the correct C++ compiler
 [ -n "$WM_CXX" ] && export CXX="$WM_CXX"
 
 
-# parse options
+# Parse options
 while [ "$#" -gt 0 ]
 do
     case "$1" in
@@ -159,7 +165,7 @@ then
 else
     boostInc="/usr/include"
 
-    # for completeness:
+    # For completeness:
     # 64-bit needs lib64, but 32-bit needs lib (not lib32)
     if [ "$WM_ARCH_OPTION" = 64 ]
     then
@@ -170,7 +176,7 @@ else
 fi
 
 
-# retrieve boost version:
+# Retrieve boost version:
 if [ -f "$boostInc/boost/version.hpp" ]
 then
     BOOST_VERSION_NO=`sed -ne 's/^#define *BOOST_VERSION *\([0-9][0-9]*\).*$/\1/p' $boostInc/boost/version.hpp`
@@ -201,7 +207,7 @@ GMP_ARCH_PATH=$installBASE/$gmpPACKAGE
 MPFR_ARCH_PATH=$installBASE/$mpfrPACKAGE
 
 (
-    # remove any existing build folder and recreate
+    # Remove any existing build folder and recreate
     if [ -d $CGAL_BINARY_DIR ]
     then
         echo "removing old build directory"

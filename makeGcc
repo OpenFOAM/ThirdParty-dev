@@ -3,7 +3,7 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 2011-2015 OpenFOAM Foundation
+#   \\  /    A nd           | Copyright (C) 2011-2016 OpenFOAM Foundation
 #    \\/     M anipulation  |
 #------------------------------------------------------------------------------
 # License
@@ -29,10 +29,16 @@
 #     Build script for gmp, mpfr and gcc-[4-9].?.?
 #
 #------------------------------------------------------------------------------
-gmpPACKAGE=gmp-5.1.2
-mpfrPACKAGE=mpfr-3.1.2
-mpcPACKAGE=mpc-1.0.1
-gccPACKAGE=
+
+# get default GCC, mpfr, gmp and mpc versions
+. $WM_PROJECT_DIR/etc/config.sh/functions
+_foamSource $($WM_PROJECT_DIR/bin/foamEtcFile config.sh/compiler)
+
+gmpPACKAGE=${gmp_version:-gmp-5.1.2}
+mpfrPACKAGE=${mpfr_version:-mpfr-3.1.2}
+mpcPACKAGE=${mpc_version:-mpc-1.0.1}
+gccPACKAGE=$gcc_version
+
 
 #------------------------------------------------------------------------------
 # Run from third-party directory only
