@@ -38,9 +38,10 @@
 #
 #------------------------------------------------------------------------------
 
-# Get CGAL, scotch and gmp/mpfr versions
+# Get CGAL, boost and gmp/mpfr versions
 . $WM_PROJECT_DIR/etc/config.sh/functions
-_foamEval SOURCE_CGAL_VERSIONS_ONLY=yes $($WM_PROJECT_DIR/bin/foamEtcFile config.sh/CGAL)
+_foamEval SOURCE_CGAL_VERSIONS_ONLY=yes \
+          $($WM_PROJECT_DIR/bin/foamEtcFile config.sh/CGAL)
 _foamSource $($WM_PROJECT_DIR/bin/foamEtcFile config.sh/compiler)
 
 set -x
