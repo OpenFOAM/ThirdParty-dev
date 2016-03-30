@@ -63,6 +63,9 @@ setDirs()
     echo "ParaView_SOURCE_DIR=$ParaView_SOURCE_DIR"
     echo "ParaView_BINARY_DIR=$ParaView_BINARY_DIR"
     echo "ParaView_DIR=$ParaView_DIR"
+
+    # Forcefully override the .git path for the ParaView source code directory
+    export GIT_DIR=$ParaView_SOURCE_DIR/.git
 }
 
 
