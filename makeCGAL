@@ -187,6 +187,11 @@ else
     exit 1
 fi
 
+if [ "$cgal_version" = "cgal-system" ]
+then
+    echo "Using system installation of CGAL"
+    exit 0
+fi
 
 #
 # Build CGAL

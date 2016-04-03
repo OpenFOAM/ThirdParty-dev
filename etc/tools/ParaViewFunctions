@@ -74,7 +74,10 @@ setDirs()
 #
 setVersion()
 {
-    [ "$#" -ge 1 ] && ParaView_VERSION="${1##paraview-}"
+    if [ "$#" -ge 1 ]
+    then
+        ParaView_VERSION="${1##paraview-}"
+    fi
 
     # The major version is "<digits>.<digits>"
     ParaView_MAJOR=$(echo $ParaView_VERSION | \
@@ -154,7 +157,10 @@ addCMakeVariable()
 #
 addVerbosity()
 {
-    [ "$withVERBOSE" = true ] && addCMakeVariable  "CMAKE_VERBOSE_MAKEFILE=TRUE"
+    if [ "${withVERBOSE:=false}" = true ]
+    then
+        addCMakeVariable  "CMAKE_VERBOSE_MAKEFILE=TRUE"
+    fi
 }
 
 
@@ -163,7 +169,11 @@ addVerbosity()
 #
 addMpiSupport()
 {
-    [ "${withMPI:=false}" = true ] || return
+    if [ "${withMPI:=false}" != true ]
+    then
+        return
+    fi
+
     OBJ_ADD="$OBJ_ADD-mpi"
 
     addCMakeVariable  "PARAVIEW_USE_MPI=ON VTK_USE_MPI=ON"
@@ -176,7 +186,11 @@ addMpiSupport()
 #
 addPythonSupport()
 {
-    [ "${withPYTHON:=false}" = true ] || return
+    if [ "${withPYTHON:=false}" != true ]
+    then
+        return
+    fi
+
     OBJ_ADD="$OBJ_ADD-py"
 
     if pythonBin=$(which python 2>/dev/null)
@@ -244,7 +258,10 @@ addPythonSupport()
 #
 addMesaSupport()
 {
-    [ "${withMESA:=false}" = true ] || return
+    if [ "${withMESA:=false}" != true ]
+    then
+       return
+    fi
 
     if [ -d "$MESA_INCLUDE" -a -f "$MESA_LIBRARY" ]
     then
@@ -268,7 +285,11 @@ addMesaSupport()
 addQtSupport()
 {
     QtVersion=none
-    [ "${withQT:=false}" = true ] || return
+
+    if [ "${withQT:=false}" != true ]
+    then
+        return
+    fi
 
     addCMakeVariable "PARAVIEW_BUILD_QT_GUI=ON"
 
@@ -327,10 +348,10 @@ addQtSupport()
         QtMajor=$1
         QtMinor=$2
 
-        if [ $QtMajor -lt 4 ] || [ $QtMajor -eq 4 -a $QtMinor -lt 5 ]
+        if [ $QtMajor -lt 4 -o $QtMajor -eq 4 -a $QtMinor -lt 5 ]
         then
             echo "*** Error: Qt version provided < 4.5"
-            echo "***     Please use the -qmake option to specify the location of a version of Qt >= 4.5 "
+            echo "***     Please use the -qmake option to specify the location of a version of Qt >= 4.5"
             echo "***     e.g."
             echo "***         -qmake /usr/local/qt-4.6.2/bin/qmake"
             echo "***         -qmake $installBASE/qt-4.6.2/bin/qmake"
@@ -382,7 +403,10 @@ configParaView()
     fi
 
     # Default to using cmake from the path
-    [ -n "$cmakeExe" ] || cmakeExe=cmake
+    if [ -z "$cmakeExe" ]
+    then
+        cmakeExe=cmake
+    fi
 
     # Remove any existing build folder and recreate
     if [ -d $ParaView_BINARY_DIR ]
@@ -438,7 +462,10 @@ makeParaView()
 
     # Remove lib if it is a link
     # (how this was previously handled before 'make install' worked)
-    [ -L lib ] && rm lib 2>/dev/null
+    if [ -L lib ]
+    then
+        rm lib 2>/dev/null
+    fi
 }
 
 
