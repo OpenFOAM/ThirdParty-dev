@@ -3,7 +3,7 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 2011-2014 OpenFOAM Foundation
+#   \\  /    A nd           | Copyright (C) 2011-2016 OpenFOAM Foundation
 #    \\/     M anipulation  |
 #------------------------------------------------------------------------------
 # License
@@ -77,7 +77,7 @@ OPENMPI)
         set -x
         cd "${MPI_ARCH_PATH##*/}" || exit 1    # change to openmpi-VERSION
 
-        make distclean 2>/dev/null
+        [ -e Makefile ] && make distclean 2>/dev/null
         rm -rf $MPI_ARCH_PATH
 
         # start with GridEngine support,
@@ -122,7 +122,7 @@ MPICH)
         set -x
         cd $MPI_HOME || exit 1    # change to mpich-VERSION
 
-        make distclean 2>/dev/null
+        [ -e Makefile ] && make distclean 2>/dev/null
         rm -rf $MPI_ARCH_PATH
         rm util/machines/machines.*
 

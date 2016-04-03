@@ -2,7 +2,7 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+#   \\  /    A nd           | Copyright (C) 2011-2016 OpenFOAM Foundation
 #    \\/     M anipulation  |
 #------------------------------------------------------------------------------
 # License
@@ -31,12 +31,13 @@
 #     Define WM_NCOMPPROCS always.
 #------------------------------------------------------------------------------
 
-# define the normal build and prefix directories
+# Define the normal build and prefix directories
 buildBASE=$WM_THIRD_PARTY_DIR/build/$WM_ARCH$WM_COMPILER
 installBASE=$WM_THIRD_PARTY_DIR/platforms/$WM_ARCH$WM_COMPILER
 
+
 #
-# mostly building without wmake
+# Mostly building without wmake
 # - disable wmakeScheduler variables
 # - restrict WM_NCOMPPROCS to local number of cores
 #
@@ -53,7 +54,16 @@ fi
 
 
 #
-# download file $1 from url $2 into download/ directory
+# If WM_CONTINUE_ON_ERROR not set activate the shell option "stop on error"
+#
+if [ -z "${WM_CONTINUE_ON_ERROR}" ]
+then
+    set -e
+fi
+
+
+#
+# Download file $1 from url $2 into download/ directory
 #
 downloadFile()
 {
@@ -75,7 +85,7 @@ downloadFile()
 
 
 #
-# copy Make/{files,options} from wmakeFiles/PACKAGE
+# Copy Make/{files,options} from wmakeFiles/PACKAGE
 #
 # $1 = PACKAGE
 # $2 (optional) TARGET DIRECTORY
