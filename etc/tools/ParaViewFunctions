@@ -482,8 +482,8 @@ installParaView()
 cat<< INFO
     ---
     Installation complete for paraview-$ParaView_VERSION
-    Now set the environment variables:
-        wmREFRESH
+    Now update the environment by running:
+        wmRefresh
     ---
 INFO
 }
