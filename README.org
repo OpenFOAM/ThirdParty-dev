@@ -2,7 +2,7 @@
 #
 #+TITLE:              OpenFOAM-dev Third-Party packages
 #+AUTHOR:                  The OpenFOAM Foundation
-#+DATE:                       7th February 2016
+#+DATE:                       30th May 2016
 #+LINK:                     http://www.openfoam.org
 #+OPTIONS: author:nil ^:{}
 # Copyright (c) 2014-2016 OpenFOAM Foundation.
@@ -40,10 +40,11 @@
 *** Miscellaneous
     + libccmio    http://portal.nersc.gov/svn/visit/trunk/third_party/libccmio-2.6.1.tar.gz
 * Notes
-*** Building ParaView-4.3.1/4.4.0/5.0.0
+*** Building ParaView-4.3.1/4.4.0/5.0.0/5.0.1
     The ParaView-4.3.1/4.4.0/5.0.0 source-pack provided by KitWare will not
     build and install correctly without a minor correction: lines 653-656
-    (650-653 in ParaView-5.0.0) must be removed or commented from file
+    (650-653 in ParaView-5.0.0, 659-662 in ParaView-5.0.1) must be removed or
+    commented from file
     /ThirdParty-dev/ParaView-[45].?.?/Qt/Components/CMakeLists.txt/ after
     unpacking and renaming the ParaView-[45].?.? directory.  This is because the
     file ui_pqExportStateWizard.h referred to in
@@ -61,7 +62,10 @@
     directory:
     + wget https://raw.githubusercontent.com/Kitware/VTK/40937e934308e5009e80769dc0c451ee4f157749/IO/Geometry/vtkSTLReader.cxx -O ParaView-4.4.0/VTK/IO/Geometry/vtkSTLReader.cxx
     See also http://www.openfoam.org/mantisbt/view.php?id=1887
-
+*** Building ParaView-5.0.1 with gcc-6.1.0
+    The SciberQuestToolKit plugin fails to compile with gcc-6.1.0 and causes the
+    compilation of ParaView to halt.  The easiest solution is to delete the
+    ParaView-5.0.1/Plugins/SciberQuestToolKit directory.
 *** Building ParaView-4.1.0
     On Ubuntu 14.10 and higher, OpenSuSE 13.2 and probably other recent
     GNU/Linux distributions there is an issue in the GL libraries requiring a
