@@ -1,0 +1,10 @@
+[hooks]
+	url = https://gitlab.kitware.com/paraview/paraview.git
+[upstream]
+	url = https://gitlab.kitware.com/paraview/paraview.git
+[gitlab]
+	host = gitlab.kitware.com
+	group-path = paraview
+	group-name = ParaView
+	project-path = paraview
+	project-name = ParaView

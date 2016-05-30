@@ -1,0 +1,15 @@
+[submodule "VTK"]
+	path = VTK
+	url = https://gitlab.kitware.com/vtk/vtk.git
+[submodule "Utilities/VisItBridge"]
+	path = Utilities/VisItBridge
+	url = https://gitlab.kitware.com/paraview/visitbridge.git
+[submodule "ThirdParty/IceT/vtkicet"]
+	path = ThirdParty/IceT/vtkicet
+	url = https://gitlab.kitware.com/icet/icet.git
+[submodule "ThirdParty/protobuf/vtkprotobuf"]
+	path = ThirdParty/protobuf/vtkprotobuf
+	url = https://gitlab.kitware.com/paraview/protobuf.git
+[submodule "ThirdParty/QtTesting/vtkqttesting"]
+	path = ThirdParty/QtTesting/vtkqttesting
+	url = https://github.com/Kitware/QtTesting.git
