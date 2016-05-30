@@ -1,79 +1,35 @@
-# man gitignore for more information
-
-# editor and misc backup files - anywhere
+# Ignore editor and misc backup files - anywhere
 *~
 .*~
 *.bak
 *.bak[0-9][0-9]
-*.orig
-*.orig[0-9][0-9]
 \#*\#
 
-# file-browser settings - anywhere
-.directory
-
-# CVS recovered versions - anywhere
-.#*
-
-# objects and archives - anywhere
-*.[oa]
-*.la
-*.so
-*.jar
-
-# derived files
-lex.yy.c
-
-# Corefiles
-core
-
-# dependency files - anywhere
-*.dep
-
-# lnInclude (symlink) folders - anywhere
-lnInclude
-
-# build folders - anywhere
-linux*Gcc*/
-linux*Icc*/
-linuxming*/
-SiCortex*Gcc*/
-solaris*Gcc*/
-SunOS*Gcc*/
-
-# source packages - anywhere
+# Ignore source packages - anywhere
 *.tar.bz2
 *.tar.gz
 *.tar
 *.tgz
 *.gtgz
 
+# Ignore build and platforms folders
+build/
+platforms/
 
-# ignore the persistent .build tag in the main directory
-/.build
+# Ignore deprecated scripts
+etc/relocateQt
+etc/tools/QtFunctions
+etc/wmakeFiles/libccmio/
+etc/wmakeFiles/tecio/
+makeQt
 
-# ignore .timeStamp in the main directory
-/.timeStamp
-
-# ignore unpacked sources in the main directory (match pkg-ver)
-# this also matches symlinks
+# Ignore unpacked sources in the main directory (match pkg-ver)
 /*[-_][0-9]*
 
-# ignore all sub-directories
-/*/
+# Include ParaView
+!/ParaView-5.0.1
 
-# do not ignore these ones
-!/etc/
+# Include scotch
+!/scotch_6.0.3
 
-# do not ignore the first level of these ones
-!/malloc/
-/malloc/*/
-!/malloc/fbsdmalloc/
-
-# ignore these extra symlinks
-libccmio
-
-# track this patched version directly - until metis gets dropped
-!/metis-5.0pre2/libmetis/metislib.h
-
-# end-of-file
+# End-of-file
