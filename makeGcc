@@ -56,7 +56,10 @@ usage() {
     while [ "$#" -ge 1 ]; do echo "$1"; shift; done
     cat<<USAGE
 
-usage: ${0##*/} [gmp-VERSION] [mpfr-VERSION] [mpc-VERSION] <gcc-VERSION>
+usage: ${0##*/} [option] [gmp-VERSION] [mpfr-VERSION] [mpc-VERSION] <gcc-VERSION>
+options:
+  -no-multilib      for 64-bit systems that don't have 32-bit support
+  -help
 
 * build combinations of gmp, mpfr, mpc and gcc
       $gmpPACKAGE
@@ -68,6 +71,7 @@ USAGE
     exit 1
 }
 
+GCC_BUILD_OPTIONS=""
 
 # Parse options
 while [ "$#" -gt 0 ]
@@ -75,6 +79,10 @@ do
     case "$1" in
     -h | -help)
         usage
+        ;;
+    -no-multilib)
+        GCC_BUILD_OPTIONS="--disable-multilib"
+        shift
         ;;
     gmp-[4-9]*)
         gmpPACKAGE="${1%%/}"
@@ -274,6 +282,7 @@ else
         --enable-__cxa_atexit \
         --enable-libstdcxx-allocator=new \
         --with-system-zlib \
+        $GCC_BUILD_OPTIONS \
         MAKEINFO=missing \
     && make -j $WM_NCOMPPROCS \
     && make install \
