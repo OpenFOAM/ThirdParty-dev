@@ -158,6 +158,7 @@ else
     set -x
     $sourceDIR/configure ABI=$ABI \
         --prefix=$GMP_ARCH_PATH \
+        --libdir=$GMP_ARCH_PATH/lib$WM_COMPILER_LIB_ARCH \
         --enable-cxx \
     && make -j $WM_NCOMPPROCS \
     && make install \
@@ -194,7 +195,9 @@ else
     set -x
     $sourceDIR/configure ABI=$ABI \
        --prefix=$MPFR_ARCH_PATH \
-       --with-gmp=$GMP_ARCH_PATH \
+       --libdir=$MPFR_ARCH_PATH/lib$WM_COMPILER_LIB_ARCH \
+       --with-gmp-include=$GMP_ARCH_PATH/include \
+       --with-gmp-lib=$GMP_ARCH_PATH/lib$WM_COMPILER_LIB_ARCH \
     && make -j $WM_NCOMPPROCS \
     && make install \
     && echo "Built: $mpfrPACKAGE"
@@ -230,8 +233,11 @@ else
     set -x
     $sourceDIR/configure ABI=$ABI \
         --prefix=$MPC_ARCH_PATH \
-        --with-gmp=$GMP_ARCH_PATH \
-        --with-mpfr=$MPFR_ARCH_PATH \
+        --libdir=$MPC_ARCH_PATH/lib$WM_COMPILER_LIB_ARCH \
+        --with-gmp-include=$GMP_ARCH_PATH/include \
+        --with-gmp-lib=$GMP_ARCH_PATH/lib$WM_COMPILER_LIB_ARCH \
+        --with-mpfr-include=$MPFR_ARCH_PATH/include \
+        --with-mpfr-lib=$MPFR_ARCH_PATH/lib$WM_COMPILER_LIB_ARCH \
     && make -j $WM_NCOMPPROCS \
     && make install \
     && echo "Built: $mpcPACKAGE"
@@ -274,9 +280,12 @@ else
     set -x
     $sourceDIR/configure \
         --prefix=$GCC_ARCH_PATH \
-        --with-gmp=$GMP_ARCH_PATH \
-        --with-mpfr=$MPFR_ARCH_PATH \
-        --with-mpc=$MPC_ARCH_PATH \
+        --with-gmp-include=$GMP_ARCH_PATH/include \
+        --with-gmp-lib=$GMP_ARCH_PATH/lib$WM_COMPILER_LIB_ARCH \
+        --with-mpfr-include=$MPFR_ARCH_PATH/include \
+        --with-mpfr-lib=$MPFR_ARCH_PATH/lib$WM_COMPILER_LIB_ARCH \
+        --with-mpc-include=$MPC_ARCH_PATH/include \
+        --with-mpc-lib=$MPC_ARCH_PATH/lib$WM_COMPILER_LIB_ARCH \
         --with-pkgversion=OpenFOAM \
         --enable-languages=c,c++ \
         --enable-__cxa_atexit \
