@@ -40,11 +40,10 @@
 
 # Get CGAL, boost and gmp/mpfr versions
 . $WM_PROJECT_DIR/etc/config.sh/functions
-_foamEval SOURCE_CGAL_VERSIONS_ONLY=yes \
-          $($WM_PROJECT_DIR/bin/foamEtcFile config.sh/CGAL)
+_foamEval $($WM_PROJECT_DIR/bin/foamEtcFile config.sh/CGAL)
 _foamSource $($WM_PROJECT_DIR/bin/foamEtcFile config.sh/compiler)
 
-cgalPACKAGE=${cgal_version:-CGAL-4.8}
+cgalPACKAGE=${cgal_version:-CGAL-4.8.1}
 boostPACKAGE=${boost_version:-boost-system}
 gmpPACKAGE=${gmp_version:-gmp-system}
 mpfrPACKAGE=${mpfr_version:-mpfr-system}

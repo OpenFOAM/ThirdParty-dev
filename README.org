@@ -42,7 +42,7 @@
     + ParaView-5.0.1 http://www.paraview.org/files/v5.0/ParaView-v5.0.1-source.tar.gz
     but may need patching to compile (See [[Notes]]).
 *** CGAL
-    + CGAL        https://github.com/CGAL/cgal/releases/download/releases%2FCGAL-4.8/CGAL-4.8.tar.xz
+    + CGAL        https://github.com/CGAL/cgal/releases/download/releases%2FCGAL-4.8.1/CGAL-4.8.1.tar.xz
     + boost       http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.bz2/download
 *** Miscellaneous
     + libccmio    http://portal.nersc.gov/svn/visit/trunk/third_party/libccmio-2.6.1.tar.gz
