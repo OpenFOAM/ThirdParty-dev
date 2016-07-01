@@ -492,16 +492,19 @@ INFO
 #------------------------------------------------------------------------------
 
 # Clear the referenced variables before using any of the functions
-unset withMPI  withVERBOSE
-unset withQT      QMAKE_PATH
-unset withMESA    MESA_INCLUDE    MESA_LIBRARY
-unset withPYTHON  PYTHON_INCLUDE  PYTHON_LIBRARY
+unset withMPI withVERBOSE
+unset withQT QMAKE_PATH
+unset withMESA MESA_INCLUDE MESA_LIBRARY
+unset withPYTHON PYTHON_INCLUDE PYTHON_LIBRARY
 unset CMAKE_VARIABLES
 unset OBJ_ADD
 unset buildType
 
 # Start with these general settings
 addCMakeVariable  "BUILD_SHARED_LIBS:BOOL=ON  VTK_USE_RPATH:BOOL=OFF"
+
+# Choose the new rendering engine
+addCMakeVariable  "VTK_RENDERING_BACKEND_DEFAULT=OpenGL2"
 
 # Include development files in "make install"
 addCMakeVariable  "PARAVIEW_INSTALL_DEVELOPMENT_FILES:BOOL=ON"
