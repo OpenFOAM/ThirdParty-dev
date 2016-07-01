@@ -44,8 +44,6 @@ _foamEval SOURCE_CGAL_VERSIONS_ONLY=yes \
           $($WM_PROJECT_DIR/bin/foamEtcFile config.sh/CGAL)
 _foamSource $($WM_PROJECT_DIR/bin/foamEtcFile config.sh/compiler)
 
-set -x
-
 cgalPACKAGE=${cgal_version:-CGAL-4.8}
 boostPACKAGE=${boost_version:-boost-system}
 gmpPACKAGE=${gmp_version:-gmp-system}
