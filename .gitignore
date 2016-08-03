@@ -19,7 +19,6 @@ platforms/
 # Ignore deprecated scripts
 etc/relocateQt
 etc/tools/QtFunctions
-etc/wmakeFiles/libccmio/
 etc/wmakeFiles/tecio/
 makeQt
 
