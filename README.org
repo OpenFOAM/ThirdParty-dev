@@ -10,7 +10,7 @@
 * Description
   Scripts for building third-party packages.
 * Order of execution:
-  + makeGcc   (recommended if the system gcc is < 4.7)
+  + makeGcc   (recommended if the system gcc is < 4.8)
   + Allwmake  (Builds OpenMPI, Scotch etc.)
   + makeCmake (if the system cmake version is < 2.8.8)
   + makeParaView
@@ -19,7 +19,7 @@
     + Allclean (Only required to save disk space)
 * Versions and locations to download the third party packages
 *** Gcc C++ Compiler
-    The minimum version of gcc required is 4.5.0
+    The minimum version of gcc required is 4.8.0
     + gcc   http://gcc.gnu.org/releases.html
     + gmp   http://gmplib.org/
             ftp://ftp.gnu.org/gnu/gmp/gmp-5.1.2.tar.bz2
