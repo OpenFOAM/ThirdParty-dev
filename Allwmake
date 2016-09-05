@@ -187,8 +187,8 @@ echo ========================================
 echo "Build Scotch decomposition library $SCOTCH_VERSION"
 echo "    $SCOTCH_ARCH_PATH"
 
-# this needs generalizing
-scotchMakefile=../../etc/wmakeFiles/scotch/Makefile.inc.i686_pc_linux2.shlib-OpenFOAM-$WM_ARCH_OPTION$WM_LABEL_OPTION
+# this needs generalizing for any compiler, since it's hard-coded to GCC
+scotchMakefile=../../etc/wmakeFiles/scotch/Makefile.inc.i686_pc_linux2.shlib-OpenFOAM
 
 if [ -f $SCOTCH_ARCH_PATH/include/scotch.h \
   -a -r $FOAM_EXT_LIBBIN/libscotch.so \
