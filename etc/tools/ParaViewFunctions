@@ -504,7 +504,7 @@ unset buildType
 addCMakeVariable  "BUILD_SHARED_LIBS:BOOL=ON  VTK_USE_RPATH:BOOL=OFF"
 
 # Choose the new rendering engine
-addCMakeVariable  "VTK_RENDERING_BACKEND_DEFAULT=OpenGL2"
+addCMakeVariable  "VTK_RENDERING_BACKEND=OpenGL2"
 
 # Include development files in "make install"
 addCMakeVariable  "PARAVIEW_INSTALL_DEVELOPMENT_FILES:BOOL=ON"
