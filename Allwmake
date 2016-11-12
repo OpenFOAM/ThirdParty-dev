@@ -331,21 +331,8 @@ then
         set -x
         cd $METIS_VERSION  || exit 1
 
-        if [ "$WM_PRECISION_OPTION" = "DP" ]
-        then
-            FLOAT_PRECISION=64
-        elif [ "$WM_PRECISION_OPTION" = "SP" ]
-        then
-            FLOAT_PRECISION=32
-        else
-            echo " Metis pre-configure error:"
-            echo "    WM_PRECISION_OPTION is neither DP nor SP"
-            exit 1
-        fi
-
         # Change user settings automatically
         sed -i -e 's=\(#define IDXTYPEWIDTH\).*=\1 '$WM_LABEL_SIZE'=' \
-               -e 's=\(#define REALTYPEWIDTH\).*=\1 '$FLOAT_PRECISION'=' \
             include/metis.h
 
         make config shared=1 prefix=$METIS_ARCH_PATH
