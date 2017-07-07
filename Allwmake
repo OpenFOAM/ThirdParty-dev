@@ -95,6 +95,7 @@ OPENMPI)
             --prefix=$MPI_ARCH_PATH \
             --disable-orterun-prefix-by-default \
             --enable-shared --disable-static \
+            --enable-mpi-thread-multiple \
             --libdir=$MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH} \
             --enable-mpi-fortran=none \
             --disable-mpi-profile \
