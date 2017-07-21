@@ -2,7 +2,7 @@
 #
 #+TITLE:              OpenFOAM-dev Third-Party packages
 #+AUTHOR:                  The OpenFOAM Foundation
-#+DATE:                       10th March 2017
+#+DATE:                       21st July 2017
 #+LINK:                     http://www.openfoam.org
 #+OPTIONS: author:nil ^:{}
 # Copyright (c) 2014-2016 OpenFOAM Foundation.
@@ -40,6 +40,7 @@
     + cmake          http://www.cmake.org/files/v3.2/cmake-3.2.1.tar.gz
     + ParaView-4.4.0 http://www.paraview.org/files/v4.4/ParaView-v4.4.0-source.tar.gz
     + ParaView-5.0.1 http://www.paraview.org/files/v5.0/ParaView-v5.0.1-source.tar.gz
+    + ParaView-5.4.0 http://www.paraview.org/files/v5.4/ParaView-v5.4.0.tar.gz
     but may need patching to compile (See [[Notes]]).
 *** CGAL
     + CGAL        https://github.com/CGAL/cgal/releases/download/releases%2FCGAL-4.8.1/CGAL-4.8.1.tar.xz
