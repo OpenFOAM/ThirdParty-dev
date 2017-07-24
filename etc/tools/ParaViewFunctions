@@ -172,13 +172,11 @@ checkVersion()
 #
 addCMakeVariable()
 {
-    while [ -n "$1" ]
+    for var in $*
     do
-        CMAKE_VARIABLES="$CMAKE_VARIABLES -D$1"
-        shift
+	CMAKE_VARIABLES="$CMAKE_VARIABLES -D$var"
     done
 }
-
 
 #
 # Verbose makefiles
