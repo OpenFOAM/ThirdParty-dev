@@ -3,7 +3,7 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 2011-2016 OpenFOAM Foundation
+#   \\  /    A nd           | Copyright (C) 2011-2017 OpenFOAM Foundation
 #    \\/     M anipulation  |
 #------------------------------------------------------------------------------
 # License
@@ -282,13 +282,16 @@ do
     esac
 done
 
-
 if [ "$runDEFAULT" = true ]
 then
     : ${runCONFIG:=true}
     : ${runMAKE:=true}
     : ${runINSTALL:=true}
 fi
+
+# Download ParaView sources
+#~~~~~~~~~~~~~~~~~~~~~~~~~~
+downloadParaView || usage "ParaView download failed.  Re-run to retry download"
 
 
 # Set configure options

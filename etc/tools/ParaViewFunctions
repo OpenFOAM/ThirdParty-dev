@@ -2,7 +2,7 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 2011-2016 OpenFOAM Foundation
+#   \\  /    A nd           | Copyright (C) 2011-2017 OpenFOAM Foundation
 #    \\/     M anipulation  |
 #------------------------------------------------------------------------------
 # License
@@ -88,6 +88,34 @@ setVersion()
 
 
 #------------------------------------------------------------------------------
+
+#
+# ParaView 5.0.1 required patches to sources to compile the OpenFOAM reader
+# module. The reader module compiles with ParaView 5.4.0 compiles without
+# changes.  So for ParaView versions beyond 5.0.1, we are downloading sources
+# directly using the following function
+#
+downloadParaView()
+{
+    # return if ParaView_VERSION=5.0.1 or older
+    [ "$(printf "5.0.1\n%s" \
+        "$ParaView_VERSION" | sort -V | tail -n1)" = "5.0.1" ] && \
+        echo "Not downloading ParaView (version <= 5.0.1)..." && \
+        return 0
+
+    # return if already downloaded
+    _dir="ParaView-${ParaView_VERSION}"
+    [ -d "$_dir" ] &&  echo "$_dir exists.  Not downloading..." && return 0
+
+    echo "Downloading $_dir"
+    _pack="ParaView-v${ParaView_VERSION}"
+    curl "https://www.paraview.org/files/v${ParaView_MAJOR}/${_pack}.tar.gz" | \
+        tar xz 2> /dev/null
+
+    # Testing successful download because ParaView repository is unreliable
+    [ "$?" -ne 0 ] && echo "Download unsuccessful" && return 1
+    mv "$_pack" "$_dir" && return 0
+}
 
 #
 # Extract and echo date stamp information from
