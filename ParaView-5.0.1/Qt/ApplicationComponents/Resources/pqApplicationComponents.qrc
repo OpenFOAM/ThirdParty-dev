@@ -1,5 +1,0 @@
-<RCC>
-  <qresource prefix="/pqApplicationComponents">
-    <file>StandardArrayColorMaps.json</file>
-  </qresource>
-</RCC>

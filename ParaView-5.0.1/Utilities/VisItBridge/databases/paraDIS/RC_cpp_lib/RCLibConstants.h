@@ -1,2 +1,0 @@
-
-#define RCLIB_BADVALUE (-99999)
