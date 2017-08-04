@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>OpenFOAM-dev Third-Party packages</title>
-<!-- 2017-07-28 Fri 08:26 -->
+<!-- 2017-08-04 Fri 11:45 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <style type="text/css">
@@ -185,6 +185,8 @@ Scripts for building third-party packages.
 </li>
 <li>Allwmake  (Builds OpenMPI, Scotch etc.)
 </li>
+<li>makeCmake (if the system cmake version is &lt; 3.3.0)
+</li>
 <li>makeParaView
 </li>
 </ul>
@@ -255,6 +257,14 @@ may be obtained from:
 <h3 id="sec-4-3"><span class="section-number-3">4.3</span> ParaView</h3>
 <div class="outline-text-3" id="text-4-3">
 <p>
+If the system cmake version is &lt; 3.3.0 you will need to download and build a
+recent version:
+</p>
+<ul class="org-ul">
+<li>cmake          <a href="http://www.cmake.org/files/v3.9/cmake-3.9.0.tar.gz">http://www.cmake.org/files/v3.9/cmake-3.9.0.tar.gz</a>
+</li>
+</ul>
+<p>
 Patched versions of the ParaView source code were once provided for ParaView
 v5.0.1.  With the current supported version of ParaView (v.5.4.0), the
 source code
@@ -306,7 +316,7 @@ the .bashrc (or .cshrc) file or by typing
 </div>
 <div id="postamble" class="status">
 <p class="date">Date: 26th July 2017</p>
-<p class="date">Created: 2017-07-28 Fri 08:26</p>
+<p class="date">Created: 2017-08-04 Fri 11:45</p>
 <p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 25.1.91 (<a href="http://orgmode.org">Org</a> mode 8.2.10)</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>

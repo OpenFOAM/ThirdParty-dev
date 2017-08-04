@@ -13,6 +13,7 @@
 * Order of execution:
   + makeGcc   (recommended if the system gcc is < 4.8)
   + Allwmake  (Builds OpenMPI, Scotch etc.)
+  + makeCmake (if the system cmake version is < 3.3.0)
   + makeParaView
 *** Optional
     + AllwmakeLibccmio (Only required for conversion of STAR-CCM+ meshes)
@@ -35,6 +36,9 @@
 ***** OpenMPI
       + OpenMPI: https://www.open-mpi.org/software/ompi/v2.1/downloads/openmpi-2.1.1.tar.bz2
 *** ParaView
+    If the system cmake version is < 3.3.0 you will need to download and build a
+    recent version:
+    + cmake          http://www.cmake.org/files/v3.9/cmake-3.9.0.tar.gz
     Patched versions of the ParaView source code were once provided for ParaView
     v5.0.1.  With the current supported version of ParaView (v.5.4.0), the
     source code

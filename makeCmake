@@ -3,7 +3,7 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+#   \\  /    A nd           | Copyright (C) 2011-2017 OpenFOAM Foundation
 #    \\/     M anipulation  |
 #------------------------------------------------------------------------------
 # License
@@ -29,7 +29,7 @@
 #     Build script for cmake
 #
 #------------------------------------------------------------------------------
-cmakePACKAGE=cmake-3.2.1
+cmakePACKAGE=cmake-3.9.0
 
 #------------------------------------------------------------------------------
 # run from third-party directory only
