@@ -274,6 +274,7 @@ CMAKE_OPTIONS
         -DCMAKE_INSTALL_PREFIX=$CGAL_ARCH_PATH \
         -DCMAKE_BUILD_TYPE=Release \
         -DWITH_CGAL_Qt5=OFF \
+        -DCGAL_INSTALL_LIB_DIR=lib$WM_COMPILER_LIB_ARCH \
         $configBoost $configGmpMpfr \
         $CGAL_SOURCE_DIR \
     && make -j $WM_NCOMPPROCS \

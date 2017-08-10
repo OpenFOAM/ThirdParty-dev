@@ -3,7 +3,7 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 2011-2016 OpenFOAM Foundation
+#   \\  /    A nd           | Copyright (C) 2011-2017 OpenFOAM Foundation
 #    \\/     M anipulation  |
 #------------------------------------------------------------------------------
 # License
@@ -355,7 +355,7 @@ then
     if [ -r $CGAL_ARCH_PATH/lib$WM_COMPILER_LIB_ARCH/libCGAL.so ]
     then
         echo "    CGAL headers in $CGAL_ARCH_PATH/include"
-        echo "    CGAL libs    in $CGAL_ARCH_PATH/lib"
+        echo "    CGAL libs    in $CGAL_ARCH_PATH/lib$WM_COMPILER_LIB_ARCH"
     else
         ./makeCGAL
     fi
