@@ -55,7 +55,10 @@ MPI_MAX_PROCS=32
 #       If it fails, specify the path using the PYTHON_LIBRARY variable
 withPYTHON=false
 PYTHON_LIBRARY=""
-# PYTHON_LIBRARY="/usr/lib64/libpython2.6.so.1.0"
+PYTHON_INCLUDE=""
+# Examples
+# PYTHON_LIBRARY="/usr/lib64/libpython2.7.so.1.0"
+# PYTHON_INCLUDE="/usr/include/python2.7"
 
 # MESA graphics support:
 withMESA=false
@@ -65,11 +68,15 @@ MESA_LIBRARY="/usr/lib64/libOSMesa.so"
 # extra QT gui support (useful for some third party apps)
 withQT=true
 
-# Set the path to the Qt-4.5 (or later) qmake if the system Qt is older
+# Set the path to the Qt-4.7 (or later) qmake if the system Qt is older
 QMAKE_PATH=""
 
 # Set the path to cmake
 CMAKE_PATH=""
+
+# Selection of the rendering backend, usually associated to the OpenGL version
+# RENDERING_BACKEND=OpenGL
+RENDERING_BACKEND=OpenGL2
 
 #
 # NO FURTHER EDITING BELOW THIS LINE
@@ -84,6 +91,8 @@ usage() {
 usage: $Script [OPTION] [CMAKE-OPTION]
 options:
   -rebuild          for repeated builds (-make -install) *use with caution*
+  -rendering MODE   rendering backend engine (current value: ${RENDERING_BACKEND:-undefined})
+                        modes: OpenGL OpenGL2
   -mesa             with mesa (if not already enabled)
   -mpi              with mpi (if not already enabled)
   -python           with python (if not already enabled)
@@ -99,7 +108,9 @@ options:
   -mesa-include DIR
                     location of mesa headers (current value: ${MESA_INCLUDE:-none})
   -mesa-lib PATH    path to mesa library     (current value: ${MESA_LIBRARY:-none})
-  -python-lib PATH  path to python library   (current value: ${PYTHON_LIBRARY:-none})
+  -python-lib PATH  path to python library   (current value: ${PYTHON_LIBRARY:-automatic})
+  -python-include DIR
+                    path to python include directory (current value: ${PYTHON_INCLUDE:-automatic})
   -help
 
 The -no-FEATURE option can be disable these features (if not already disabled):
@@ -196,6 +207,11 @@ do
         unset runDEFAULT
         shift
         ;;
+    -rendering)
+        [ "$#" -ge 2 ] || usage "'$1' option requires an argument"
+        RENDERING_BACKEND="$2"
+        shift 2
+        ;;
     -mesa)
         withMESA=true
         shift
@@ -233,6 +249,11 @@ do
     -python-lib)
         [ "$#" -ge 2 ] || usage "'$1' option requires an argument"
         PYTHON_LIBRARY="$2"
+        shift 2
+        ;;
+    -python-include)
+        [ "$#" -ge 2 ] || usage "'$1' option requires an argument"
+        PYTHON_INCLUDE="$2"
         shift 2
         ;;
     -cmake)
@@ -301,6 +322,8 @@ addMpiSupport       # set MPI-specific options
 addPythonSupport    # set Python-specific options
 addMesaSupport      # set MESA-specific options
 addQtSupport        # add extra Qt support
+
+configRenderingBackend # configure the rendering backend, e.g. OpenGL2
 
 setDirs             # where things are or should be put
 echoDateStamp       # report kitware source code date-stamp

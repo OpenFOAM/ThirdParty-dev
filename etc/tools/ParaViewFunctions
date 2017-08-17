@@ -227,7 +227,7 @@ addPythonSupport()
             if [ ! -e "$PYTHON_LIBRARY" ]
             then
                 echo "*** Error: libpython not found at location specified " \
-                     "by -pythnon-lib input: PYTHON_LIBRARY=$PYTHON_LIBRARY"
+                     "by -python-lib input: PYTHON_LIBRARY=$PYTHON_LIBRARY"
             fi
         else
             # Try to get $PYTHON_LIBRARY from dynamically linked binary
@@ -248,28 +248,31 @@ addPythonSupport()
         }
 
         pythonMajor=$(echo $PYTHON_LIBRARY | sed 's/.*libpython\(.*\)\.so.*/\1/')
-        pythonInclude=/usr/include/python$pythonMajor
 
-        # Note - we could also allow for a PYTHON_INCLUDE variable ...
-        [ -d "$pythonInclude" ] || {
-            echo "    No python headers found in $pythonInclude/"
+        if [ -z "$PYTHON_INCLUDE" ]
+        then
+            PYTHON_INCLUDE=/usr/include/python$pythonMajor
+        fi
+
+        [ -d "$PYTHON_INCLUDE" ] || {
+            echo "    No python headers found in $PYTHON_INCLUDE/"
             echo "    Please install python headers or deactivate "
             echo "    python support by not using the -python option"
             exit 1
         }
 
         addCMakeVariable  "PARAVIEW_ENABLE_PYTHON=ON"
-        addCMakeVariable  "PYTHON_INCLUDE_PATH=$pythonInclude"
+        addCMakeVariable  "PYTHON_INCLUDE_PATH=$PYTHON_INCLUDE"
         addCMakeVariable  "PYTHON_LIBRARY=$PYTHON_LIBRARY"
 
         echo "----"
         echo "Python information:"
         echo "    executable     : $pythonBin"
         echo "    version        : $pythonMajor"
-        echo "    include path   : $pythonInclude"
+        echo "    include path   : $PYTHON_INCLUDE"
         echo "    library        : $PYTHON_LIBRARY"
 
-        unset pythonBin pythonInclude pythonMajor
+        unset pythonBin pythonMajor
     else
         echo "*** Error: python not found"
         echo "***        Deactivate python support by not using the -python "
@@ -398,6 +401,21 @@ addQtSupport()
     else
         echo "*** Error: cannot find qmake either at \$QMAKE_PATH or in current \$PATH"
         exit 1
+    fi
+}
+
+
+#
+# Configure ParaView/VTK rendering backend
+#
+configRenderingBackend()
+{
+    # Choose the rendering engine
+    if [ -n "${RENDERING_BACKEND}" ]
+    then
+        addCMakeVariable  "VTK_RENDERING_BACKEND=$RENDERING_BACKEND"
+    else
+        usage "*** Error: No rendering backend is defined"
     fi
 }
 
@@ -540,9 +558,6 @@ unset buildType
 
 # Start with these general settings
 addCMakeVariable  "BUILD_SHARED_LIBS:BOOL=ON  VTK_USE_RPATH:BOOL=OFF"
-
-# Choose the new rendering engine
-addCMakeVariable  "VTK_RENDERING_BACKEND=OpenGL2"
 
 # Include development files in "make install"
 addCMakeVariable  "PARAVIEW_INSTALL_DEVELOPMENT_FILES:BOOL=ON"
