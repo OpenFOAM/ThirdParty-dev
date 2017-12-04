@@ -413,7 +413,12 @@ configRenderingBackend()
     # Choose the rendering engine
     if [ -n "${RENDERING_BACKEND}" ]
     then
-        addCMakeVariable  "VTK_RENDERING_BACKEND=$RENDERING_BACKEND"
+        addCMakeVariable  "VTK_RENDERING_BACKEND=${RENDERING_BACKEND}"
+
+        if [ "${RENDERING_BACKEND}" = "OpenGL" ]
+        then
+            addCMakeVariable  "VTK_LEGACY_SILENT=ON"
+        fi
     else
         usage "*** Error: No rendering backend is defined"
     fi
