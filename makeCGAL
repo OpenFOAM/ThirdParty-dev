@@ -3,7 +3,7 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 2012-2016 OpenFOAM Foundation
+#   \\  /    A nd           | Copyright (C) 2012-2018 OpenFOAM Foundation
 #    \\/     M anipulation  |
 #------------------------------------------------------------------------------
 # License
@@ -43,7 +43,7 @@
 _foamEval $($WM_PROJECT_DIR/bin/foamEtcFile config.sh/CGAL)
 _foamSource $($WM_PROJECT_DIR/bin/foamEtcFile config.sh/compiler)
 
-cgalPACKAGE=${cgal_version:-CGAL-4.8.1}
+cgalPACKAGE=${cgal_version:-CGAL-4.10}
 boostPACKAGE=${boost_version:-boost-system}
 gmpPACKAGE=${gmp_version:-gmp-system}
 mpfrPACKAGE=${mpfr_version:-mpfr-system}
@@ -144,6 +144,11 @@ then
     boostInc="$BOOST_ARCH_PATH/include"
     boostLib="$BOOST_ARCH_PATH/lib"
 
+    toolset="$WM_CC"
+    if [ $WM_COMPILER == "Icc" ]; then
+        toolset=intel
+    fi
+
     echo "Starting build: boost"
     (
         cd $BOOST_SOURCE_DIR || exit 1
@@ -154,7 +159,7 @@ then
             --prefix=$BOOST_ARCH_PATH \
             --with-libraries=thread \
             --with-libraries=system \
-        && ./bjam toolset=$WM_CC -j $WM_NCOMPPROCS install \
+        && ./bjam toolset=$toolset -j $WM_NCOMPPROCS install \
         && echo "Built: boost"
     ) || {
         echo "Error building: boost"
