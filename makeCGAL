@@ -280,6 +280,7 @@ CMAKE_OPTIONS
         -DCMAKE_BUILD_TYPE=Release \
         -DWITH_CGAL_Qt5=OFF \
         -DCGAL_INSTALL_LIB_DIR=lib$WM_COMPILER_LIB_ARCH \
+        -DCGAL_CXX_FLAGS="-DCGAL_NO_DEPRECATED_CODE" \
         $configBoost $configGmpMpfr \
         $CGAL_SOURCE_DIR \
     && make -j $WM_NCOMPPROCS \
