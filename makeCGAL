@@ -110,10 +110,15 @@ do
         mpfrPACKAGE="${1%%/}"
         shift
         ;;
-    CGAL-[0-9]*)
+    CGAL-[0-9]*) 
         cgalPACKAGE="${1%%/}"
         shift
         ;;
+    CGAL-sys* | cgal-sys*)
+	cgalPACKAGE="${1%%/}"
+	cgal_version="cgal-system"
+	shift
+	;;
     boost-[0-9]* | boost_[0-9]* | boost-sys* )
         boostPACKAGE="${1%%/}"
         shift
