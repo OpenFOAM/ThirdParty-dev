@@ -291,6 +291,7 @@ else
         --enable-__cxa_atexit \
         --enable-libstdcxx-allocator=new \
         --with-system-zlib \
+        --enable-multilib \
         $GCC_BUILD_OPTIONS \
         MAKEINFO=missing \
     && make -j $WM_NCOMPPROCS \
