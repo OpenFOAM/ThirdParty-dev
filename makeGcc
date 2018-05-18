@@ -3,7 +3,7 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 2011-2016 OpenFOAM Foundation
+#   \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
 #    \\/     M anipulation  |
 #------------------------------------------------------------------------------
 # License
@@ -71,7 +71,7 @@ USAGE
     exit 1
 }
 
-GCC_BUILD_OPTIONS=""
+GCC_BUILD_OPTIONS="--enable-multilib"
 
 # Parse options
 while [ "$#" -gt 0 ]
@@ -291,7 +291,6 @@ else
         --enable-__cxa_atexit \
         --enable-libstdcxx-allocator=new \
         --with-system-zlib \
-        --enable-multilib \
         $GCC_BUILD_OPTIONS \
         MAKEINFO=missing \
     && make -j $WM_NCOMPPROCS \
