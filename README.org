@@ -2,10 +2,10 @@
 #
 #+TITLE:              OpenFOAM-dev Third-Party packages
 #+AUTHOR:                  The OpenFOAM Foundation
-#+DATE:                       26th July 2017
+#+DATE:                       16th August 2018
 #+LINK:                     http://www.openfoam.org
 #+OPTIONS: author:nil ^:{}
-# Copyright (c) 2014-2016 OpenFOAM Foundation.
+# Copyright (c) 2014-2018 OpenFOAM Foundation.
 
 * Description
   Scripts for building third-party packages.
@@ -21,24 +21,24 @@
 * Versions and locations to download the third party packages
 *** Gcc C++ Compiler
     The minimum version of gcc required is 4.8.0
-    + gcc   http://gcc.gnu.org/releases.html
-    + gmp   http://gmplib.org/
-            ftp://ftp.gnu.org/gnu/gmp/gmp-5.1.2.tar.bz2
-    + mpfr  http://www.mpfr.org/
-            ftp://ftp.gnu.org/gnu/mpfr/mpfr-3.1.2.tar.bz2
+    + gcc   https://gcc.gnu.org/releases.html
+    + gmp   https://gmplib.org/
+            https://ftp.gnu.org/gnu/gmp/gmp-5.1.2.tar.bz2
+    + mpfr  https://www.mpfr.org/
+            https://ftp.gnu.org/gnu/mpfr/mpfr-3.1.2.tar.bz2
     + mpc   http://www.multiprecision.org/
-            http://www.multiprecision.org/mpc/download/mpc-1.0.1.tar.gz
+            https://ftp.gnu.org/gnu/mpc/mpc-1.0.1.tar.gz
 *** Parallel Processing
 ***** Scotch
       Scotch-6.0.3 is provided with ThirdParty-dev or the original source pack
       may be obtained from:
       + Scotch/PtScotch: https://gforge.inria.fr/frs/download.php/file/34099/scotch_6.0.3.tar.gz
 ***** OpenMPI
-      + OpenMPI: https://www.open-mpi.org/software/ompi/v2.1/downloads/openmpi-2.1.1.tar.bz2
+      + OpenMPI: https://www.open-mpi.org/software/ompi/v3.1/downloads/openmpi-3.1.1.tar.bz2
 *** ParaView
     If the system cmake version is < 3.3.0 you will need to download and build a
     recent version:
-    + cmake          http://www.cmake.org/files/v3.9/cmake-3.9.0.tar.gz
+    + cmake          https://www.cmake.org/files/v3.9/cmake-3.9.0.tar.gz
     Patched versions of the ParaView source code were once provided for ParaView
     v5.0.1.  With the current supported version of ParaView (v.5.4.0), the
     source code
@@ -52,8 +52,8 @@
     + wmRefresh
 *** CGAL
     + CGAL        https://github.com/CGAL/cgal/releases/download/releases%2FCGAL-4.10/CGAL-4.10.tar.xz
-    + boost       http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.bz2/download
+    + boost       https://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.bz2/download
 *** Miscellaneous
-    + libccmio    http://portal.nersc.gov/svn/visit/trunk/third_party/libccmio-2.6.1.tar.gz
+    + libccmio    https://portal.nersc.gov/svn/visit/trunk/third_party/libccmio-2.6.1.tar.gz
 
 # --------------------------------------------------------------------------
