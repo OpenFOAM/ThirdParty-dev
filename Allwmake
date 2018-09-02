@@ -3,7 +3,7 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 2011-2017 OpenFOAM Foundation
+#   \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
 #    \\/     M anipulation  |
 #------------------------------------------------------------------------------
 # License
@@ -360,8 +360,14 @@ then
         ./makeCGAL
     fi
 )
+elif [ -z "$FOAMY_HEX_MESH" ]
+then
+    echo "    skipped because foamyHexMesh is not selected"
+elif [ -n "$FOAMY_HEX_MESH" -a -z "$CGAL_ARCH_PATH" ]
+then
+    echo "    using system CGAL"
 else
-    echo "    optional component was not found"
+    echo "    optional component CGAL was not found"
 fi
 
 echo
