@@ -1,0 +1,143 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                  %
+% Titre  : s_f.tex                 %
+% Sujet  : Manuel de l'utilisateur %
+%          du projet 'Scotch'      %
+%          Formats de fichiers 5.0 %
+% Auteur : Francois Pellegrini     %
+%                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Files and data structures}
+\label{sec-file}
+
+For the sake of portability and readability, all the data files shared
+by the different programs of the \scotch\ project are coded in plain
+ASCII text exclusively.  Although we may speak of ``lines'' when
+describing file formats, text-formatting characters such as newlines
+or tabulations are not mandatory, and are not taken into account when
+files are read.  They are only used to provide better readability and
+understanding.  Whenever numbers are used to label objects, and unless
+explicitely stated, {\bf numberings always start from zero}, not one.
+
+\subsection{Distributed graph files}
+\label{sec-file-dsgraph}
+
+Because even very large graphs are most often stored in the form of
+centralized files, the distributed graph loading routine of the
+\ptscotch\ package, as well as all parallel programs which handle
+distributed graphs, are able to read centralized graph files in the
+\scotch\ format and to scatter them on the fly across the available
+processors (the format of centralized \scotch\ graph files is
+described in the {\it\scotch\ User's Guide}~\scotchcitesuser).
+However, in order to reduce loading time, a distributed graph format
+has been designed, so that the different file fragments which comprise
+distributed graph files can be read in parallel and be stored on
+local disks on the nodes of a parallel or grid cluster.
+\\
+
+Distributed graph files, which usually end in ``{\tt \@.dgr}'',
+describe fragments of valuated graphs, which can be valuated process
+graphs to be mapped onto target architectures, or graphs representing
+the adjacency structures of matrices to order.
+
+In \scotch, graphs are represented by means of adjacency lists: the
+definition of each vertex is accompanied by the list of all of its
+neighbors, i.e.  all of its adjacent arcs. Therefore, the overall
+number of edge data is twice the number of edges. Distributed graphs
+are stored as a set of files which contain each a subset of graph vertices
+and their adjacencies. The purpose of this format is to speed-up the
+loading and saving of large graphs when working for some time with the
+same number of processors: the distributed graph loading routine will
+allow each of the processors to read in parallel from a different file.
+Consequently, the number of files must be equal to the number of
+processors involved in the parallel loading phase.
+\\
+
+The first line of a distributed graph file holds the distributed graph
+file version number, which is currently {\tt 2}. The second line holds
+the number of files across which the graph data is distributed
+(referred to as {\tt proc\lbo glb\lbo nbr} in \libscotch; see for
+instance Figure~\ref{fig-lib-dgraf-one},
+page~\pageref{fig-lib-dgraf-one}, for a detailed example), followed by
+the number of this file in the sequence (ranging from $0$ to $({\tt
+proc\lbo glb\lbo nbr} - 1)$, and analogous to {\tt proc\lbo loc\lbo
+num} in Figure~\ref{fig-lib-dgraf-one}).
+The third line holds the global number of graph vertices
+(referred to as {\tt vert\lbo glb\lbo nbr}), followed by the global
+number of arcs (inappropriately called {\tt edge\lbo glb\lbo nbr}, as
+it is in fact equal to twice the actual number of edges).
+The fourth line holds the number of vertices contained in
+this graph fragment (analogous to {\tt vert\lbo loc\lbo nbr}),
+followed by its local number of arcs (analogous to
+{\tt edge\lbo loc\lbo nbr}).
+The fifth line holds two figures: the graph base index value ({\tt
+baseval}) and a numeric flag.
+
+The graph base index value records the value of the starting index
+used to describe the graph; it is usually $0$ when the graph has been
+output by C programs, and $1$ for Fortran programs. Its purpose is to
+ease the manipulation of graphs within each of these two environments,
+while providing compatibility between them.
+
+The numeric flag, similar to the one used by the \chaco\ graph
+format~\cite{hele93c}, is made of three decimal digits.
+A non-zero value in the units indicates that vertex weights are provided.
+A non-zero value in the tenths indicates that edge weights are provided.
+A non-zero value in the hundredths indicates that vertex labels are provided;
+if it is the case, vertices can be stored in any order in the file; else,
+natural order is assumed, starting from the starting global index of
+each fragment.
+
+This header data is then followed by as many lines as there are
+vertices in the graph fragment, that is, {\tt vert\lbo loc\lbo nbr}
+lines. Each of these lines begins with the vertex label, if necessary,
+the vertex load, if necessary, and the vertex degree, followed by the
+description of the arcs. An arc is defined by the load of the edge, if
+necessary, and by the label of its other end vertex.
+The arcs of a given vertex can be provided in any order in its
+neighbor list. If vertex labels are provided, vertices can also be
+stored in any order in the file.
+
+Figure~\ref{fig-file-dsgraph} shows the contents of two complementary
+distributed graph files modeling a cube with unity vertex and edge
+weights and base $0$, distributed across two processors.
+
+\begin{figure}[hbt]
+\begin{center}
+\begin{minipage}{4.0cm}
+{\renewcommand{\baselinestretch}{1.05}
+ \footnotesize \tt
+\begin{verbatim}
+2
+2       0
+8       24
+4       12
+0       000
+3       4       2       1
+3       5       3       0
+3       6       0       3
+3       7       1       2
+\end{verbatim}}
+\end{minipage}
+\hfil~\hfil
+\begin{minipage}{4.0cm}
+{\renewcommand{\baselinestretch}{1.05}
+ \footnotesize \tt
+\begin{verbatim}
+2
+2       1
+8       24
+4       12
+0       000
+3       0       6       5
+3       1       7       4
+3       2       4       7
+3       3       5       6
+\end{verbatim}}
+\end{minipage}
+\end{center}
+\caption{Two complementary distributed graph files representing
+a cube distributed across two processors.}
+\label{fig-file-dsgraph}
+\end{figure}

@@ -1,0 +1,176 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                  %
+% Titre  : s_e.tex                 %
+% Sujet  : Manuel de l'utilisateur %
+%          du projet 'Scotch'      %
+%          Exemples d'utilisation  %
+% Auteur : Francois Pellegrini     %
+%                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Examples}
+\label{sec-examples}
+
+This section contains chosen examples destined to show how the programs
+of the \scotch\ project interoperate and can be combined.
+It is supposed that the current directory is directory
+``{\tt scotch\_\scotchver}'' of the \scotch\ distribution.
+Character ``{\tt\bf \%}'' represents the shell prompt.
+\begin{itemize}
+\item
+Partition source graph {\tt brol.grf} into $7$ parts, and save the
+result to file {\tt /tmp/brol.map}.
+\\
+
+\noi
+{\tt
+{\bf\%} echo cmplt 7 > /tmp/k7.tgt\\
+{\bf\%} gmap brol.grf /tmp/k7.tgt /tmp/brol.map
+}
+\spa
+
+\noi
+This can also be done in a single piped command:
+
+{\tt {\bf\%} echo cmplt 7 | gmap brol.grf - /tmp/brol.map}
+\spa
+
+\noi
+If compressed data handling is enabled, read the graph as a {\tt gzip}
+compressed file, and output the mapping as a {\tt bzip2} file, on the fly:
+
+{\tt {\bf\%} echo cmplt 7 | gmap brol.grf.gz - /tmp/brol.map.bz2}
+\item
+Partition source graph {\tt brol.grf} into two uneven parts of
+respective weights $\frac{4}{11}$ and $\frac{7}{11}$, and save
+the result to file {\tt /tmp/brol.map}.
+\\
+
+\noi
+{\tt
+{\bf\%} echo cmpltw 2 4 7 > /tmp/k2w.tgt\\
+{\bf\%} gmap brol.grf /tmp/k2w.tgt /tmp/brol.map
+}
+\spa
+
+\noi
+This can also be done in a single piped command:
+
+{\tt {\bf\%} echo cmpltw 2 4 7 | gmap brol.grf - /tmp/brol.map}
+\spa
+
+\noi
+If compressed data handling is enabled, use {\tt gzip} compressed
+streams on the fly:
+
+{\tt {\bf\%} echo cmpltw 2 4 7 | gmap brol.grf.gz - /tmp/brol.map.gz}
+\item
+Map a 32 by 32 bidimensional grid source graph onto a 256-node hypercube, and
+save the result to file {\tt /tmp/brol.map}.
+\\
+
+\noi
+{\tt {\bf\%} gmk\_m2 32 32 | gmap - tgt/h8.tgt /tmp/brol.map}
+\item
+Build the {\sc Open Inventor} file {\tt graph.iv} that contains
+the display of a source graph the source and geometry files of which
+are named {\tt graph.grf} and {\tt graph.xyz}.
+\\
+
+\noi
+{\tt {\bf\%} gout -Mn -Oi graph.grf graph.xyz - graph.iv}
+\spa
+
+\noi
+Although no mapping data is required because of the ``{\tt -Mn}'' option,
+note the presence of the dummy input mapping file name ``{\tt -}'', which is
+needed to specify the output visualization file name.
+\item
+Given the source and geometry files {\tt graph.grf} and {\tt graph.xyz} of
+a source graph, map the graph on a 8 by 8 bidimensional mesh and display
+the mapping result on a color screen by means of the public-domain
+{\tt ghostview} PostScript previewer.
+\\
+
+\noi
+{\tt {\bf\%} gmap graph.grf tgt/m8x8.tgt | gout graph.grf graph.xyz '-Op\{c,f,l\}' | ghostview -}
+\item
+Build a 24-node Cube-Connected-Cycles graph target architecture which will be
+frequently used. Then, map compressed source file {\tt graph.grf.gz} onto it,
+and save the result to file {\tt /tmp/brol.map}.
+\\
+
+\noi
+{\tt
+{\bf\%} amk\_ccc 3 | acpl - /tmp/ccc3.tgt\\
+{\bf\%} gunzip -c graph.grf.gz | gmap - /tmp/ccc3.tgt /tmp/brol.map
+}
+\spa
+
+\noi
+To speed up target architecture loading in the future, the
+decomposition-defined target architecture is compiled by means of {\tt acpl}.
+\item
+Build an architecture graph which is the subgraph of the $8$-node de~Bruijn
+graph restricted to vertices labeled $1$, $2$, $4$, $5$, $6$, map graph
+{\tt graph.grf} onto it, and save the result to file {\tt /tmp/brol.map}.
+\\
+
+\noi
+{\tt
+{\bf\%} (gmk\_ub2 3; echo 5 1 2 4 5 6) | amk\_grf -L |
+gmap graph.grf - /tmp/brol.map}
+\spa
+
+\noi
+Note how the two input streams of program {\tt amk\_grf} (that is, the
+de~Bruijn source graph and the five-elements vertex label list) are
+concatenated into a single stream to be read from the standard input.
+%% \item
+%% Output the pattern of the adjacency matrix associated with graph
+%% {\tt graph.grf.gz} to the encapsulated PostScript file {\tt graph.pattern.ps}.
+%% \\
+
+%% \noi
+%% {\tt
+%% {\bf\%} gunzip -c graph.grf.gz | gout - - - -Gn -Mn '-Om\{e\}' graph.pattern.ps}
+%% \item
+%% Output the pattern of the factored reordered matrix associated with graph
+%% {\tt graph.grf} to the encapsulated PostScript file {\tt graph\_\lbt pattern.ps}.
+%% \\
+
+%% \noi
+%% {\tt
+%% {\bf\%} gord graph.grf -F- /dev/null | gout graph.grf - - -Gn -Mn '-Om\{e\}' graph\_\lbt pattern.ps}
+\item
+Compile and link the user application {\tt brol.c} with the \libscotch\ library,
+using the default error handler.
+\\
+
+\noi
+{\tt
+{\bf\%} cc brol.c -o brol -lscotch -lscotcherr -lm}
+\spa
+
+\noi
+Note that the mathematical library should also be included, after
+all of the \scotch\ libraries.
+\item
+Recompile a program that used \metis\ so that it uses \scotch\ instead.
+\\
+
+\noi
+{\tt
+{\bf\%} cc brol.c -o brol -I\$\{metisdir\} -lscotchmetis -lscotch -lscotcherr -lmetis -lm}
+\spa
+
+\noi
+Note that the ``{\tt -lscotch\lbt metis}'' option must be placed before the
+``{\tt -lmetis}'' one, so that routines that are redefined by \scotch\ are
+selected instead of their \metis\ counterpart. When no other
+\metis\ routines than the ones redefined by \scotch\ are used, the
+``{\tt -lmetis}'' option can be omitted. The ``{\tt -I\$\{metisdir\}}''
+option may be necessary to provide the path to the original {\tt metis.h}
+include file, which contains the prototypes of all of the \metis\ routines.
+
+\end{itemize}

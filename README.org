@@ -2,7 +2,7 @@
 #
 #+TITLE:              OpenFOAM-dev Third-Party packages
 #+AUTHOR:                  The OpenFOAM Foundation
-#+DATE:                       16th August 2018
+#+DATE:                       2nd October 2018
 #+LINK:                     http://www.openfoam.org
 #+OPTIONS: author:nil ^:{}
 # Copyright (c) 2014-2018 OpenFOAM Foundation.
@@ -30,9 +30,9 @@
             https://ftp.gnu.org/gnu/mpc/mpc-1.0.1.tar.gz
 *** Parallel Processing
 ***** Scotch
-      Scotch-6.0.3 is provided with ThirdParty-dev or the original source pack
+      Scotch-6.0.6 is provided with ThirdParty-dev or the original source pack
       may be obtained from:
-      + Scotch/PtScotch: https://gforge.inria.fr/frs/download.php/file/34099/scotch_6.0.3.tar.gz
+      + Scotch/PtScotch: https://gforge.inria.fr/frs/download.php/file/37622/scotch_6.0.6.tar.gz
 ***** OpenMPI
       + OpenMPI: https://www.open-mpi.org/software/ompi/v3.1/downloads/openmpi-3.1.1.tar.bz2
 *** ParaView

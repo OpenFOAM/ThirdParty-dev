@@ -1,0 +1,104 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                  %
+% Titre  : s_d.tex                 %
+% Sujet  : Manuel de l'utilisateur %
+%          du projet 'Scotch'      %
+%          Distribution programmes %
+% Auteur : Francois Pellegrini     %
+%                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Installation}
+\label{sec-install}
+
+Version {\sc \scotchver} of the \scotch\ software package is
+distributed as free/libre software under the CeCILL-C free/libre
+software license~\cite{cecill}, which is very similar to the GNU LGPL
+license. Therefore, it is no longer distributed as a set of binaries,
+but instead in the form of a source distribution, which can be
+downloaded from the \scotch\ web page at
+\url{http://www.labri.fr/~pelegrin/scotch/}~.
+\\
+
+All \scotch\ users are welcome to send an e-mail to the author so that
+they can be added to the \scotch\ mailing list, and be automatically
+informed of new releases and publications.
+\\
+
+The extraction process will create a {\tt scotch\_\scotchversub}
+directory, containing several subdirectories and files. Please refer
+to the files called {\tt LICENSE\_\lbt EN.txt} or
+{\tt LICENCE\_\lbt FR.txt}, as well as file
+{\tt INSTALL\_\lbt EN.txt}, to see under which conditions your
+distribution of \scotch\ is licensed and how to install it.
+
+\subsection{Thread issues}
+
+To enable the use of POSIX threads in some routines, the {\tt
+SCOTCH\_\lbt PTHREAD} flag must be set. If your MPI implementation is
+not thread-safe, make sure this flag is not defined at compile time.
+
+\subsection{File compression issues}
+
+To enable on-the-fly compression and decompression of various formats,
+the relevant flags must be defined. These flags are {\tt COMMON\_\lbt
+FILE\_\lbt COMPRESS\_\lbt BZ2} for {\tt bzip2} (de)compression, {\tt
+COMMON\_\lbt FILE\_\lbt COMPRESS\_\lbt GZ} for {\tt gzip}
+(de)compression, and {\tt COMMON\_\lbt FILE\_\lbt COMPRESS\_\lbt LZMA}
+for {\tt lzma} decompression. Note that the corresponding
+development libraries must be installed on your system before compile
+time, and that compressed file handling can take place only on systems
+which support multi-threading or multi-processing. In the first case,
+you must set the {\tt SCOTCH\_\lbt PTHREAD} flag in order to take
+advantage of these features.
+
+On Linux systems, the development libraries to install are {\tt
+libbzip2\_1-\lbt devel} for the {\tt bzip2} format, {\tt zlib1-\lbt
+devel} for the {\tt gzip} format, and {\tt liblzma0-\lbt devel} for
+the {\tt lzma} format. The names of the libraries may vary according
+to operating systems and library versions. Ask your system engineer in
+case of trouble.
+
+\subsection{Machine word size issues}
+\label{sec-install-inttypesize}
+
+The integer values handled by \scotch\ are based on the
+{\tt SCOTCH\_\lbt Num} type, which equates by default to the {\tt int}
+C type, corresponding to the {\tt INTEGER} Fortran type, both of which
+being of machine word size. To coerce the length of the
+{\tt SCOTCH\_\lbt Num} integer type to 32 or 64 bits, one can use the
+``{\tt -DINTSIZE32}'' or ``{\tt -DINTSIZE64}'' flags, respectively, or
+else use the ``{\tt -DINT=}'' definition, at compile time. For
+instance, adding ``{\tt -DINT=long}'' to the {\tt CFLAGS} variable in
+the {\tt Makefile.inc} file to be placed at the root of the source
+tree will make all {\tt SCOTCH\_\lbt Num} integers become {\tt long} C
+integers.
+
+Whenever doing so, make sure to use integer types of equivalent length
+to declare variables passed to \scotch\ routines from caller C and
+Fortran procedures. Also, because of API conflicts, the
+\metis\ compatibility library will not be usable. It is usually safer
+and cleaner to tune your C and Fortran compilers to make them
+interpret {\tt int} and {\tt INTEGER} types as 32 or 64 bit values,
+than to use the aforementioned flags and coerce type lengths in your
+own code.
+
+Fortran users also have to take care of another size issue: since
+there are no pointers in Fortran~77, the Fortran interface of some
+routines converts pointers to be returned into integer indices with
+respect to a given array (e.g. see
+sections~\ref{sec-lib-func-graphdata},
+\ref{sec-lib-func-meshdata}
+and~\ref{sec-lib-func-geomdata}).
+For 32\_64 architectures, such indices can be larger than the size of
+a regular {\tt INTEGER}. This is why the indices to be returned are
+defined by means of a specific integer type, {\tt SCOTCH\_Idx}. To
+coerce the length of this index type to 32 or 64 bits, one can use the
+``{\tt -DIDXSIZE32}'' or ``{\tt -DIDXSIZE64}'' flags, respectively, or
+else use the ``{\tt -DIDX=}'' definition, at compile time. For
+instance, adding ``{\tt -DIDX="long~long"}'' to the {\tt CFLAGS}
+variable in the {\tt Makefile.inc} file to be placed at the root of
+the source tree will equate all {\tt SCOTCH\_\lbt Idx} integers to
+C {\tt long long} integers. By default, when the size of
+{\tt SCOTCH\_\lbt Idx} is not explicitly defined, it is assumed to be
+the same as the size of {\tt SCOTCH\_\lbt Num}.

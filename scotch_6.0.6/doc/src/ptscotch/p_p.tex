@@ -1,0 +1,449 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                  %
+% Titre  : p_p.tex                 %
+% Sujet  : Manuel de l'utilisateur %
+%          du projet 'PT-Scotch'   %
+%          Programmes 6.0          %
+% Auteur : Francois Pellegrini     %
+%                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Programs}
+\label{sec-prog}
+
+\subsection{Invocation}
+
+All of the programs comprised in the \scotch\ and
+\ptscotch\ distributions have been designed to run in
+command-line mode without any interactive prompting,
+so that they can be called easily from other programs by means of
+``\mbox{\tt system$\,$()}'' or ``\mbox{\tt popen$\,$()}'' system calls, or be
+piped together on a single shell command line. In order to facilitate this,
+whenever a stream name is asked for (either on input or output), the user may
+put a single ``{\tt -}'' to indicate standard input or output.
+Moreover, programs read their input in the same order as stream names are
+given in the command line. It allows them to read all their data from a
+single stream (usually the standard input), provided that these data are
+ordered properly.
+
+A brief on-line help is provided with all the programs. To get this
+help, use the ``{\tt -h}'' option after the program name. The case of
+option letters is not significant, except when both the lower and
+upper cases of a letter have different meanings. When passing
+parameters to the programs, only the order of file names is
+significant; options can be put anywhere in the command line, in any
+order. Examples of use of the different programs
+of the \ptscotch\ project are provided in section~\ref{sec-examples}.
+
+Error messages are standardized, but may not be fully explanatory.
+However, most of the errors you may run into should be related to file
+formats, and located in ``\mbox{\tt \ldots Load}'' routines.
+In this case, compare your data formats with the definitions
+given in section~\ref{sec-file}, and use the {\tt dgtst}
+% and {\tt dmtst}
+program of the \ptscotch\ distribution to check the consistency of
+your distributed source graphs.
+% and meshes.
+\\
+
+According to your MPI environment, you may either run the programs
+directly, or else have to invoke them by means of a command such as
+{\tt mpirun}. Check your local MPI documentation to see how to
+specify the number of processors on which to run them.
+
+\subsection{File names}
+\label{sec-prog-filename}
+
+\subsubsection{Sequential and parallel file opening}
+
+The programs of the \ptscotch\ distribution can handle either
+the classical centralized \scotch\ graph files, or the
+distributed \ptscotch\ graph files described in
+section~\ref{sec-file-dsgraph}.
+
+In order to tell whether programs should read from, or write to, a single
+file located on only one processor, or to multiple instances of the same
+file on all of the processors, or else to distinct files on each of the
+processors, a special grammar has been designed, which is based on the
+``{\tt \%}'' escape character. Four such escape sequences are defined,
+which are interpreted independently on every processor, prior to
+file opening. By default, when a filename is provided, it is assumed
+that the file is to be opened on only one of the processors, called
+the root processor, which is usually process $0$ of the communicator
+within which the program is run. Using any of the first three
+escape sequences below will instruct programs to open in parallel a file
+of name equal to the interpreted filename, on every processor on which they
+are run. 
+\begin{itemize}
+\iteme[{\tt \%p}]
+Replaced by the number of processes in the global communicator in
+which the program is run. Leads to parallel opening.
+\iteme[{\tt \%r}]
+Replaced on each process running the program by the rank of this
+process in the global communicator. Leads to parallel opening.
+\iteme[{\tt \%-}]
+Discarded, but leads to parallel opening. This sequence is mainly used to
+instruct programs to open on every processor a file of identical
+name. The opened files can be, according whether the given path leads
+to a shared directory or to directories that are local to each
+processor, either to the opening of multiple instances of the same
+file, or to the opening of distinct files which may each have a
+different content, respectively (but in this latter case it is much
+recommended to identify files by means of the ``{\tt \%r}'' sequence).
+\iteme[{\tt \%\%}]
+Replaced by a single ``{\tt \%}'' character. File names using this
+escape sequence are not considered for parallel opening, unless one or
+several of the three other escape sequences are also present.
+\end{itemize}
+For instance, filename ``{\tt brol}'' will lead to the
+opening of file ``{\tt brol}'' on the root processor only, filename
+``{\tt \%-brol}'' (or even ``{\tt br\%-ol}'') will lead to the
+parallel opening of files called ``{\tt brol}'' on every processor,
+and filename ``{\tt brol\%p-\%r}'' will lead to the opening of files
+``{\tt brol2-0}'' and ``{\tt brol2-1}'', respectively, on each of the
+two processors on which which would run a program of the
+\ptscotch\ distribution.
+
+\subsubsection{Using compressed files}
+\label{sec-prog-compressed}
+
+Starting from version 5.0.6, \scotch\ allows users to provide and
+retrieve data in compressed form. Since this feature requires that
+the compression and decompression tasks run in the same time as data
+is read or written, it can only be done on systems which support
+multi-threading (Posix threads) or multi-processing (by means of
+{\tt fork} system calls).
+
+To determine if a stream has to be handled in compressed form,
+\scotch\ checks its extension. If it is ``{\tt .gz}'' ({\tt gzip}
+format), ``{\tt .bz2}'' ({\tt bzip2} format) or ``{\tt .lzma}''
+({\tt lzma} format), the stream is assumed to be compressed according
+to the corresponding format. A filter task will then be used to process
+it accordingly if the format is implemented in \scotch\ and enabled on
+your system.
+
+To date, data can be read and written in {\tt bzip2} and {\tt gzip}
+formats, and can also be read in the {\tt lzma} format. Since the
+compression ratio of {\tt lzma} on \scotch\ graphs is $30\%$ better
+than the one of {\tt gzip} and {\tt bzip2} (which are almost
+equivalent in this case), the {\tt lzma} format is a very good choice
+for handling very large graphs. To see how to enable compressed data
+handling in \scotch, please refer to Section~\ref{sec-install}.
+\\
+
+When the compressed format allows it, several files can be provided on
+the same stream, and be uncompressed on the fly. For instance, the
+command ``{\tt cat brol.grf.gz brol.xyz.gz | gout -.gz -.gz -Mn -
+brol.iv}'' concatenates the topology and geometry data of some graph
+{\tt brol} and feed them as a single compressed stream to the standard
+input of program {\tt gout}, hence the ''{\tt -.gz}'' to indicate a
+compressed standard stream.
+
+\subsection{Description}
+
+\subsubsection{{\tt dgmap} / {\tt dgpart}}
+\label{sec-prog-dgmap}
+
+\begin{itemize}
+\progsyn
+{\tt dgmap} [{\it input\_graph\_file} [{\it input\_\lbt target\_\lbt file} [{\it output\_\lbt mapping\_\lbt file} [{\it output\_\lbt log\_\lbt file}]]]] {\it options}\\
+~\\
+{\tt dgpart} {\it number\_\lbt of\_\lbt parts} [{\it input\_graph\_file} [{\it output\_\lbt mapping\_\lbt file} [{\it output\_\lbt log\_\lbt file}]]] {\it options}
+
+\progdes
+
+The {\tt dgmap} program is the parallel static mapper. It uses a
+static mapping strategy to compute a mapping of the given source graph
+to the given target architecture. The implemented algorithms aim at
+assigning source graph vertices to target vertices such that every
+target vertex receives a set of source vertices of summed weight
+proportional to the relative weight of the target vertex in the target
+architecture, and such that the communication cost function $f_C$ is
+minimized (see Section~\ref{sec-algo-cost} for the definition and
+rationale of this cost function).
+
+Since its main purpose is to provide mappings that exhibit high
+concurrency for communication minimization in the mapped application,
+it comprises a parallel implementation of the dual recursive
+bipartitioning algorithm~\cite{pell94a}, as well as all of the
+sequential static mapping methods used by its sequential counterpart
+{\tt gmap}, to be used on subgraphs located on single processors.
+
+{\tt dgpart} is a simplified interface to {\tt dgmap}, which performs
+graph partitioning instead of static mapping. Consequently, the
+desired number of parts has to be provided, in lieu of the target
+architecture.
+
+The {\tt -b} and {\tt -c} options allow the user to set preferences on
+the behavior of the mapping strategy which is used by default. The
+{\tt -m} option allows the user to define a custom mapping strategy.
+
+The {\it input\_graph\_file} filename can refer either to a
+centralized or to a distributed graph, according to the semantics
+defined in Section~\ref{sec-prog-filename}. The mapping file must be
+a centralized file.
+
+\progopt\\*
+Since the program is devoted to experimental studies, it has many
+optional parameters, used to test various execution modes. Values
+set by default will give best results in most cases.
+\begin{itemize}
+\iteme[{\tt -b}{\it rat}]
+Set the maximum load imbalance ratio to \textit{rat}, which should
+be a value comprised between $0$ and $1$. This option can be used in
+conjunction with option \texttt{-c}, but is incompatible with option
+\texttt{-m}.
+\iteme[{\tt -c}{\it flags}]
+Tune the default mapping strategy according to the given preference
+flags. Some of these flags are antagonistic, while others can be
+combined. See Section~\ref{sec-lib-format-strat-default} for more
+information. The currently available flags are the following.
+\begin{itemize}
+\iteme[{\tt b}]
+Enforce load balance as much as possible.
+\iteme[{\tt q}]
+Privilege quality over speed. This is the default behavior.
+\iteme[{\tt s}]
+Privilege speed over quality.
+\iteme[{\tt t}]
+Use only safe methods in the strategy.
+\iteme[{\tt x}]
+Favor scalability.
+\end{itemize}
+This option can be used in conjunction with option \texttt{-b}, but is
+incompatible with option \texttt{-m}.
+The resulting strategy string can be displayed by means
+of the {\tt -vs} option.
+\iteme[{\tt -h}]
+Display the program synopsis.
+\iteme[{{\tt -m}{\it strat}}]
+Apply parallel static mapping strategy {\it strat}. The format of parallel
+mapping strategies is defined in section~\ref{sec-lib-format-pmap}.
+This option is incompatible with options \texttt{-b} and
+\texttt{-c}.
+\iteme[{\tt -r}{\it num}]
+Set the number of the root process which will be used for centralized
+file accesses. Set to $0$ by default.
+\iteme[{\tt -s}{\it obj}]
+Mask source edge and vertex weights. This option allows the user to
+``unweight'' weighted source graphs by removing weights from edges and
+vertices at loading time. {\it obj\/} may contain several of the following
+switches.
+\begin{itemize}
+\iteme[{\tt e}]
+Remove edge weights, if any.
+\iteme[{\tt v}]
+Remove vertex weights, if any.
+\end{itemize}
+\iteme[{\tt -V}]
+Print the program version and copyright.
+\iteme[{\tt -v}{\it verb}]
+Set verbose mode to {\it verb}, which may contain several of the following
+switches.
+%For a detailed description of the data displayed, please
+%refer to the manual page of {\tt dgmtst} below.
+\begin{itemize}
+\iteme[{\tt a}]
+Memory allocation information.
+\iteme[{\tt m}]
+Mapping information, similar to the one displayed by the {\tt gmtst}
+program of the sequential \scotch\ distribution.
+\iteme[{\tt s}]
+Strategy information. This parameter displays the default mapping
+strategy used by {\tt gmap}.
+\iteme[{\tt t}]
+Timing information.
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+\subsubsection{{\tt dgord}}
+
+\begin{itemize}
+\progsyn
+{\tt dgord} [{\it input\_graph\_file} [{\it output\_ordering\_file} [{\it output\_log\_file}]]] {\it options}
+
+\progdes
+
+The {\tt dgord} program is the parallel sparse matrix block
+orderer. It uses an ordering strategy to compute block orderings of
+sparse matrices represented as source graphs, whose vertex weights
+indicate the number of DOFs per node (if this number is non
+homogeneous) and whose edges are unweighted, in order to minimize
+fill-in and operation count.
+
+Since its main purpose is to provide orderings that exhibit high
+concurrency for parallel block factorization, it comprises a parallel
+nested dissection method~\cite{geli81}, but sequential
+classical~\cite{liu-85} and state-of-the-art~\cite{peroam00a}
+minimum degree algorithms are implemented as well, to be used on
+subgraphs located on single processors.
+
+Ordering methods can be combined by means of selection, grouping, and
+condition operators, so as to define ordering strategies, which can be
+passed to the program by means of the {\tt -o} option. The {\tt -c}
+option allows the user to set preferences on the behavior of the
+ordering strategy which is used by default.
+
+The {\it input\_graph\_file} filename can refer either to a
+centralized or to a distributed graph, according to the semantics
+defined in Section~\ref{sec-prog-filename}. The ordering file must be
+a centralized file.
+
+\progopt\\*
+Since the program is devoted to experimental studies, it has many
+optional parameters, used to test various execution modes. Values
+set by default will give best results in most cases.
+\begin{itemize}
+\iteme[{\tt -c}{\it flags}]
+Tune the default ordering strategy according to the given preference
+flags. Some of these flags are antagonistic, while others can be
+combined. See Section~\ref{sec-lib-format-strat-default} for more
+information. The resulting strategy string can be displayed by means
+of the {\tt -vs} option.
+\begin{itemize}
+\iteme[{\tt b}]
+Enforce load balance as much as possible.
+\iteme[{\tt q}]
+Privilege quality over speed. This is the default behavior.
+\iteme[{\tt s}]
+Privilege speed over quality.
+\iteme[{\tt t}]
+Use only safe methods in the strategy.
+\iteme[{\tt x}]
+Favor scalability.
+\end{itemize}
+\iteme[{\tt -h}]
+Display the program synopsis.
+\iteme[{\tt -m}{\it output\_mapping\_file}]
+Write to {\it output\_mapping\_file\/} the mapping of graph vertices to
+column blocks. All of the separators and leaves produced by the nested
+dissection method are considered as distinct column blocks, which may
+be in turn split by the ordering methods that are applied to them.
+Distinct integer numbers are associated with each of the column blocks,
+such that the number of a block is always greater than the ones of its
+predecessors in the elimination process, that is, its descendants in
+the elimination tree.
+The structure of mapping files is described in detail in the relevant
+section of the {\it\scotch\ User's Guide}~\scotchcitesuser.
+
+When the geometry of the graph is available, this mapping file may be
+processed by program {\tt gout} to display the vertex separators and
+supervariable amalgamations that have been computed.
+\iteme[{{\tt -o}{\it strat}}]
+Apply parallel ordering strategy {\it strat}. The format of parallel
+ordering strategies is defined in section~\ref{sec-lib-format-pord}.
+\iteme[{\tt -r}{\it num}]
+Set the number of the root process which will be used for centralized
+file accesses. Set to $0$ by default.
+\iteme[{\tt -t}{\it output\_tree\_file}]
+Write to {\it output\_tree\_file\/} the structure of the separator
+tree. The data that is written resembles much the one of a mapping
+file: after a first line that contains the number of lines to follow,
+there are that many lines of mapping pairs, which associate an integer
+number with every graph vertex index. This integer number is the
+number of the column block which is the parent of the column block to
+which the vertex belongs, or $-1$ if the column block to which the
+vertex belongs is a root of the separator tree (there can be several
+roots, if the graph is disconnected).
+
+Combined to the column block mapping data produced by option {\tt -m},
+the tree structure allows one to rebuild the separator tree.
+\iteme[{\tt -V}]
+Print the program version and copyright.
+\iteme[{\tt -v}{\it verb}]
+Set verbose mode to {\it verb}, which may contain several of the following
+switches.
+%For a detailed description of the data displayed, please
+%refer to the manual page of {\tt gotst}.
+\begin{itemize}
+\iteme[{\tt a}]
+Memory allocation information.
+\iteme[{\tt s}]
+Strategy information. This parameter displays the default parallel
+ordering strategy used by {\tt dgord}.
+\iteme[{\tt t}]
+Timing information.
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+\subsubsection{{\tt dgpart}}
+
+\begin{itemize}
+\progsyn
+{\tt dgpart} [{\it number\_of\_parts} [{\it input\_\lbt graph\_\lbt file} [{\it output\_\lbt mapping\_\lbt file} [{\it output\_\lbt log\_\lbt file}]]]] {\it options}
+
+\progdes
+
+The {\tt dgpart} program is the parallel graph partitioner. It is
+in fact a shortcut for the {\tt dgmap} program, where the number of
+parts is turned into a complete graph with same number of vertices
+which is passed to the static mapping routine.
+
+Save for the {\it number\_of\_parts} parameter which replaces the {\it
+input\_target\_file}, the parameters of {\tt dgpart} are identical to
+the ones of {\tt dgmap}. Please refer to its manual page, in
+Section~\ref{sec-prog-dgmap}, for a description of all of the
+available options.
+\end{itemize}
+
+\subsubsection{{\tt dgscat}}
+
+\begin{itemize}
+\progsyn
+{\tt dgscat} [{\it input\_graph\_file} [{\it output\_graph\_file}]] {\it options}
+
+\progdes
+
+The {\tt dgscat} program creates a distributed source graph, in the
+\scotch\ distributed graph format, from the given centralized source
+graph file.
+
+The {\it input\_graph\_file} filename should therefore refer to a
+centralized graph, while {\it output\_graph\_file} must refer to a
+distributed graph, according to the semantics defined in
+Section~\ref{sec-prog-filename}.
+
+\progopt\\[-1em]
+\begin{itemize}
+\iteme[{\tt -c}]
+Check the consistency of the distributed graph at the end of the
+graph loading phase.
+\iteme[{\tt -h}]
+Display the program synopsis.
+\iteme[{\tt -r}{\it num}]
+Set the number of the root process which will be used for centralized
+file accesses. Set to $0$ by default.
+\iteme[{\tt -V}]
+Print the program version and copyright.
+\end{itemize}
+\end{itemize}
+
+\subsubsection{{\tt dgtst}}
+
+\begin{itemize}
+\progsyn
+{\tt dgtst} [{\it input\_graph\_file} [{\it output\_data\_file}]] {\it options}
+
+\progdes
+
+The program {\tt dgtst} is the source graph tester. It checks the
+consistency of the input source graph structure (matching of arcs,
+number of vertices and edges, etc\@.), and gives some statistics
+regarding edge weights, vertex weights, and vertex degrees.
+
+It produces the same results as the {\tt gtst} program of the
+\scotch\ sequential distribution.
+
+\progopt
+\begin{itemize}
+\iteme[{\tt -h}]
+Display the program synopsis.
+\iteme[{\tt -r}{\it num}]
+Set the number of the root process which will be used for centralized
+file accesses. Set to $0$ by default.
+\iteme[{\tt -V}]
+Print the program version and copyright.
+\end{itemize}
+\end{itemize}

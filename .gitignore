@@ -29,6 +29,6 @@ makeQt
 !/ParaView-5.0.1
 
 # Include scotch
-!/scotch_6.0.3
+!/scotch_6.0.6
 
 # End-of-file

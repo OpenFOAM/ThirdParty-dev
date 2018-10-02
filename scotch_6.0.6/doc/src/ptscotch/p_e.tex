@@ -1,0 +1,85 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                  %
+% Titre  : p_e.tex                 %
+% Sujet  : Manuel de l'utilisateur %
+%          du projet 'PT-Scotch'   %
+%          Exemples d'utilisation  %
+% Auteur : Francois Pellegrini     %
+%                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Examples}
+\label{sec-examples}
+
+This section contains chosen examples destined to show how the programs
+of the \ptscotch\ project interoperate and can be combined.
+It is assumed that parallel programs are launched by means of the
+{\tt mpirun} command, which comprises a {\tt -np} option to set the
+number of processes on which to run them.
+Character ``{\tt\bf \%}'' in bold represents the shell prompt.
+\begin{itemize}
+\item
+Create a distributed source graph file of $7$ fragments from the
+centralized source graph file {\tt brol.grf} stored in the current
+directory of process $0$ of the MPI environment, and stores the
+resulting fragments in files labeled with the proper number of
+processors and processor ranks.
+\\
+
+\noi
+{\tt
+{\bf\%} mpirun -np 7 dgscat brol.grf brol-\%p-\%r.dgr
+}
+
+\item
+Compute on $3$ processors the ordering of graph {\tt brol.grf}, to be
+saved in a file called {\tt brol.ord} written by process $0$ of the
+MPI environment.
+\\
+
+\noi
+{\tt
+{\bf\%} mpirun -np 7 dgord brol.grf brol.ord
+}
+
+\item
+Compute on $4$ processors the first three levels of nested dissection
+of graph {\tt brol.grf}, and create an {\sc Open Inventor} file called
+{\tt brol.iv} to show the resulting separators and leaves.
+\\
+
+\noi
+{\tt
+{\bf\%} mpirun -np 4 dgord brol.grf /dev/null '-On\{sep=\lbt /(levl\lbt <\lbt 3)\lbt ?\lbt m\{\lbt asc=\lbt b\{strat=\lbt q\{\lbt strat=\lbt f\}\},\lbt low=\lbt q\{\lbt strat=\lbt h\},\lbt seq=\lbt q\{\lbt strat=\lbt m\{low=\lbt h,asc=\lbt b\{\lbt strat=\lbt f\}\}\}\};,\lbt ole=\lbt s,\lbt ose=\lbt s,\lbt osq=\lbt n\{\lbt sep=\lbt /(levl\lbt <\lbt 3)\lbt ?\lbt m\{asc=\lbt b\{\lbt strat=\lbt f\},\lbt low=\lbt h\};\}\}' -mbrol.map
+\\
+{\bf\%} gout brol.grf brol.xyz brol.map brol.iv
+}
+\item
+Compute on $4$ processors an ordering of the compressed graph {\tt
+brol.\lbt grf.\lbt gz}, and output the resulting ordering on
+compressed form.
+\\
+
+\noi
+{\tt
+{\bf\%} mpirun -np 4 dgord brol.grf.gz brol.ord.gz
+}
+\item
+Recompile a program that used \parmetis\ so that it uses \ptscotch\ instead.
+\\
+
+\noi
+{\tt
+{\bf\%} mpicc brol.c -o brol -I\$\{parmetisdir\} -lptscotchparmetis -lptscotch -lptscotcherr -lparmetis -lmetis -lm}
+\spa
+
+\noi
+Note that the ``{\tt -lptscotch\lbt parmetis}'' option must be placed before the
+``{\tt -lparmetis}'' one, so that routines that are redefined by \ptscotch\ are
+selected instead of their \parmetis\ counterpart. When no other
+\parmetis\ routines than the ones redefined by \ptscotch\ are used, the
+``{\tt -lparmetis -lmetis}'' options can be omitted. The ``{\tt -I\$\{parmetisdir\}}
+option may be necessary to provide the path to the original {\tt parmetis.h}
+include file, which contains the prototypes of all of the \parmetis\ routines.
+
+\end{itemize}
