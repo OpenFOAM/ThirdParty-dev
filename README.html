@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2018-10-02 Tue 14:29 -->
+<!-- 2018-10-15 Mon 10:12 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>OpenFOAM-dev Third-Party packages</title>
@@ -233,44 +233,44 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org67b162f">1. Description</a></li>
-<li><a href="#orgd58495c">2. Download and installation instructions</a></li>
-<li><a href="#org5d168dc">3. Order of execution:</a>
+<li><a href="#orgd6c71b4">1. Description</a></li>
+<li><a href="#org6393fd6">2. Download and installation instructions</a></li>
+<li><a href="#org4fa4de2">3. Order of execution:</a>
 <ul>
-<li><a href="#orgf28634d">3.1. Optional</a></li>
+<li><a href="#org5829bb9">3.1. Optional</a></li>
 </ul>
 </li>
-<li><a href="#orgbba733a">4. Versions and locations to download the third party packages</a>
+<li><a href="#orga04c036">4. Versions and locations to download the third party packages</a>
 <ul>
-<li><a href="#org0061750">4.1. Gcc C++ Compiler</a></li>
-<li><a href="#orge232d8d">4.2. Parallel Processing</a>
+<li><a href="#orgb36b759">4.1. Gcc C++ Compiler</a></li>
+<li><a href="#orgcf4990b">4.2. Parallel Processing</a>
 <ul>
-<li><a href="#org6081cdb">4.2.1. Scotch</a></li>
-<li><a href="#org8e8338f">4.2.2. OpenMPI</a></li>
+<li><a href="#orgf1be3cf">4.2.1. Scotch</a></li>
+<li><a href="#org7637436">4.2.2. OpenMPI</a></li>
 </ul>
 </li>
-<li><a href="#org5183786">4.3. ParaView</a></li>
-<li><a href="#orgbfef91f">4.4. CGAL</a></li>
-<li><a href="#org2c7e5c5">4.5. Miscellaneous</a></li>
+<li><a href="#org3c680b2">4.3. ParaView</a></li>
+<li><a href="#orgf7f67b0">4.4. CGAL</a></li>
+<li><a href="#org04ff56f">4.5. Miscellaneous</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org67b162f" class="outline-2">
-<h2 id="org67b162f"><span class="section-number-2">1</span> Description</h2>
+<div id="outline-container-orgd6c71b4" class="outline-2">
+<h2 id="orgd6c71b4"><span class="section-number-2">1</span> Description</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 Scripts for building third-party packages.
 </p>
 </div>
 </div>
-<div id="outline-container-orgd58495c" class="outline-2">
-<h2 id="orgd58495c"><span class="section-number-2">2</span> <a href="https://openfoam.org/download/source/third-party-software/">Download and installation instructions</a></h2>
+<div id="outline-container-org6393fd6" class="outline-2">
+<h2 id="org6393fd6"><span class="section-number-2">2</span> <a href="https://openfoam.org/download/source/third-party-software/">Download and installation instructions</a></h2>
 </div>
-<div id="outline-container-org5d168dc" class="outline-2">
-<h2 id="org5d168dc"><span class="section-number-2">3</span> Order of execution:</h2>
+<div id="outline-container-org4fa4de2" class="outline-2">
+<h2 id="org4fa4de2"><span class="section-number-2">3</span> Order of execution:</h2>
 <div class="outline-text-2" id="text-3">
 <ul class="org-ul">
 <li>makeGcc   (recommended if the system gcc is &lt; 4.8)</li>
@@ -279,8 +279,8 @@ Scripts for building third-party packages.
 <li>makeParaView</li>
 </ul>
 </div>
-<div id="outline-container-orgf28634d" class="outline-3">
-<h3 id="orgf28634d"><span class="section-number-3">3.1</span> Optional</h3>
+<div id="outline-container-org5829bb9" class="outline-3">
+<h3 id="org5829bb9"><span class="section-number-3">3.1</span> Optional</h3>
 <div class="outline-text-3" id="text-3-1">
 <ul class="org-ul">
 <li>AllwmakeLibccmio (Only required for conversion of STAR-CCM+ meshes)</li>
@@ -289,12 +289,12 @@ Scripts for building third-party packages.
 </div>
 </div>
 </div>
-<div id="outline-container-orgbba733a" class="outline-2">
-<h2 id="orgbba733a"><span class="section-number-2">4</span> Versions and locations to download the third party packages</h2>
+<div id="outline-container-orga04c036" class="outline-2">
+<h2 id="orga04c036"><span class="section-number-2">4</span> Versions and locations to download the third party packages</h2>
 <div class="outline-text-2" id="text-4">
 </div>
-<div id="outline-container-org0061750" class="outline-3">
-<h3 id="org0061750"><span class="section-number-3">4.1</span> Gcc C++ Compiler</h3>
+<div id="outline-container-orgb36b759" class="outline-3">
+<h3 id="orgb36b759"><span class="section-number-3">4.1</span> Gcc C++ Compiler</h3>
 <div class="outline-text-3" id="text-4-1">
 <p>
 The minimum version of gcc required is 4.8.0
@@ -310,12 +310,12 @@ The minimum version of gcc required is 4.8.0
 </ul>
 </div>
 </div>
-<div id="outline-container-orge232d8d" class="outline-3">
-<h3 id="orge232d8d"><span class="section-number-3">4.2</span> Parallel Processing</h3>
+<div id="outline-container-orgcf4990b" class="outline-3">
+<h3 id="orgcf4990b"><span class="section-number-3">4.2</span> Parallel Processing</h3>
 <div class="outline-text-3" id="text-4-2">
 </div>
-<div id="outline-container-org6081cdb" class="outline-4">
-<h4 id="org6081cdb"><span class="section-number-4">4.2.1</span> Scotch</h4>
+<div id="outline-container-orgf1be3cf" class="outline-4">
+<h4 id="orgf1be3cf"><span class="section-number-4">4.2.1</span> Scotch</h4>
 <div class="outline-text-4" id="text-4-2-1">
 <p>
 Scotch-6.0.6 is provided with ThirdParty-dev or the original source pack
@@ -326,17 +326,17 @@ may be obtained from:
 </ul>
 </div>
 </div>
-<div id="outline-container-org8e8338f" class="outline-4">
-<h4 id="org8e8338f"><span class="section-number-4">4.2.2</span> OpenMPI</h4>
+<div id="outline-container-org7637436" class="outline-4">
+<h4 id="org7637436"><span class="section-number-4">4.2.2</span> OpenMPI</h4>
 <div class="outline-text-4" id="text-4-2-2">
 <ul class="org-ul">
-<li>OpenMPI: <a href="https://www.open-mpi.org/software/ompi/v3.1/downloads/openmpi-3.1.1.tar.bz2">https://www.open-mpi.org/software/ompi/v3.1/downloads/openmpi-3.1.1.tar.bz2</a></li>
+<li>OpenMPI: <a href="https://www.open-mpi.org/software/ompi/v2.1/downloads/openmpi-2.1.1.tar.bz2">https://www.open-mpi.org/software/ompi/v2.1/downloads/openmpi-2.1.1.tar.bz2</a></li>
 </ul>
 </div>
 </div>
 </div>
-<div id="outline-container-org5183786" class="outline-3">
-<h3 id="org5183786"><span class="section-number-3">4.3</span> ParaView</h3>
+<div id="outline-container-org3c680b2" class="outline-3">
+<h3 id="org3c680b2"><span class="section-number-3">4.3</span> ParaView</h3>
 <div class="outline-text-3" id="text-4-3">
 <p>
 If the system cmake version is &lt; 3.3.0 you will need to download and build a
@@ -370,8 +370,8 @@ the .bashrc (or .cshrc) file or by typing
 </ul>
 </div>
 </div>
-<div id="outline-container-orgbfef91f" class="outline-3">
-<h3 id="orgbfef91f"><span class="section-number-3">4.4</span> CGAL</h3>
+<div id="outline-container-orgf7f67b0" class="outline-3">
+<h3 id="orgf7f67b0"><span class="section-number-3">4.4</span> CGAL</h3>
 <div class="outline-text-3" id="text-4-4">
 <ul class="org-ul">
 <li>CGAL        <a href="https://github.com/CGAL/cgal/releases/download/releases/CGAL-4.10/CGAL-4.10.tar.xz">https://github.com/CGAL/cgal/releases/download/releases/CGAL-4.10/CGAL-4.10.tar.xz</a></li>
@@ -379,8 +379,8 @@ the .bashrc (or .cshrc) file or by typing
 </ul>
 </div>
 </div>
-<div id="outline-container-org2c7e5c5" class="outline-3">
-<h3 id="org2c7e5c5"><span class="section-number-3">4.5</span> Miscellaneous</h3>
+<div id="outline-container-org04ff56f" class="outline-3">
+<h3 id="org04ff56f"><span class="section-number-3">4.5</span> Miscellaneous</h3>
 <div class="outline-text-3" id="text-4-5">
 <ul class="org-ul">
 <li>libccmio    <a href="https://portal.nersc.gov/svn/visit/trunk/third_party/libccmio-2.6.1.tar.gz">https://portal.nersc.gov/svn/visit/trunk/third_party/libccmio-2.6.1.tar.gz</a></li>
@@ -391,7 +391,7 @@ the .bashrc (or .cshrc) file or by typing
 </div>
 <div id="postamble" class="status">
 <p class="date">Date: 2nd October 2018</p>
-<p class="date">Created: 2018-10-02 Tue 14:29</p>
+<p class="date">Created: 2018-10-15 Mon 10:12</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

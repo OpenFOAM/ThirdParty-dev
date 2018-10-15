@@ -34,7 +34,7 @@
       may be obtained from:
       + Scotch/PtScotch: https://gforge.inria.fr/frs/download.php/file/37622/scotch_6.0.6.tar.gz
 ***** OpenMPI
-      + OpenMPI: https://www.open-mpi.org/software/ompi/v3.1/downloads/openmpi-3.1.1.tar.bz2
+      + OpenMPI: https://www.open-mpi.org/software/ompi/v2.1/downloads/openmpi-2.1.1.tar.bz2
 *** ParaView
     If the system cmake version is < 3.3.0 you will need to download and build a
     recent version:
