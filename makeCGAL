@@ -161,7 +161,7 @@ then
             --with-libraries=system \
             --with-libraries=atomic \
             --with-libraries=chrono \
-            --with-libraries-date_time \
+            --with-libraries=date_time \
         && ./bjam toolset=$toolset -j $WM_NCOMPPROCS install \
         && echo "Built: boost"
     ) || {
