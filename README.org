@@ -2,7 +2,7 @@
 #
 #+TITLE:              OpenFOAM-dev Third-Party packages
 #+AUTHOR:                  The OpenFOAM Foundation
-#+DATE:                       2nd October 2018
+#+DATE:                       5th July 2019
 #+LINK:                     http://www.openfoam.org
 #+OPTIONS: author:nil ^:{}
 # Copyright (c) 2014-2018 OpenFOAM Foundation.
@@ -39,10 +39,7 @@
     If the system cmake version is < 3.3.0 you will need to download and build a
     recent version:
     + cmake          https://www.cmake.org/files/v3.9/cmake-3.9.0.tar.gz
-    Patched versions of the ParaView source code were once provided for ParaView
-    v5.0.1.  With the current supported version of ParaView (v.5.4.0), the
-    source code
-    + ParaView-5.4.0 http://www.paraview.org/files/v5.4/ParaView-v5.4.0.tar.gz
+    + ParaView-5.6.0 http://www.paraview.org/files/v5.6/ParaView-v5.6.0.tar.gz
     is downloaded automatically and compiles without modification.  ParaView is
     compiled by running the =makeParaView= script, i.e.
     + ./makeParaView
