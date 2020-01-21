@@ -1,0 +1,269 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                  %
+% Titre  : s.tex                   %
+% Sujet  : Manuel de l'utilisateur %
+%          de Scotch 6.0           %
+%          Corps du document       %
+% Auteur : Francois Pellegrini     %
+%                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Formatage et pagination.
+
+% pdflatex -sPAPERSIZE=a4 s.tex
+% dvips -sPAPERSIZE=a4 s.dvi -o scotch_user6.0.ps
+% ps2pdf -sPAPERSIZE=a4 scotch_user6.0.ps scotch_user6.0.pdf
+
+\documentclass{article}
+\usepackage{a4}
+\usepackage{url}
+\usepackage[dvips]{graphicx}
+%\documentstyle[11pt,a4,fullpage,epsf]{article}
+%\textwidth      16.0cm
+%\oddsidemargin   -0.5cm
+%\evensidemargin  -0.5cm
+%\marginparwidth  0.0cm
+%\marginparsep    0.0cm
+%\marginparpush   0.0cm
+%\topmargin        0.5cm
+%\headheight      0.0cm
+%\headsep         0.0cm
+%\textheight     25.0cm
+%\footheight      0.0cm
+%\footskip        0.0cm
+
+\sloppy                                          % Gestion des overfull hbox
+\renewcommand{\baselinestretch}{1.05}            % Hauteur lignes x 1.05
+
+\setcounter{secnumdepth}{3}                      % Sous-sous-sections numerotees
+\setcounter{tocdepth}{3}                         % Sous-sous-sections dans la table
+
+%% Macros et commandes utiles.
+
+\makeatletter
+\@definecounter{enumv}                           % 8 niveaux d'itemizations
+\@definecounter{enumvi}
+\@definecounter{enumvii}
+\@definecounter{enumviii}
+\def\itemize{\ifnum \@itemdepth >8 \@toodeep\else \advance\@itemdepth \@ne
+\edef\@itemitem{labelitem\romannumeral\the\@itemdepth}%
+\list{\csname\@itemitem\endcsname}{\def\makelabel##1{\hss\llap{##1}}}\fi}
+\let\enditemize =\endlist
+
+\def\@iteme[#1]{\if@noparitem \@donoparitem      % Item long pour options
+  \else \if@inlabel \indent \par \fi
+         \ifhmode \unskip\unskip \par \fi
+         \if@newlist \if@nobreak \@nbitem \else
+                        \addpenalty\@beginparpenalty
+                        \addvspace\@topsep \addvspace{-\parskip}\fi
+           \else \addpenalty\@itempenalty \addvspace\itemsep
+          \fi
+    \global\@inlabeltrue
+\fi
+\everypar{\global\@minipagefalse\global\@newlistfalse
+          \if@inlabel\global\@inlabelfalse
+             \setbox\@tempboxa\hbox{#1}\relax
+             \hskip \itemindent \hskip -\parindent
+             \hskip -\labelwidth \hskip -\labelsep
+             \ifdim \wd\@tempboxa > \labelwidth
+               \box\@tempboxa\hfil\break
+             \else
+               \hbox to\labelwidth{\box\@tempboxa\hfil}\relax
+               \hskip \labelsep
+             \fi
+             \penalty\z@ \fi
+          \everypar{}}\global\@nobreakfalse
+\if@noitemarg \@noitemargfalse \if@nmbrlist \refstepcounter{\@listctr}\fi \fi
+\ignorespaces}
+\def\iteme{\@ifnextchar [{\@iteme}{\@noitemargtrue \@iteme[\@itemlabel]}}
+
+\let\@Hxfloat\@xfloat
+\def\@xfloat#1[{\@ifnextchar{H}{\@HHfloat{#1}[}{\@Hxfloat{#1}[}}
+\def\@HHfloat#1[H]{%
+\expandafter\let\csname end#1\endcsname\end@Hfloat
+\vskip\intextsep\def\@captype{#1}\parindent\z@
+\ignorespaces}
+\def\end@Hfloat{\vskip \intextsep}
+\makeatother
+
+\def\progsyn{\item[{\makebox[1.5em][l]{\bf Synopsis}}]\ ~\linebreak[0]\\*[1em]}
+\def\progdes{\item[{\makebox[1.5em][l]{\bf Description}}]\ ~\linebreak[0]\\*[1em]}
+\def\progopt{\item[{\makebox[1.5em][l]{\bf Options}}]~\linebreak[0]}
+\def\progret{\item[{\makebox[1.5em][l]{\bf Return values}}]~\linebreak[0]}
+
+\newcommand{\bn}{\begin{displaymath}}            % Equations non-numerotees
+\newcommand{\en}{\end{displaymath}}
+\newcommand{\bq}{\begin{equation}}               % Equations numerotees
+\newcommand{\eq}{\end{equation}}
+
+\newcommand{\lbo}{\linebreak[0]}
+\newcommand{\lbt}{\linebreak[2]}
+\newcommand{\noi}{{\noindent}}                   % Pas d'indentation
+\newcommand{\spa}{{\protect \vspace{\bigskipamount}}} % Espace vertical
+
+\newcommand{\eg}{{\it e\@.g\@.\/\ }}             % e.g.
+\newcommand{\ie}{{\it i\@.e\@.\/\ }}             % i.e.
+
+\newcommand{\chaco}{\textsc{Chaco}}                 % "chaco"
+\newcommand{\scotch}{\textsc{Scotch}}               % "scotch"
+\newcommand{\libscotch}{\textsc{libScotch}}         % "libscotch"
+\newcommand{\ptscotch}{\textsc{PT-Scotch}}          % "PT-Scotch"
+\newcommand{\metis}{\mbox{\textsc{Me$\!$T$\!$iS}}}  % "MeTiS"
+
+\newcommand{\eqdef}{\stackrel{\scriptscriptstyle \rm def}{=}}       % = as definition
+\newcommand{\isapprox}{\mathop{\approx}\limits}
+
+\newcommand{\lefta}{\longleftarrow}
+\newcommand{\rghta}{\longrightarrow}
+\newcommand{\botha}{\longleftrightarrow}
+\newcommand{\Lefta}{\Longleftarrow}
+\newcommand{\Rghta}{\Longrightarrow}
+\newcommand{\Botha}{\Longleftrightarrow}
+
+\newcommand{\HY}{{\rm H}}                        % H
+\newcommand{\KP}{{\rm K}}                        % K
+\newcommand{\MK}[1]{{\rm M}_{#1}}                % Mk
+\newcommand{\MD}{\MK{2}}                         % M2
+\newcommand{\PA}{{\rm P}}                        % P
+\newcommand{\UB}{{\rm UB}}                       % UB
+\newcommand{\SE}{{\rm SE}}                       % SE
+\newcommand{\FFT}{{\rm FFT}}                     % FFT
+\newcommand{\BF}{{\rm BF}}                       % BF
+\newcommand{\BFB}{{\overline{\rm BF}}}           % BF bar
+\newcommand{\CCC}{{\rm CCC}}                     % CCC
+\newcommand{\CCCB}{{\overline{\rm CCC}}}         % CCC bar
+
+\newcommand{\roo}[1]{{\rho_{\scriptscriptstyle {#1}}}} % Rho avec petit argument
+\newcommand{\too}[1]{{\tau_{\scriptscriptstyle {#1}}}} % Tau avec petit argument
+\newcommand{\xio}[1]{{\xi_{\scriptscriptstyle {#1}}}} % Xi avec petit argument
+
+\newcommand{\SB}[1]{{\cal C}'_S\left({#1}\right)} % Comportement en espace
+\newcommand{\TB}[1]{{\cal C}'_T\left({#1}\right)} % Comportement en temps
+\newcommand{\SC}[1]{{\cal C}_S\left({#1}\right)} % Complexite en espace
+\newcommand{\TC}[1]{{\cal C}_T\left({#1}\right)} % Complexite en temps
+
+\newcommand{\dmap}{\mbox{$\delta_{map}$}}
+\newcommand{\dexp}{\mbox{$\delta_{exp}$}}
+\newcommand{\mmap}{\mbox{$\mu_{map}$}}
+\newcommand{\mdil}{\mbox{$\mu_{dil}$}}
+\newcommand{\mcom}{\mbox{$\mu_{com}$}}
+\newcommand{\mexp}{\mbox{$\mu_{exp}$}}
+
+\newcommand{\NNZ}{\mbox{NNZ}}
+\newcommand{\OPC}{\mbox{OPC}}
+\newcommand{\hnbr}{\mbox{$h_{\rm nbr}$}}
+\newcommand{\hmin}{\mbox{$h_{\rm min}$}}
+\newcommand{\hmax}{\mbox{$h_{\rm max}$}}
+\newcommand{\havg}{\mbox{$h_{\rm avg}$}}
+\newcommand{\hdlt}{\mbox{$h_{\rm dlt}$}}
+
+%% Version du document.
+
+\newcommand{\scotchver}{6.0}
+\newcommand{\scotchversub}{6.0.9}
+\newcommand{\scotchcitepuser}{\protect\cite{pell08c}}
+\newcommand{\scotchcitesuser}{\protect\cite{pell08b}}
+
+%% Page de garde.
+
+\begin{document}
+
+\date{\today}
+%\date{Revision 0.4 $\beta$\\\today}
+
+\title{\includegraphics{s_f_logo.ps}\\[1em]
+       {\LARGE\bf \scotch\ and \libscotch\ \textsc{\scotchver} User's Guide}\\[1em]%
+       {\normalsize (version \scotchversub)}
+}
+
+\author{Fran\c cois Pellegrini\\
+Universit\'e de Bordeaux \& LaBRI, UMR CNRS 5800\\
+TadAAM team, INRIA Bordeaux Sud-Ouest\\
+351 cours de la Lib\'eration, 33405 TALENCE, FRANCE\\
+{\tt francois.pellegrini@labri.fr}}
+
+\maketitle
+
+\begin{abstract}
+This document describes the capabilities and operations of
+\scotch\ and \libscotch, a software package and a software library
+devoted to static mapping, edge- and vertex-based graph partitioning,
+and sparse matrix block ordering of graphs and meshes/hypergraphs. It
+gives brief descriptions of the algorithms, details the input/output
+formats, instructions for use, installation procedures, and provides a
+number of examples.
+
+\scotch\ is distributed as free/libre software, and has been
+designed such that new partitioning or ordering methods can be added
+in a straightforward manner. It can therefore be used as a testbed for
+the easy and quick coding and testing of such new methods, and may
+also be redistributed, as a library, along with third-party software
+that makes use of it, either in its original or in updated forms.
+\end{abstract}
+
+\clearpage
+
+%% Table des matieres.
+
+\tableofcontents
+
+%% Corps du document.
+
+\input{s_i.tex}                                  % Introduction
+\input{s_c.tex}                                  % Changes since previous versions
+\input{s_f.tex}                                  % Formats de fichiers
+\input{s_p.tex}                                  % Programmes
+\input{s_l.tex}                                  % Bibliotheque
+\input{s_d.tex}                                  % Distribution
+\input{s_e.tex}                                  % Relevant examples
+\input{s_n.tex}                                  % Addition of a new method
+
+%% Remerciements.
+
+\section*{Credits}
+
+I wish to thank all of the following people:
+\begin{itemize}
+\item
+Patrick Amestoy collaborated to the design of the Halo Approximate
+Minimum Degree algorithm~\cite{peroam99} that had been embedded into
+\scotch\ \textsc{3.3}, and provided versions of his Approximate Minimum
+Degree algorithm, available since version \textsc{3.2}, and of his
+Halo Approximate Minimum Fill algorithm, available since version
+\textsc{3.4}. He designed the mesh versions of the approximate
+minimum degree and approximate minimum fill algorithms, which are
+available since version \textsc{4.0};
+\item
+S\'ebastien Fourestier coded the mapping with fixed vertices,
+remapping, and remapping with fixed vertices sequential routines that
+are available since version \textsc{6.0};
+\item
+Jun-Ho Her coded the graph partitioning with overlap routines that
+were introduced in the unpublished \textsc{5.2} release, and publicly
+released in version \textsc{6.0};
+\item
+Amaury Jacques improved the development environment and contributed to
+the consistency checking and non-regression testing routines;
+\item
+C\'édric Lachat contributed to the robustness of the software, in
+relation with his development of the \textsc{PaMPA} software;
+\item
+Alex Pothen kindly provided a version of his Multiple Minimum Degree
+algorithm, which was embedded into \scotch\ from version \textsc{3.2} to
+version \textsc{3.4};
+\item
+Luca Scarano, visiting Erasmus student from the \textit{Universit\'a
+degli Studi di Bologna}, coded the multilevel graph algorithm
+in \scotch\ \textsc{3.1};
+\item
+Yves Secretan contributed to the \textsc{MinGW32} port;
+\item
+David Sherman proofread version \textsc{3.2} of this manual.
+\end{itemize}
+
+%% Bibliographie.
+
+\bibliographystyle{plain}
+\bibliography{s}
+
+\end{document}

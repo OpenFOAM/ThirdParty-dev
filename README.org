@@ -30,9 +30,9 @@
             https://ftp.gnu.org/gnu/mpc/mpc-1.0.1.tar.gz
 *** Parallel Processing
 ***** Scotch
-      Scotch-6.0.6 is provided with ThirdParty-dev or the original source pack
+      Scotch-6.0.9 is provided with ThirdParty-dev or the original source pack
       may be obtained from:
-      + Scotch/PtScotch: https://gforge.inria.fr/frs/download.php/file/37622/scotch_6.0.6.tar.gz
+      + Scotch/PtScotch: https://gforge.inria.fr/frs/download.php/file/38187/scotch_6.0.9.tar.gz
 ***** OpenMPI
       + OpenMPI: https://www.open-mpi.org/software/ompi/v2.1/downloads/openmpi-2.1.1.tar.bz2
 *** ParaView

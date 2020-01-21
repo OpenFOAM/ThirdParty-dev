@@ -1,0 +1,73 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                  %
+% Title   : m_s.tex                %
+% Subject : Maintenance manual of  %
+%           Scotch                 %
+%           Global structure       %
+% Author  : Francois Pellegrini    %
+%                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Structure of the \libscotch\ library}
+\label{sec-structure}
+
+As seen in Section~\ref{sec-naming-functions}, all of the routines
+that comprise the \libscotch\ project are named with a prefix that
+defines the type of data structure onto which they apply and a prefix
+that describes their purpose. This naming scheme allows one to
+categorize functions as methods of classes, in an object-oriented
+manner.
+
+This organization is reflected in the naming and contents of the
+various source files.
+
+The main modules of the \libscotch\ library are the following:
+\begin{itemize}
+\item
+\texttt{arch}: target architectures used by the static mapping methods.
+\item
+\texttt{bgraph}: graph edge bipartitioning methods, hence the initial.
+\item
+\texttt{graph}: basic (source) graph handling methods.
+\item
+\texttt{hgraph}: graph ordering methods. These are based on an extended
+``halo'' graph structure, thus for the initial.
+\item
+\texttt{hmesh}: mesh ordering methods.
+\item
+\texttt{kgraph}: k-way graph partitioning methods.
+\item
+\texttt{library}: API routines for the \libscotch\ library.
+\item
+\texttt{mapping}: definition of the mapping structure.
+\item
+\texttt{mesh}: basic mesh handling methods.
+\item
+\texttt{order}: definition of the ordering structure.
+\item
+\texttt{parser}: strategy parsing routines, based on the \textsc{Flex}
+and \textsc{Bison} parsers.
+\item
+\texttt{vgraph}: graph vertex bipartitioning methods, hence the initial.
+\item
+\texttt{vmesh}: mesh node bipartitioning methods.
+\end{itemize}
+
+Every source file name is made of the name of the module to which it
+belongs, followed by one or two words, separated by an underscore,
+that describe the type of action performed by the routines of the
+file. For instance, for module \texttt{bgraph}:
+\begin{itemize}
+\item
+\texttt{bgraph.h} is the header file that defines the \texttt{Bgraph}
+data structure,
+\item
+\texttt{bgraph\_bipart\_fm.[ch]} are the files that contain the
+Fiduccia-Mattheyses-like graph bipartitioning method,
+\item
+\texttt{bgraph\_check.c} is the file that contains the consistency
+checking routine \texttt{bgraph\lbt Check} for \texttt{Bgraph}
+structures,
+\end{itemize}
+and so on. Every source file has a comments header briefly describing
+the purpose of the code it contains.
