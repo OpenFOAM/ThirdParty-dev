@@ -1,0 +1,184 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                  %
+% Title   : m_m.tex                %
+% Subject : Maintenance manual of  %
+%           Scotch                 %
+%           How to add a method    %
+% Author  : Francois Pellegrini    %
+%                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Adding a method to the \libscotch\ library}
+\label{sec-method}
+
+The \libscotch\ has been carefully designed so as to allow external
+contributors to add their new partitioning or ordering methods, and
+to use \scotch\ as a testbed for them.
+
+\subsection{What to add}
+
+There are currently six types of methods which can be added:
+\begin{itemize}
+\item
+k-way graph mapping methods, in module {\tt kgraph},
+\item
+graph bipartitioning methods by means of edge separators, in module
+{\tt bgraph}, used by the mapping method by dual recursive
+bipartitioning, implemented in {\tt kgraph\_\lbt map\_\lbt rb.[ch]},
+\item
+graph ordering methods, in module {\tt hgraph},
+\item
+graph separation methods by means of vertex separators, in module
+{\tt vgraph}, used by the nested dissection ordering method
+implemented in {\tt hgraph\_\lbt order\_\lbt nd.[ch]},
+\item
+mesh ordering methods, in module {\tt hmesh},
+\item
+mesh separation methods with vertex separators, in module
+{\tt vmesh}, used by the nested dissection ordering method
+implemented in {\tt hmesh\_\lbt order\_\lbt nd.[ch]}.
+\end{itemize}
+Every method of these six types operates on instances of augmented
+graph structures that contain, in addition to the graph topology,
+data related to the current state of the partition or of the
+ordering. For instance, all of the graph bipartitioning methods
+operate on an instance of a {\tt Bgraph}, defined in {\tt bgraph.h},
+and which contains fields such as {\tt compload0}, the current load
+sum of the vertices assigned to the first part, {\tt commload}, the
+load sum of the cut edges, etc.
+
+In order to understand better the meaning of each of the fields
+used by some augmented graph or mesh structure, contributors can read
+the code of the consistency checking routines, located in files ending
+in {\tt \_check.c}\enspace, such as {\tt bgraph\_check.c} for a
+{\tt Bgraph} structure. These routines are regularly called during the
+execution of the debug version of \scotch\ to ease bug tracking. They
+are time-consuming but proved very helpful in the development and
+testing of new methods.
+
+\subsection{Where to add}
+
+Let us assume that you want to code a new graph separation
+routine. Your routine will operate on a {\tt Vgraph} structure, and
+thus will be stored in files called {\tt vgraph\_\lbt separate\_
+xy\lbt .[ch]}, where {\tt xy} is a two-letter reminder of the name
+of your algorithm. Look into the \libscotch\ source directory for
+already used codenames, and pick a free one.
+In case you have more that one single source file, use extended names,
+such as {\tt vgraph\_\lbt separate\_\lbt xy\_\lbt subname\lbt
+.[ch]}\enspace .
+
+In order to ease your coding, copy the files of a simple and already
+existing method and use them as a pattern for the interface of your
+new method. Some methods have an optional parameter data structure,
+others do not. Browse through all existing methods to find the one
+that looks closest to what you want.
+
+Some methods can be passed parameters at run time from the strategy
+string parser. These parameters can be of fixed types only. These
+types are:
+\begin{itemize}
+\item
+an integer ({\tt int}) type,
+\item
+an floating-point ({\tt double}) type,
+\item
+an enumerated ({\tt char}) type : this type is used to make a
+choice among a list of single character values, such as ``{\tt
+yn}''. It is more readable than giving integer numerical values to
+method option flags,
+\item
+a strategy (\scotch\ {\tt Strat} type) : a method can be passed a
+sub-strategy of a given type, which can be run on an augmented graph
+of the proper type. For instance, the nested dissection method in {\tt
+hgraph\_\lbt order\_\lbt nd\lbt .c} uses a graph separation strategy
+to compute its vertex separators.
+\end{itemize}
+
+\subsection{Declaring the new method to the parser}
+
+Once the new method has been coded, its interface must be known to the
+parser, so that it can be used in strategy strings. All of this is
+done in the module strategy method files, the name of which always end
+in {\tt \_st.[ch]}, that is, {\tt vgraph\_\lbt separate\_\lbt st.[ch]}
+for the {\tt vgraph} module. Both files are to be updated.
+
+In the header file {*\_st.h}, a new identifier must be created for the
+new method in the {\tt St\lbt Method\lbt Type} enumeration type,
+preferrably placed in alphabetical order.
+
+In file {*\_st.c}, there are several places to update.
+First, in the beginning of the module file, the header file of the new
+method, {\tt vgraph\_\lbt separate\_\lbt xy\lbt .h} in this example,
+must be added in alphabetical order to the list of included method
+header files.
+
+Then, if the new method has parameters, an instance of the method
+parameter structure must be created, which will hold the default
+values for the method. This is in fact a {\tt union} structure,
+of the following form :
+{\tt\begin{verbatim}
+static union {
+  VgraphSeparateXyParam     param;
+  StratNodeMethodData       padding;
+} vgraphseparatedefaultxy = { { ... } };
+\end{verbatim}}
+where the dots should be replaced by the list of default values of the
+fields of the {\tt Vgraph\lbt Separate\lbt Xy\lbt Param} structure.
+Note that the size of the {\tt Strat\lbt Node\lbt Method\lbt Data}
+structure, which is used as a generic padding structure, must always
+be greater than or equal to the size of each of the parameter
+structures. If your new parameter structure is larger, you will have
+to update the size of the {\tt Strat\lbt Node\lbt Method\lbt Data}
+type in file {\tt parser.h}\enspace. The size of the {\tt Strat\lbt
+Node\lbt Method\lbt Data} type does not depend directly on the size of
+the parameter structures (as could have been done by making it an union
+of all of them) so as to to reduce the dependencies between the files
+of the library. In most cases, the default size is sufficient, and a
+test is added in the beginning of all method routines to ensure it is
+the case in practice.
+
+Finally, the first two method tables must be filled accordingly. In the
+first one, of type {\tt Strat\lbt Method\lbt Tab}, one must add a new
+line linking the method identifier to the character code used to name
+the method in strategy strings (which must be chosen among all of
+the yet unused letters), the pointer to the routine, and the pointer
+to the above default parameter structure if it exists (else, a {\tt
+NULL} pointer must be given).
+In the second one, of type {\tt Strat\lbt Param\lbt Tab}, one must add
+one line per method parameter, giving the identifier of the method,
+the type of the parameter, the name of the parameter in the strategy
+string, the base address of the default parameter structure, the
+actual address of the field in the parameter structure (both fields
+are required because the relative offset of the field with respect to
+the starting address of the structure cannot be computed at
+compile-time), and an optional pointer that references either the
+strategy table to be used to parse the strategy parameter (for
+strategy parameters) or a string holding all of the values of the
+character flags (for an enumerated type), this pointer being set to
+{\tt NULL} for all of the other parameter types (integer and floating
+point).
+
+\subsection{Adding the new method to the makefile}
+
+Of course, in order to be compiled, the new method must be added to
+the {\tt makefile} of the {\tt libscotch} source directory. There are
+several places to update.
+
+First, you have to create the entry for the new method source files
+themselves. The best way to proceed is to search for the one of an
+already existing method, such as {\tt vgraph\_\lbt separate\_\lbt fm},
+and copy it to the right neighboring place, preferrably following the
+alphabetical order.
+
+Then, you have to add the new header file to the dependency list of
+the module strategy method, that is, {\tt vgraph\_\lbt separate\_\lbt
+st} for graph separation methods. Here again, search for the
+occurences of string {\tt vgraph\_\lbt separate\_\lbt fm} to see where
+it is done.
+
+Finally, add the new object file to the component list of the {\tt
+libscotch} library file.
+
+Once all of this is done, you can recompile \scotch\ and be able to
+use your new method in strategy strings.

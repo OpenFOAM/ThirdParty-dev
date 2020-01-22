@@ -1,0 +1,202 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                  %
+% Titre  : m_n.tex                 %
+% Sujet  : Maintenance manual of   %
+%          Scotch                  %
+%          Naming conventions      %
+% Auteur : Francois Pellegrini     %
+%                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Naming conventions}
+\label{sec-naming}
+
+All of the files of the \scotch\ project have been written using
+strict coding conventions, to ease maintenance and further extension
+by external contributors. Therefore, contributors must follow these
+coding conventions so as to ease the work of their followers.
+
+\subsection{Variables}
+\label{sec-naming-variables}
+
+Variables of the sequential \scotch\ software are commonly built from
+a radical and a suffix. When contextualization is required, e.g., the
+same kind of variable appear in two different objects, a prefix is
+added. In \ptscotch, a second radical is commonly used.
+
+Common radicals are:
+\begin{itemize}
+\item
+\texttt{vert}: vertex.
+\item
+\texttt{velo}: vertex load.
+\item
+\texttt{vnum}: vertex number, used as an index to access another vertex
+structure. This radical typically relates to an array that contains
+the vertex indices, in some original graph, corresponding to the
+vertices of a derived graph (e.g., an induced graph).
+\item
+\texttt{vlbl}: user-defined vertex label (at the user API level).
+\item
+\texttt{edge}: edge (i.e., arcs, in fact).
+\item
+\texttt{edlo}: edge (arc) load.
+\item
+\texttt{graf}: graph.
+\end{itemize}
+
+Common suffices are:
+\begin{itemize}
+\item
+\texttt{end}: vertex end index of an edge (e.g.,
+\texttt{vertend}, wrt. \texttt{vertnum}). The \texttt{end} suffix is
+a sub-category of the \texttt{num} suffix.
+\item
+\texttt{nbr}: number of instances of objects of a given radical
+type (e.g., \texttt{vertnbr}, \texttt{edgenbr}).
+\item
+\texttt{num}: number (index) of some instance of an object of a given
+radical type. For instance, \texttt{vertnum} is the index of some
+(graph) vertex, that can be used to access adjacency
+(\texttt{verttab}) or vertex load (\texttt{velotab}) arrays.
+$0 \leq \mbox{\texttt{vertnum}} < \mbox{\texttt{vertnbr}}$ if the
+vertex index is ``not based'', and $\mbox{\texttt{baseval}} \leq
+\mbox{\texttt{vertnum}} < \mbox{\texttt{vertnnd}}$
+if the index is ``based'', that it, counted starting from
+\texttt{baseval}. For number basing and array indexing, see
+Section~\ref{sec-basing}.
+\item
+\texttt{ptr} : pointer to an instance of an item of some radical type
+(e.g., \texttt{grafptr}).
+\item
+\texttt{sum}: sum of several values of the same radical type (e.g.,
+\texttt{velosum}, \texttt{edlosum}).
+\item
+\texttt{tab}: reference to the first memory element of an array. Such
+a reference is returned by a memory allocation routine (e.g.,
+\texttt{mem\lbt Alloc}) or allocated from the stack.
+\item
+\texttt{tax} (for ``\textit{table access}''): reference to an array
+that will be accessed using ``based'' indices. See
+Section~\ref{sec-basing}.
+\item
+\texttt{tnd} : pointer to the ``based'' after-end of an array of items
+of radix type (e.g. \texttt{velotnd}). Variables of this suffix are
+mostly used as bounds in loops.
+\item
+\texttt{val}: value of an item. For instance, \texttt{veloval} is the
+load of some vertex, that may have been read from a file.
+\end{itemize}
+
+Common prefixes are:
+\begin{itemize}
+\item
+\texttt{src}: source, wrt. active. For instance, a source graph is a
+plain \texttt{Graph} structure that contains only graph topology,
+compared to enriched graph data structures that are used for specific
+computations such as bipartitioning.
+\item
+\texttt{act}: active, wrt. source. An active graph is a data structure
+enriched with information required for specific computations, e.g. a
+\texttt{Bgraph}, a \texttt{Kgraph} or a \texttt{Vgraph} compared to a
+\texttt{Graph}.
+\item
+\texttt{ind}: induced, wrt. original.
+\item
+\texttt{src}: source, wrt. active or target.
+\item
+\texttt{org}: original, wrt. induced. An original graph is a graph
+from which a derived graph will be computed, e.g. an induced subgraph.
+\item
+\texttt{tgt}: target.
+\item
+\texttt{coar}: coarse, wrt. fine (e.g. \texttt{coarvertnum}, as a
+variable that holds the number of a coarse vertex, within some
+coarsening algorithm).
+\item
+\texttt{fine}: fine, wrt. coarse.
+\item
+\texttt{mult}: multinode, for coarsening.
+\end{itemize}
+
+\subsection{Functions}
+\label{sec-naming-functions}
+
+Like variables, routines of the \scotch\ software package follow a
+strict naming scheme, in an object-oriented fashion. Routines are
+always prefixed by the name of the data structure on which they
+operate, then by the name of the method that is applied to the said
+data structure. Some method names are standard for each class.
+
+Standard method names are:
+\begin{itemize}
+\item
+\texttt{Alloc}: dynamically allocate an object of the given class. Not
+always available, as many objects are allocated on the stack as local
+variables.
+\item
+\texttt{Init}: initialization of the object passed as parameter.
+\item
+\texttt{Free}: freeing of the external structures of the object, to save
+space. The object may still be used, but it is considered as ``empty''
+(e.g., an empty graph). The object may be re-used after it is
+initialized again.
+\item
+\texttt{Exit}: freeing of the internal structures of the object. The
+object must not be passed to other routines after the \texttt{Exit}
+method has been called.
+\item
+\texttt{Copy}: make a fully operational, independent, copy of the
+object, like a ``clone'' function in object-oriented languages.
+\item
+\texttt{Load}: load object data from stream.
+\item
+\texttt{Save}: save object data to stream.
+\item
+\texttt{View}: display internal structures and statistics, for debugging
+purposes.
+\item
+\texttt{Check}: check internal consistency of the object data, for
+debugging purposes. A \texttt{Check} method must be created for any
+new class, and any function that creates or updates an instance of
+some class must call the appropriate \texttt{Check} method, when
+compiled in debug mode.
+\end{itemize}
+
+\subsection{Array index basing}
+\label{sec-basing}
+
+The \libscotch\ library can accept data structures that come both from
+FORTRAN, where array indices start at $1$, and C, where they start at
+$0$. The start index for arrays is called the ``base value'', commonly
+stored in a variable (or field) called \texttt{baseval}.
+
+In order to manage based indices elegantly, most references to arrays
+are based as well. The ``table access'' reference, suffixed as
+``\texttt{tax}'' (see Section~\ref{sec-naming-variables}), is defined
+as the reference to the beginning of an array in memory, minus the
+base value (with respect to pointer arithmetic, that is, in terms of
+bytes, times the size of the array cell data type). Consequently, for
+any array whose beginning is pointed to by \texttt{xxxxtab}, we have
+$\mbox{\texttt{xxxxtax}} = \mbox{\texttt{xxxxtab}} - \mbox{\texttt{baseval}}$.
+Consequently \texttt{xxxxtax[baseval]} always represents the first
+cell in the array, whatever the base value is.
+Of course, memory allocation and freeing operations must always
+operate on \texttt{tab} pointers only.
+
+In terms of indices, if the size of the array is \texttt{xxxxnbr},
+then
+$\mbox{\texttt{xxxxnnd}} = \mbox{\texttt{xxxxnbr}} + \mbox{\texttt{baseval}}$,
+so that valid indices \texttt{xxxxnum} always belong to the range
+$[\mbox{\texttt{baseval}};\mbox{\texttt{vertnnd}}[$. Consequently,
+loops often take the form:
+\begin{center}
+{\renewcommand{\baselinestretch}{1.05}
+\footnotesize\tt
+\begin{verbatim}
+  for (xxxxnum = baseval; xxxxnum < xxxxnnd; xxxxnum ++) {
+    xxxxtax[xxxxnum] = ...;
+  }
+\end{verbatim}
+}
+\end{center}

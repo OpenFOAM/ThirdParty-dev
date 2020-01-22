@@ -25,10 +25,7 @@ makeQt
 # Ignore unpacked sources in the main directory (match pkg-ver)
 /*[-_][0-9]*
 
-# Include ParaView
-!/ParaView-5.0.1
-
 # Include scotch
-!/scotch_6.0.6
+!/scotch_6.0.9
 
 # End-of-file
