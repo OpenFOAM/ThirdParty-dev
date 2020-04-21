@@ -1,0 +1,210 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | Copyright (C) 2020 OpenFOAM Foundation
+#    \\/     M anipulation  |
+#------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM.
+#
+#     OpenFOAM is free software: you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+#     for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Script
+#     makeMesa
+#
+# Description
+#     Build script for mesa and offscreen mesa (osmesa)
+#
+#------------------------------------------------------------------------------
+mesaPACKAGE=mesa-18.3.6
+offscreen=false
+
+#------------------------------------------------------------------------------
+
+# Run from third-party directory only
+wmakeCheckPwd "$WM_THIRD_PARTY_DIR" || {
+    echo "Error: Current directory is not \$WM_THIRD_PARTY_DIR"
+    echo "    The environment variables are inconsistent with the installation."
+    echo "    Check the OpenFOAM entries in your dot-files and source them."
+    exit 1
+}
+
+. etc/tools/ThirdPartyFunctions
+
+#------------------------------------------------------------------------------
+
+usage() {
+    exec 1>&2
+    while [ "$#" -ge 1 ]; do echo "$1"; shift; done
+    cat<<USAGE
+
+usage: ${0##*/} [OPTION] [mesa-VERSION]
+options:
+  -gcc              force g++ instead of the value from \$WM_CXX
+  -offscreen        build offscreen mesa (osmesa)
+  -help
+
+* build mesa
+      $mesaPACKAGE
+
+USAGE
+    exit 1
+}
+
+# Ensure CMake gets the correct C++ compiler
+[ -n "$WM_CXX" ] && export CXX="$WM_CXX"
+[ -n "$WM_CC" ] && export CC="$WM_CC"
+
+# Parse options
+while [ "$#" -gt 0 ]
+do
+    case "$1" in
+    -h | -help)
+        usage
+        ;;
+    -gcc)
+        export CC=gcc   # use gcc
+        export CXX=g++  # use g++
+        shift
+        ;;
+    -offscreen)
+        offscreen=true
+        shift
+        ;;
+    mesa-[1-9]*)
+        mesaPACKAGE="${1%%/}"
+        shift
+        ;;
+    *)
+        usage "unknown option/argument: '$*'"
+        ;;
+    esac
+done
+
+#------------------------------------------------------------------------------
+
+# Install graphical mesa to mesa-x.x.x, and offscreen mesa to osmesa-x.x.x
+if ! $offscreen
+then
+    mesaDIR=$mesaPACKAGE
+else
+    mesaDIR=os$mesaPACKAGE
+fi
+
+# Create the directory to which to install
+prefixDIR=$installBASE/$mesaDIR
+
+# Create configuration options
+options="--prefix="$prefixDIR
+if ! $offscreen
+then
+    options="$options \
+        --enable-glx=gallium-xlib \
+        --enable-llvm \
+        --with-gallium-drivers=swrast \
+        --disable-dri \
+        --disable-gbm \
+        --disable-egl"
+else
+    options="$options \
+        --enable-gallium-osmesa"
+fi
+
+# Build mesa
+echo "---------------"
+if [ -d "$prefixDIR" ]
+then
+    echo "Already built: $mesaDIR"
+else
+    echo "Starting build: $mesaDIR"
+    echo
+(
+    # Get the source
+    sourceDIR=$WM_THIRD_PARTY_DIR/$mesaPACKAGE
+    sourceURL="ftp://ftp.freedesktop.org/pub/mesa/$mesaPACKAGE.tar.gz"
+    [ -d "$sourceDIR" ] \
+        || curl "$sourceURL" | tar xz 2> /dev/null \
+        || exit 1
+
+    # Create the build directory
+    buildDIR=$buildBASE/$mesaDIR
+    rm -rf "$buildDIR"
+    mkdir -p "$buildDIR"
+    cd "$buildDIR" || exit 1
+
+    # Configure, build and install
+    set -x
+    "$sourceDIR"/configure $options \
+        && make -j "$WM_NCOMPPROCS" \
+        && make install \
+        && echo "Built: $mesaPACKAGE"
+) || {
+    echo "Error building: $mesaPACKAGE"
+    exit 1
+}
+fi
+
+# print usage
+if ! $offscreen
+then
+
+cat<<USAGE
+
+---------------
+Add mesa libraries to paraview by running:
+
+    [ -d \$WM_THIRD_PARTY_DIR/platforms/\$WM_ARCH\$WM_COMPILER/$mesaDIR/lib64 ] \
+&& mesaArch=64
+
+    if \$WM_PROJECT_DIR/bin/tools/foamVersionCompare \$ParaView_VERSION ge 5.5.0
+    then
+        ln -s ../../$mesaDIR/lib\$mesaArch \$ParaView_LIB_DIR/mesa
+    else
+        ln -s ../../../$mesaDIR/lib\$mesaArch \$ParaView_LIB_DIR/mesa
+    fi
+
+And then execute paraview by running:
+
+    if \$WM_PROJECT_DIR/bin/tools/foamVersionCompare \$ParaView_VERSION ge 5.7.0
+    then
+        paraview-mesa paraview
+    else
+        paraview --mesa
+    fi
+
+USAGE
+
+else
+
+cat<<USAGE
+
+---------------
+Build ParaView against the offscreen mesa libraries by running:
+
+    [ -d \$WM_THIRD_PARTY_DIR/platforms/\$WM_ARCH\$WM_COMPILER/$mesaDIR/lib64 ] \
+&& osmesaArch=64
+
+    ./makeParaView -mesa \\
+        -mesa-include \
+\$WM_THIRD_PARTY_DIR/platforms/\$WM_ARCH\$WM_COMPILER/$mesaDIR/include \\
+        -mesa-lib \
+\$WM_THIRD_PARTY_DIR/platforms/\$WM_ARCH\$WM_COMPILER/$mesaDIR/lib\$osmesaArch
+
+USAGE
+
+fi
+
+#------------------------------------------------------------------------------
