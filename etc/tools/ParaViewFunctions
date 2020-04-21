@@ -283,34 +283,38 @@ addPythonSupport()
 
 
 #
-# Define options for mesa support
+# Define options for osmesa support
 #
-addMesaSupport()
+addOSMesaSupport()
 {
-    if [ "${withMESA:=false}" != true ]
+    if [ "${withOSMESA:=false}" != true ]
     then
        return
     fi
 
-    if [ -d "$MESA_INCLUDE" -a -f "$MESA_LIBRARY" ]
+    if [ -d "$OSMESA_INCLUDE" -a -f "$OSMESA_LIBRARY" ]
     then
-        OBJ_ADD="$OBJ_ADD-mesa"
+        OBJ_ADD="$OBJ_ADD-osmesa"
 
         addCMakeVariable  "VTK_OPENGL_HAS_OSMESA=ON"
-        addCMakeVariable  "OSMESA_INCLUDE_DIR=$MESA_INCLUDE"
-        addCMakeVariable  "OSMESA_LIBRARY=$MESA_LIBRARY"
+        addCMakeVariable  "VTK_USE_X=OFF"
+        addCMakeVariable  "OSMESA_INCLUDE_DIR=$OSMESA_INCLUDE"
+        addCMakeVariable  "OSMESA_LIBRARY=$OSMESA_LIBRARY"
 
     else
-       echo "*** Error: no MESA information found"
-       echo "***        Deactivate MESA support by not using the -mesa option, "
+       echo "*** Error: no OSMESA information found"
+       echo "***        Deactivate OSMESA support by not using the -osmesa option, "
        echo "***        or set the correct paths for:"
-       echo "***        -mesa-include ($MESA_INCLUDE)"
-       echo "***        -mesa-lib ($MESA_LIBRARY)"
+       echo "***        -osmesa-include ($OSMESA_INCLUDE)"
+       echo "***        -osmesa-lib ($OSMESA_LIBRARY)"
        exit 1
     fi
 }
 
 
+#
+# Define options for Qt support
+#
 addQtSupport()
 {
     QtVersion=none
@@ -486,7 +490,7 @@ configParaView()
     echo "Configuring paraview-$ParaView_VERSION (major version: $ParaView_MAJOR)"
     echo "    MPI    support : ${withMPI:-false}"
     echo "    Python support : ${withPYTHON:-false}"
-    echo "    MESA   support : ${withMESA:-false}"
+    echo "    OSMESA support : ${withOSMESA:-false}"
     echo "    Qt dev support : ${withQT:-false}"
     echo "    Source         : $ParaView_SOURCE_DIR"
     echo "    Build          : $ParaView_BINARY_DIR"
@@ -555,7 +559,7 @@ INFO
 # Clear the referenced variables before using any of the functions
 unset withMPI withVERBOSE
 unset withQT QMAKE_PATH
-unset withMESA MESA_INCLUDE MESA_LIBRARY
+unset withOSMESA OSMESA_INCLUDE OSMESA_LIBRARY
 unset withPYTHON PYTHON_INCLUDE PYTHON_LIBRARY
 unset CMAKE_VARIABLES
 unset OBJ_ADD
