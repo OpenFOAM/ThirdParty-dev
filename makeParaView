@@ -60,10 +60,10 @@ PYTHON_INCLUDE=""
 # PYTHON_LIBRARY="/usr/lib64/libpython2.7.so.1.0"
 # PYTHON_INCLUDE="/usr/include/python2.7"
 
-# MESA graphics support:
-withMESA=false
-MESA_INCLUDE="/usr/include/GL"
-MESA_LIBRARY="/usr/lib64/libOSMesa.so"
+# OSMESA graphics support:
+withOSMESA=false
+OSMESA_INCLUDE="/usr/include/GL"
+OSMESA_LIBRARY="/usr/lib64/libOSMesa.so"
 
 # extra QT gui support (useful for some third party apps)
 withQT=true
@@ -93,7 +93,7 @@ options:
   -rebuild          for repeated builds (-make -install) *use with caution*
   -rendering MODE   rendering backend engine (current value: ${RENDERING_BACKEND:-undefined})
                         modes: OpenGL OpenGL2
-  -mesa             with mesa (if not already enabled)
+  -osmesa           with osmesa (if not already enabled)
   -mpi              with mpi (if not already enabled)
   -python           with python (if not already enabled)
   -cmake PATH       with the cmake version corresponding to the cmake path given
@@ -104,17 +104,17 @@ options:
   -gcc              force g++ instead of the value from \$WM_CXX
   -verbose          verbose output in Makefiles
   -version VER      specify an alternative version (current value: $ParaView_VERSION)
-  -major   VER      specify an alternative major version for special builds
-  -mesa-include DIR
-                    location of mesa headers (current value: ${MESA_INCLUDE:-none})
-  -mesa-lib PATH    path to mesa library     (current value: ${MESA_LIBRARY:-none})
-  -python-lib PATH  path to python library   (current value: ${PYTHON_LIBRARY:-automatic})
+  -major VER        specify an alternative major version for special builds
+  -osmesa-include DIR
+                    location of osmesa headers (current value: ${OSMESA_INCLUDE:-none})
+  -osmesa-lib PATH  path to osmesa library (current value: ${OSMESA_LIBRARY:-none})
+  -python-lib PATH  path to python library (current value: ${PYTHON_LIBRARY:-automatic})
   -python-include DIR
                     path to python include directory (current value: ${PYTHON_INCLUDE:-automatic})
   -help
 
 The -no-FEATURE option can be disable these features (if not already disabled):
-  mesa mpi python qt
+  osmesa mpi python qt
 
 CMake options start with a capital letter and contain an '='.
 For example,
@@ -144,7 +144,7 @@ USAGE
 #
 # add options based on script name:
 #
-case "$Script" in *-mesa*)   withMESA=true;; esac
+case "$Script" in *-osmesa*) withOSMESA=true;; esac
 case "$Script" in *-mpi*)    withMPI=true;; esac
 case "$Script" in *-python*) withPYTHON=true;; esac
 case "$Script" in *-qt*)     withQT=true;; esac
@@ -212,22 +212,22 @@ do
         RENDERING_BACKEND="$2"
         shift 2
         ;;
-    -mesa)
-        withMESA=true
+    -osmesa)
+        withOSMESA=true
         shift
         ;;
-    -no-mesa)
-        withMESA=false
+    -no-osmesa)
+        withOSMESA=false
         shift
         ;;
-    -mesa-include)
+    -osmesa-include)
         [ "$#" -ge 2 ] || usage "'$1' option requires an argument"
-        MESA_INCLUDE="$2"
+        OSMESA_INCLUDE="$2"
         shift 2
         ;;
-    -mesa-lib)
+    -osmesa-lib)
         [ "$#" -ge 2 ] || usage "'$1' option requires an argument"
-        MESA_LIBRARY="$2"
+        OSMESA_LIBRARY="$2"
         shift 2
         ;;
     -mpi)
@@ -320,7 +320,7 @@ downloadParaView || usage "ParaView download failed.  Re-run to retry download"
 addVerbosity        # verbose makefiles
 addMpiSupport       # set MPI-specific options
 addPythonSupport    # set Python-specific options
-addMesaSupport      # set MESA-specific options
+addOSMesaSupport    # set OSMESA-specific options
 addQtSupport        # add extra Qt support
 
 configRenderingBackend # configure the rendering backend, e.g. OpenGL2
@@ -340,7 +340,7 @@ Build stages selected
     -install  ${runINSTALL:-false}
 ---------------------
 Features selected
-    mesa      ${withMESA:-false}
+    osmesa    ${withOSMESA:-false}
     mpi       ${withMPI:-false}
     python    ${withPYTHON:-false}
     qt        ${withQT:-false}

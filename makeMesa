@@ -197,11 +197,11 @@ Build ParaView against the offscreen mesa libraries by running:
     [ -d \$WM_THIRD_PARTY_DIR/platforms/\$WM_ARCH\$WM_COMPILER/$mesaDIR/lib64 ] \
 && osmesaArch=64
 
-    ./makeParaView -mesa \\
-        -mesa-include \
-\$WM_THIRD_PARTY_DIR/platforms/\$WM_ARCH\$WM_COMPILER/$mesaDIR/include \\
-        -mesa-lib \
-\$WM_THIRD_PARTY_DIR/platforms/\$WM_ARCH\$WM_COMPILER/$mesaDIR/lib\$osmesaArch
+    ./makeParaView -osmesa \\
+        -osmesa-include \
+\$WM_THIRD_PARTY_DIR/platforms/\$WM_ARCH\$WM_COMPILER/$mesaDIR/include/GL \\
+        -osmesa-lib \
+\$WM_THIRD_PARTY_DIR/platforms/\$WM_ARCH\$WM_COMPILER/$mesaDIR/lib\$osmesaArch/libGL.so
 
 USAGE
 
