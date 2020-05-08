@@ -346,30 +346,6 @@ else
 fi
 
 
-# CGAL is optional
-echo ========================================
-echo Build CGAL
-if [ -n "$CGAL_ARCH_PATH" ]
-then
-(
-    if [ -r $CGAL_ARCH_PATH/lib$WM_COMPILER_LIB_ARCH/libCGAL.so ]
-    then
-        echo "    CGAL headers in $CGAL_ARCH_PATH/include"
-        echo "    CGAL libs    in $CGAL_ARCH_PATH/lib$WM_COMPILER_LIB_ARCH"
-    else
-        ./makeCGAL
-    fi
-)
-elif [ -z "$FOAMY_HEX_MESH" ]
-then
-    echo "    skipped because foamyHexMesh is not selected"
-elif [ -n "$FOAMY_HEX_MESH" -a -z "$CGAL_ARCH_PATH" ]
-then
-    echo "    using system CGAL"
-else
-    echo "    optional component CGAL was not found"
-fi
-
 echo
 echo ========================================
 echo Done ThirdParty Allwmake

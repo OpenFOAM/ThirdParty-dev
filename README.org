@@ -48,7 +48,7 @@
     the .bashrc (or .cshrc) file or by typing
     + wmRefresh
 *** CGAL
-    + CGAL        https://github.com/CGAL/cgal/releases/download/releases%2FCGAL-4.10/CGAL-4.10.tar.xz
+    + CGAL        https://github.com/CGAL/cgal/releases/download/releases%2FCGAL-5.0.2/CGAL-5.0.2.tar.xz
     + boost       https://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.bz2/download
 *** Miscellaneous
     + libccmio    https://portal.nersc.gov/svn/visit/trunk/third_party/libccmio-2.6.1.tar.gz
