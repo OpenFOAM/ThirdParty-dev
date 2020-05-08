@@ -39,7 +39,7 @@
     If the system cmake version is < 3.3.0 you will need to download and build a
     recent version:
     + cmake          https://www.cmake.org/files/v3.9/cmake-3.9.0.tar.gz
-    + ParaView-5.6.0 http://www.paraview.org/files/v5.6/ParaView-v5.6.0.tar.gz
+    + ParaView-5.6.3 http://www.paraview.org/files/v5.6/ParaView-v5.6.3.tar.gz
     is downloaded automatically and compiles without modification.  ParaView is
     compiled by running the =makeParaView= script, i.e.
     + ./makeParaView
