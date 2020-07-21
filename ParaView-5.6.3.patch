@@ -1,0 +1,49 @@
+diff -ruN ParaView-5.6.3.orig/VTK/ThirdParty/exodusII/update.sh ParaView-5.6.3/VTK/ThirdParty/exodusII/update.sh
+--- ParaView-5.6.3.orig/VTK/ThirdParty/exodusII/update.sh	2020-07-21 15:19:12.222819909 +0100
++++ ParaView-5.6.3/VTK/ThirdParty/exodusII/update.sh	2020-07-21 15:20:44.225343632 +0100
+@@ -8,7 +8,7 @@
+ readonly ownership="Seacas Upstream <kwrobot@kitware.com>"
+ readonly subtree="ThirdParty/$name/vtk$name"
+ readonly repo="https://gitlab.kitware.com/third-party/seacas.git"
+-readonly tag="for/vtk-old"
++readonly tag="for/vtk-20200128-7.24f-v2019-12-1"
+ readonly paths="
+ packages/seacas/libraries/exodus/CMakeLists.vtk.txt
+ packages/seacas/libraries/exodus/cmake/exodus_config.h.in
+diff -ruN ParaView-5.6.3.orig/VTK/ThirdParty/exodusII/vtkexodusII/src/ex_create_par.c ParaView-5.6.3/VTK/ThirdParty/exodusII/vtkexodusII/src/ex_create_par.c
+--- ParaView-5.6.3.orig/VTK/ThirdParty/exodusII/vtkexodusII/src/ex_create_par.c	2020-07-21 15:19:12.222819909 +0100
++++ ParaView-5.6.3/VTK/ThirdParty/exodusII/vtkexodusII/src/ex_create_par.c	2020-07-21 15:20:23.112764495 +0100
+@@ -614,5 +614,5 @@
+  * Prevent warning in some versions of ranlib(1) because the object
+  * file has no symbols.
+  */
+-const char exodus_unused_symbol_dummy_1;
++const char exodus_unused_symbol_dummy_ex_create_par;
+ #endif
+diff -ruN ParaView-5.6.3.orig/VTK/ThirdParty/exodusII/vtkexodusII/src/ex_open_par.c ParaView-5.6.3/VTK/ThirdParty/exodusII/vtkexodusII/src/ex_open_par.c
+--- ParaView-5.6.3.orig/VTK/ThirdParty/exodusII/vtkexodusII/src/ex_open_par.c	2020-07-21 15:19:12.226820018 +0100
++++ ParaView-5.6.3/VTK/ThirdParty/exodusII/vtkexodusII/src/ex_open_par.c	2020-07-21 15:20:31.833003698 +0100
+@@ -474,5 +474,5 @@
+  * Prevent warning in some versions of ranlib(1) because the object
+  * file has no symbols.
+  */
+-const char exodus_unused_symbol_dummy_1;
++const char exodus_unused_symbol_dummy_ex_open_par;
+ #endif
+diff -ruN ParaView-5.6.3.orig/VTK/CMake/VTKGenerateExportHeader.cmake ParaView-5.6.3/VTK/CMake/VTKGenerateExportHeader.cmake
+--- ParaView-5.6.3.orig/VTK/CMake/VTKGenerateExportHeader.cmake  2020-05-24 14:33:12.154603698 -0600
++++ ParaView-5.6.3/VTK/CMake/VTKGenerateExportHeader.cmake  2020-05-24 14:33:34.864603776 -0600
+@@ -174,8 +174,12 @@
+     execute_process(COMMAND ${CMAKE_C_COMPILER} --version
+       OUTPUT_VARIABLE _gcc_version_info
+       ERROR_VARIABLE _gcc_version_info)
+-    string(REGEX MATCH "[3-9]\\.[0-9]\\.[0-9]*"
++    string(REGEX MATCH "[1-9][0-9]\\.[0-9]\\.[0-9]*"
+       _gcc_version "${_gcc_version_info}")
++    if(NOT _gcc_version)
++      string(REGEX MATCH "[3-9]\\.[0-9]\\.[0-9]*"
++        _gcc_version "${_gcc_version_info}")
++    endif()
+     # gcc on mac just reports: "gcc (GCC) 3.3 20030304 ..." without the
+     # patch level, handle this here:
+     if(NOT _gcc_version)

@@ -114,7 +114,15 @@ downloadParaView()
 
     # Testing successful download because ParaView repository is unreliable
     [ "$?" -ne 0 ] && echo "Download unsuccessful" && return 1
-    mv "$_pack" "$_dir" && return 0
+    mv "$_pack" "$_dir"
+
+    if [ -f "ParaView-${ParaView_VERSION}.patch" ]
+    then
+        echo "Patching $_dir with ParaView-${ParaView_VERSION}.patch"
+        patch -i "ParaView-${ParaView_VERSION}.patch" -N -p 0
+    fi
+
+    return 0
 }
 
 #
