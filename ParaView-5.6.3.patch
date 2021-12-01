@@ -47,3 +47,24 @@ diff -ruN ParaView-5.6.3.orig/VTK/CMake/VTKGenerateExportHeader.cmake ParaView-5
      # gcc on mac just reports: "gcc (GCC) 3.3 20030304 ..." without the
      # patch level, handle this here:
      if(NOT _gcc_version)
+diff -ruN ParaView-5.6.3.orig/VTK/Common/Core/vtkMath.h ParaView-5.6.3/VTK/Common/Core/vtkMath.h
+--- ParaView-5.6.3.orig/VTK/Common/Core/vtkMath.h	2019-10-03 02:44:52.000000000 +0100
++++ ParaView-5.6.3/VTK/Common/Core/vtkMath.h	2021-11-30 18:57:53.932760379 +0000
+@@ -1510,9 +1510,6 @@
+ {
+   assert("pre: valid_range" && min<=max);
+ 
+-#if __cplusplus >= 201703L
+-  return std::clamp(value, min, max);
+-#else
+   if (value < min)
+   {
+     return min;
+@@ -1524,7 +1521,6 @@
+   }
+ 
+   return value;
+-#endif
+ }
+ 
+ //----------------------------------------------------------------------------
