@@ -96,7 +96,7 @@ do
         mpcPACKAGE="${1%%/}"
         shift
         ;;
-    gcc-[4-9]*)
+    gcc-[4-11]*)
         gccPACKAGE="${1%%/}"
         shift
         ;;
