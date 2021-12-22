@@ -3,7 +3,7 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     |
-#   \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
+#   \\  /    A nd           | Copyright (C) 2011-2021 OpenFOAM Foundation
 #    \\/     M anipulation  |
 #------------------------------------------------------------------------------
 # License
@@ -343,6 +343,48 @@ then
     fi
 else
     echo "    optional component Metis was not found"
+fi
+
+
+#------------------------------------------------------------------------------
+
+# Zoltan is optional
+echo ========================================
+echo Build Zoltan decomposition
+
+# Get ZOLTAN_VERSION, ZOLTAN_ARCH_PATH
+if settings=`$WM_PROJECT_DIR/bin/foamEtcFile config.sh/zoltan`
+then
+    . $settings
+fi
+if [ -d "$ZOLTAN_VERSION" ]
+then
+
+    if [ -f $ZOLTAN_ARCH_PATH/include/zoltan.h \
+      -a -r $FOAM_EXT_LIBBIN/$FOAM_MPI/libzoltan.a ]
+    then
+        echo "    Zoltan header in $ZOLTAN_ARCH_PATH/include"
+        echo "    Zoltan libs   in $FOAM_EXT_LIBBIN/$FOAM_MPI"
+        echo
+    else
+    (
+        set -x
+        cd $ZOLTAN_VERSION  || exit 1
+        mkdir -p build
+        cd build
+        ../configure \
+            --prefix=$ZOLTAN_ARCH_PATH \
+            --libdir=$FOAM_EXT_LIBBIN/$FOAM_MPI \
+            --with-mpi=$MPI_ARCH_PATH \
+            --with-mpi-libdir=$MPI_ARCH_PATH/lib64 \
+            --with-mpi-compilers=no \
+            --with-ccflags=-fPIC --with-cxxflags=-fPIC
+        make everything
+        make install
+    )
+    fi
+else
+    echo "    optional component Zoltan was not found"
 fi
 
 

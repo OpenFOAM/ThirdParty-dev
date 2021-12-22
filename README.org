@@ -2,17 +2,17 @@
 #
 #+TITLE:              OpenFOAM-dev Third-Party packages
 #+AUTHOR:                  The OpenFOAM Foundation
-#+DATE:                       5th July 2019
+#+DATE:                       22th December 2021
 #+LINK:                     http://www.openfoam.org
 #+OPTIONS: author:nil ^:{}
-# Copyright (c) 2014-2018 OpenFOAM Foundation.
+# Copyright (c) 2014-2021 OpenFOAM Foundation.
 
 * Description
   Scripts for building third-party packages.
 * [[https://openfoam.org/download/source/third-party-software/][Download and installation instructions]]
 * Order of execution:
   + makeGcc   (recommended if the system gcc is < 4.8)
-  + Allwmake  (Builds OpenMPI, Scotch etc.)
+  + Allwmake  (Builds OpenMPI, Scotch, Zoltan etc.)
   + makeCmake (if the system cmake version is < 3.3.0)
   + makeParaView
 *** Optional
@@ -35,6 +35,8 @@
       + Scotch/PtScotch: https://gforge.inria.fr/frs/download.php/file/38187/scotch_6.0.9.tar.gz
 ***** OpenMPI
       + OpenMPI: https://www.open-mpi.org/software/ompi/v2.1/downloads/openmpi-2.1.1.tar.bz2
+***** Zoltan
+      + Zoltan: https://github.com/sandialabs/Zoltan/archive/refs/tags/v3.90.tar.gz
 *** ParaView
     If the system cmake version is < 3.3.0 you will need to download and build a
     recent version:
