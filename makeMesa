@@ -29,7 +29,7 @@
 #     Build script for mesa and offscreen mesa (osmesa)
 #
 #------------------------------------------------------------------------------
-mesaPACKAGE=mesa-18.3.6
+mesaPACKAGE=mesa-20.3.5
 offscreen=false
 
 #------------------------------------------------------------------------------
@@ -64,7 +64,7 @@ USAGE
     exit 1
 }
 
-# Ensure CMake gets the correct C++ compiler
+# Ensure we use the correct C++ compiler
 [ -n "$WM_CXX" ] && export CXX="$WM_CXX"
 [ -n "$WM_CC" ] && export CC="$WM_CC"
 
@@ -76,8 +76,8 @@ do
         usage
         ;;
     -gcc)
-        export CC=gcc   # use gcc
-        export CXX=g++  # use g++
+        export CC=gcc # use gcc
+        export CXX=g++ # use g++
         shift
         ;;
     -offscreen)
@@ -108,19 +108,21 @@ fi
 prefixDIR=$installBASE/$mesaDIR
 
 # Create configuration options
-options="--prefix="$prefixDIR
+options="\
+    -Dprefix=$prefixDIR \
+    -Dgallium-drivers=swrast \
+    -Dllvm=true \
+    -Ddri-drivers=[] \
+    -Dvulkan-drivers=[] \
+    -Dgbm=false \
+    -Degl=false"
 if ! $offscreen
 then
     options="$options \
-        --enable-glx=gallium-xlib \
-        --enable-llvm \
-        --with-gallium-drivers=swrast \
-        --disable-dri \
-        --disable-gbm \
-        --disable-egl"
+        -Dglx=gallium-xlib"
 else
     options="$options \
-        --enable-gallium-osmesa"
+        -Dosmesa=gallium"
 fi
 
 # Build mesa
@@ -134,22 +136,20 @@ else
 (
     # Get the source
     sourceDIR=$WM_THIRD_PARTY_DIR/$mesaPACKAGE
-    sourceURL="ftp://ftp.freedesktop.org/pub/mesa/$mesaPACKAGE.tar.gz"
+    sourceURL="ftp://ftp.freedesktop.org/pub/mesa/$mesaPACKAGE.tar.xz"
     [ -d "$sourceDIR" ] \
-        || curl "$sourceURL" | tar xz 2> /dev/null \
+        || curl "$sourceURL" | tar xJ 2> /dev/null \
         || exit 1
 
-    # Create the build directory
+    # Set the build directory
     buildDIR=$buildBASE/$mesaDIR
-    rm -rf "$buildDIR"
-    mkdir -p "$buildDIR"
-    cd "$buildDIR" || exit 1
 
     # Configure, build and install
     set -x
-    "$sourceDIR"/configure $options \
-        && make -j "$WM_NCOMPPROCS" \
-        && make install \
+    cd "$sourceDIR" || exit 1
+    meson setup "$buildDIR" $options \
+        && ninja -C "$buildDIR" \
+        && ninja -C "$buildDIR" install \
         && echo "Built: $mesaPACKAGE"
 ) || {
     echo "Error building: $mesaPACKAGE"
@@ -164,26 +164,11 @@ then
 cat<<USAGE
 
 ---------------
-Add mesa libraries to paraview by running:
+Execute ParaView with mesa libraries by running:
 
-    [ -d \$WM_THIRD_PARTY_DIR/platforms/\$WM_ARCH\$WM_COMPILER/$mesaDIR/lib64 ] \
-&& mesaArch=64
+    Mesa_DIR=\$WM_THIRD_PARTY_DIR/platforms/\$WM_ARCH\$WM_COMPILER/$mesaDIR
 
-    if \$WM_PROJECT_DIR/bin/tools/foamVersionCompare \$ParaView_VERSION ge 5.5.0
-    then
-        ln -s ../../$mesaDIR/lib\$mesaArch \$ParaView_LIB_DIR/mesa
-    else
-        ln -s ../../../$mesaDIR/lib\$mesaArch \$ParaView_LIB_DIR/mesa
-    fi
-
-And then execute paraview by running:
-
-    if \$WM_PROJECT_DIR/bin/tools/foamVersionCompare \$ParaView_VERSION ge 5.7.0
-    then
-        paraview-mesa paraview
-    else
-        paraview --mesa
-    fi
+    LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:\$(echo \$Mesa_DIR/lib*) paraview
 
 USAGE
 
