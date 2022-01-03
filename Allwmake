@@ -376,8 +376,9 @@ then
             --prefix=$ZOLTAN_ARCH_PATH \
             --libdir=$FOAM_EXT_LIBBIN/$FOAM_MPI \
             --with-mpi=$MPI_ARCH_PATH \
-            --with-mpi-libdir=$MPI_ARCH_PATH/lib64 \
             --with-mpi-compilers=no \
+            --with-mpi-libdir=$MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH} \
+            --disable-zoltan-cppdriver \
             --with-ccflags=-fPIC --with-cxxflags=-fPIC
         make everything
         make install
