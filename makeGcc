@@ -84,19 +84,19 @@ do
         GCC_BUILD_OPTIONS="--disable-multilib"
         shift
         ;;
-    gmp-[4-9]*)
+    gmp-[4-9].*)
         gmpPACKAGE="${1%%/}"
         shift
         ;;
-    mpfr-[2-9]*)
+    mpfr-[2-9].*)
         mpfrPACKAGE="${1%%/}"
         shift
         ;;
-    mpc-[0-9]*)
+    mpc-[0-9].*)
         mpcPACKAGE="${1%%/}"
         shift
         ;;
-    gcc-[4-11]*)
+    gcc-[4-9].*|gcc-[1-9][0-9].*)
         gccPACKAGE="${1%%/}"
         shift
         ;;
