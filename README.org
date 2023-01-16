@@ -2,10 +2,10 @@
 #
 #+TITLE:              OpenFOAM-dev Third-Party packages
 #+AUTHOR:                  The OpenFOAM Foundation
-#+DATE:                       22th December 2021
+#+DATE:                       16th January 2023
 #+LINK:                     http://www.openfoam.org
 #+OPTIONS: author:nil ^:{}
-# Copyright (c) 2014-2021 OpenFOAM Foundation.
+# Copyright (c) 2014-2023 OpenFOAM Foundation.
 
 * Description
   Scripts for building third-party packages.
@@ -41,7 +41,7 @@
     If the system cmake version is < 3.3.0 you will need to download and build a
     recent version:
     + cmake          https://www.cmake.org/files/v3.9/cmake-3.9.0.tar.gz
-    + ParaView-5.6.3 http://www.paraview.org/files/v5.6/ParaView-v5.6.3.tar.gz
+    + ParaView-5.10.1 http://www.paraview.org/files/v5.10/ParaView-v5.10.1.tar.gz
     is downloaded automatically and compiles without modification.  ParaView is
     compiled by running the =makeParaView= script, i.e.
     + ./makeParaView
@@ -49,9 +49,6 @@
     desktop computer.  Following compilation, update the environment by sourcing
     the .bashrc (or .cshrc) file or by typing
     + wmRefresh
-*** CGAL
-    + CGAL        https://github.com/CGAL/cgal/releases/download/releases%2FCGAL-5.0.2/CGAL-5.0.2.tar.xz
-    + boost       https://sourceforge.net/projects/boost/files/boost/1.72.0/boost_1_72_0.tar.bz2/download
 *** Miscellaneous
     + libccmio    https://portal.nersc.gov/svn/visit/trunk/third_party/libccmio-2.6.1.tar.gz
 

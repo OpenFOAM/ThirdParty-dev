@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-12-22 Wed 17:08 -->
+<!-- 2023-01-16 Mon 10:16 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>OpenFOAM-dev Third-Party packages</title>
@@ -233,45 +233,44 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org37c9b8f">1. Description</a></li>
-<li><a href="#orge1bab94">2. Download and installation instructions</a></li>
-<li><a href="#orgd5754b8">3. Order of execution:</a>
+<li><a href="#orgeb3cda3">1. Description</a></li>
+<li><a href="#org05d4c13">2. Download and installation instructions</a></li>
+<li><a href="#org4a79ab6">3. Order of execution:</a>
 <ul>
-<li><a href="#orgd2b3f44">3.1. Optional</a></li>
+<li><a href="#org263f1fe">3.1. Optional</a></li>
 </ul>
 </li>
-<li><a href="#org6b18cad">4. Versions and locations to download the third party packages</a>
+<li><a href="#org9538f90">4. Versions and locations to download the third party packages</a>
 <ul>
-<li><a href="#org232a616">4.1. Gcc C++ Compiler</a></li>
-<li><a href="#org6538390">4.2. Parallel Processing</a>
+<li><a href="#org96be109">4.1. Gcc C++ Compiler</a></li>
+<li><a href="#org8c39c65">4.2. Parallel Processing</a>
 <ul>
-<li><a href="#orge16da64">4.2.1. Scotch</a></li>
-<li><a href="#org675a9ff">4.2.2. OpenMPI</a></li>
-<li><a href="#org1deb941">4.2.3. Zoltan</a></li>
+<li><a href="#orga011eea">4.2.1. Scotch</a></li>
+<li><a href="#org1114877">4.2.2. OpenMPI</a></li>
+<li><a href="#orgfb499c0">4.2.3. Zoltan</a></li>
 </ul>
 </li>
-<li><a href="#org289a9c5">4.3. ParaView</a></li>
-<li><a href="#orgd764cca">4.4. CGAL</a></li>
-<li><a href="#org62ec144">4.5. Miscellaneous</a></li>
+<li><a href="#orga0bf360">4.3. ParaView</a></li>
+<li><a href="#org22ce3d3">4.4. Miscellaneous</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org37c9b8f" class="outline-2">
-<h2 id="org37c9b8f"><span class="section-number-2">1</span> Description</h2>
+<div id="outline-container-orgeb3cda3" class="outline-2">
+<h2 id="orgeb3cda3"><span class="section-number-2">1</span> Description</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 Scripts for building third-party packages.
 </p>
 </div>
 </div>
-<div id="outline-container-orge1bab94" class="outline-2">
-<h2 id="orge1bab94"><span class="section-number-2">2</span> <a href="https://openfoam.org/download/source/third-party-software/">Download and installation instructions</a></h2>
+<div id="outline-container-org05d4c13" class="outline-2">
+<h2 id="org05d4c13"><span class="section-number-2">2</span> <a href="https://openfoam.org/download/source/third-party-software/">Download and installation instructions</a></h2>
 </div>
-<div id="outline-container-orgd5754b8" class="outline-2">
-<h2 id="orgd5754b8"><span class="section-number-2">3</span> Order of execution:</h2>
+<div id="outline-container-org4a79ab6" class="outline-2">
+<h2 id="org4a79ab6"><span class="section-number-2">3</span> Order of execution:</h2>
 <div class="outline-text-2" id="text-3">
 <ul class="org-ul">
 <li>makeGcc   (recommended if the system gcc is &lt; 4.8)</li>
@@ -280,8 +279,8 @@ Scripts for building third-party packages.
 <li>makeParaView</li>
 </ul>
 </div>
-<div id="outline-container-orgd2b3f44" class="outline-3">
-<h3 id="orgd2b3f44"><span class="section-number-3">3.1</span> Optional</h3>
+<div id="outline-container-org263f1fe" class="outline-3">
+<h3 id="org263f1fe"><span class="section-number-3">3.1</span> Optional</h3>
 <div class="outline-text-3" id="text-3-1">
 <ul class="org-ul">
 <li>AllwmakeLibccmio (Only required for conversion of STAR-CCM+ meshes)</li>
@@ -290,12 +289,12 @@ Scripts for building third-party packages.
 </div>
 </div>
 </div>
-<div id="outline-container-org6b18cad" class="outline-2">
-<h2 id="org6b18cad"><span class="section-number-2">4</span> Versions and locations to download the third party packages</h2>
+<div id="outline-container-org9538f90" class="outline-2">
+<h2 id="org9538f90"><span class="section-number-2">4</span> Versions and locations to download the third party packages</h2>
 <div class="outline-text-2" id="text-4">
 </div>
-<div id="outline-container-org232a616" class="outline-3">
-<h3 id="org232a616"><span class="section-number-3">4.1</span> Gcc C++ Compiler</h3>
+<div id="outline-container-org96be109" class="outline-3">
+<h3 id="org96be109"><span class="section-number-3">4.1</span> Gcc C++ Compiler</h3>
 <div class="outline-text-3" id="text-4-1">
 <p>
 The minimum version of gcc required is 4.8.0
@@ -311,12 +310,12 @@ The minimum version of gcc required is 4.8.0
 </ul>
 </div>
 </div>
-<div id="outline-container-org6538390" class="outline-3">
-<h3 id="org6538390"><span class="section-number-3">4.2</span> Parallel Processing</h3>
+<div id="outline-container-org8c39c65" class="outline-3">
+<h3 id="org8c39c65"><span class="section-number-3">4.2</span> Parallel Processing</h3>
 <div class="outline-text-3" id="text-4-2">
 </div>
-<div id="outline-container-orge16da64" class="outline-4">
-<h4 id="orge16da64"><span class="section-number-4">4.2.1</span> Scotch</h4>
+<div id="outline-container-orga011eea" class="outline-4">
+<h4 id="orga011eea"><span class="section-number-4">4.2.1</span> Scotch</h4>
 <div class="outline-text-4" id="text-4-2-1">
 <p>
 Scotch-6.0.9 is provided with ThirdParty-dev or the original source pack
@@ -327,16 +326,16 @@ may be obtained from:
 </ul>
 </div>
 </div>
-<div id="outline-container-org675a9ff" class="outline-4">
-<h4 id="org675a9ff"><span class="section-number-4">4.2.2</span> OpenMPI</h4>
+<div id="outline-container-org1114877" class="outline-4">
+<h4 id="org1114877"><span class="section-number-4">4.2.2</span> OpenMPI</h4>
 <div class="outline-text-4" id="text-4-2-2">
 <ul class="org-ul">
 <li>OpenMPI: <a href="https://www.open-mpi.org/software/ompi/v2.1/downloads/openmpi-2.1.1.tar.bz2">https://www.open-mpi.org/software/ompi/v2.1/downloads/openmpi-2.1.1.tar.bz2</a></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org1deb941" class="outline-4">
-<h4 id="org1deb941"><span class="section-number-4">4.2.3</span> Zoltan</h4>
+<div id="outline-container-orgfb499c0" class="outline-4">
+<h4 id="orgfb499c0"><span class="section-number-4">4.2.3</span> Zoltan</h4>
 <div class="outline-text-4" id="text-4-2-3">
 <ul class="org-ul">
 <li>Zoltan: <a href="https://github.com/sandialabs/Zoltan/archive/refs/tags/v3.90.tar.gz">https://github.com/sandialabs/Zoltan/archive/refs/tags/v3.90.tar.gz</a></li>
@@ -344,8 +343,8 @@ may be obtained from:
 </div>
 </div>
 </div>
-<div id="outline-container-org289a9c5" class="outline-3">
-<h3 id="org289a9c5"><span class="section-number-3">4.3</span> ParaView</h3>
+<div id="outline-container-orga0bf360" class="outline-3">
+<h3 id="orga0bf360"><span class="section-number-3">4.3</span> ParaView</h3>
 <div class="outline-text-3" id="text-4-3">
 <p>
 If the system cmake version is &lt; 3.3.0 you will need to download and build a
@@ -353,7 +352,7 @@ recent version:
 </p>
 <ul class="org-ul">
 <li>cmake          <a href="https://www.cmake.org/files/v3.9/cmake-3.9.0.tar.gz">https://www.cmake.org/files/v3.9/cmake-3.9.0.tar.gz</a></li>
-<li>ParaView-5.6.3 <a href="http://www.paraview.org/files/v5.6/ParaView-v5.6.3.tar.gz">http://www.paraview.org/files/v5.6/ParaView-v5.6.3.tar.gz</a></li>
+<li>ParaView-5.10.1 <a href="http://www.paraview.org/files/v5.10/ParaView-v5.10.1.tar.gz">http://www.paraview.org/files/v5.10/ParaView-v5.10.1.tar.gz</a></li>
 </ul>
 <p>
 is downloaded automatically and compiles without modification.  ParaView is
@@ -372,18 +371,9 @@ the .bashrc (or .cshrc) file or by typing
 </ul>
 </div>
 </div>
-<div id="outline-container-orgd764cca" class="outline-3">
-<h3 id="orgd764cca"><span class="section-number-3">4.4</span> CGAL</h3>
+<div id="outline-container-org22ce3d3" class="outline-3">
+<h3 id="org22ce3d3"><span class="section-number-3">4.4</span> Miscellaneous</h3>
 <div class="outline-text-3" id="text-4-4">
-<ul class="org-ul">
-<li>CGAL        <a href="https://github.com/CGAL/cgal/releases/download/releases/CGAL-5.0.2/CGAL-5.0.2.tar.xz">https://github.com/CGAL/cgal/releases/download/releases/CGAL-5.0.2/CGAL-5.0.2.tar.xz</a></li>
-<li>boost       <a href="https://sourceforge.net/projects/boost/files/boost/1.72.0/boost_1_72_0.tar.bz2/download">https://sourceforge.net/projects/boost/files/boost/1.72.0/boost_1_72_0.tar.bz2/download</a></li>
-</ul>
-</div>
-</div>
-<div id="outline-container-org62ec144" class="outline-3">
-<h3 id="org62ec144"><span class="section-number-3">4.5</span> Miscellaneous</h3>
-<div class="outline-text-3" id="text-4-5">
 <ul class="org-ul">
 <li>libccmio    <a href="https://portal.nersc.gov/svn/visit/trunk/third_party/libccmio-2.6.1.tar.gz">https://portal.nersc.gov/svn/visit/trunk/third_party/libccmio-2.6.1.tar.gz</a></li>
 </ul>
@@ -392,8 +382,8 @@ the .bashrc (or .cshrc) file or by typing
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Date: 22th December 2021</p>
-<p class="date">Created: 2021-12-22 Wed 17:08</p>
+<p class="date">Date: 16th January 2023</p>
+<p class="date">Created: 2023-01-16 Mon 10:16</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
