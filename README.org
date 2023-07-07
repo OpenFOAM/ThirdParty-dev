@@ -2,7 +2,7 @@
 #
 #+TITLE:              OpenFOAM-dev Third-Party packages
 #+AUTHOR:                  The OpenFOAM Foundation
-#+DATE:                       16th January 2023
+#+DATE:                       11th July 2023
 #+LINK:                     http://www.openfoam.org
 #+OPTIONS: author:nil ^:{}
 # Copyright (c) 2014-2023 OpenFOAM Foundation.
@@ -11,16 +11,15 @@
   Scripts for building third-party packages.
 * [[https://openfoam.org/download/source/third-party-software/][Download and installation instructions]]
 * Order of execution:
-  + makeGcc   (recommended if the system gcc is < 4.8)
+  + makeGcc   (recommended if the system gcc is < 5.4)
   + Allwmake  (Builds OpenMPI, Scotch, Zoltan etc.)
   + makeCmake (if the system cmake version is < 3.3.0)
   + makeParaView
 *** Optional
-    + AllwmakeLibccmio (Only required for conversion of STAR-CCM+ meshes)
     + Allclean (Only required to save disk space)
 * Versions and locations to download the third party packages
 *** Gcc C++ Compiler
-    The minimum version of gcc required is 4.8.0
+    The minimum version of gcc required is 5.4.0
     + gcc   https://gcc.gnu.org/releases.html
     + gmp   https://gmplib.org/
             https://ftp.gnu.org/gnu/gmp/gmp-5.1.2.tar.bz2
@@ -49,7 +48,5 @@
     desktop computer.  Following compilation, update the environment by sourcing
     the .bashrc (or .cshrc) file or by typing
     + wmRefresh
-*** Miscellaneous
-    + libccmio    https://portal.nersc.gov/svn/visit/trunk/third_party/libccmio-2.6.1.tar.gz
 
 # --------------------------------------------------------------------------
