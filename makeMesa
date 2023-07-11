@@ -29,7 +29,7 @@
 #     Build script for mesa and offscreen mesa (osmesa)
 #
 #------------------------------------------------------------------------------
-mesaPACKAGE=mesa-20.3.5
+mesaPACKAGE=mesa-22.2.5
 offscreen=false
 
 #------------------------------------------------------------------------------
@@ -111,18 +111,18 @@ prefixDIR=$installBASE/$mesaDIR
 options="\
     -Dprefix=$prefixDIR \
     -Dgallium-drivers=swrast \
-    -Dllvm=true \
+    -Dllvm=enabled \
     -Ddri-drivers=[] \
     -Dvulkan-drivers=[] \
-    -Dgbm=false \
-    -Degl=false"
+    -Dgbm=disabled \
+    -Degl=disabled"
 if ! $offscreen
 then
-    options="$options \
-        -Dglx=gallium-xlib"
+    $WM_PROJECT_DIR/bin/tools/foamVersionCompare ${mesaPACKAGE#mesa-*} lt 22 \
+ && options="$options -Dglx=gallium-xlib" \
+ || options="$options -Dglx=xlib"
 else
-    options="$options \
-        -Dosmesa=gallium"
+    options="$options -Dosmesa=gallium"
 fi
 
 # Build mesa
@@ -168,7 +168,7 @@ Execute ParaView with mesa libraries by running:
 
     Mesa_DIR=\$WM_THIRD_PARTY_DIR/platforms/\$WM_ARCH\$WM_COMPILER/$mesaDIR
 
-    LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:\$(echo \$Mesa_DIR/lib*) paraview
+    LD_PRELOAD=\$(echo \$Mesa_DIR/lib*)/libGL.so paraview
 
 USAGE
 
