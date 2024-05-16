@@ -1,0 +1,24 @@
+diff -ruN ParaView-5.11.2.orig/VTK/ThirdParty/libproj/vtklibproj/src/proj_json_streaming_writer.hpp ParaView-5.11.2/VTK/ThirdParty/libproj/vtklibproj/src/proj_json_streaming_writer.hpp
+--- ParaView-5.11.2.orig/VTK/ThirdParty/libproj/vtklibproj/src/proj_json_streaming_writer.hpp	2023-09-22 15:35:37.000000000 +0100
++++ ParaView-5.11.2/VTK/ThirdParty/libproj/vtklibproj/src/proj_json_streaming_writer.hpp	2024-05-16 11:18:43.486605968 +0100
+@@ -31,6 +31,7 @@
+ 
+ /*! @cond Doxygen_Suppress */
+ 
++#include <cstdint>
+ #include <vector>
+ #include <string>
+ 
+diff -ruN ParaView-5.11.2.orig/VTK/ThirdParty/netcdf/vtknetcdf/include/vtk_netcdf_mangle.h ParaView-5.11.2/VTK/ThirdParty/netcdf/vtknetcdf/include/vtk_netcdf_mangle.h
+--- ParaView-5.11.2.orig/VTK/ThirdParty/netcdf/vtknetcdf/include/vtk_netcdf_mangle.h	2023-09-22 15:35:37.000000000 +0100
++++ ParaView-5.11.2/VTK/ThirdParty/netcdf/vtknetcdf/include/vtk_netcdf_mangle.h	2024-05-16 12:02:40.234229912 +0100
+@@ -1245,9 +1245,4 @@
+ #define UDF1_magic_number vtknetcdf_UDF1_magic_number
+ #define write_numrecs vtknetcdf_write_numrecs
+ 
+-/* Only define strlcat conditionally, as it's provided by system headers on the BSDs. */
+-#if !defined(__APPLE__) && !defined(__FreeBSD__) && !defined(__NetBSD__) && !defined(__OpenBSD__) && !defined(_BSD_SOURCE)
+-#define strlcat vtknetcdf_strlcat
+-#endif
+-
+ #endif

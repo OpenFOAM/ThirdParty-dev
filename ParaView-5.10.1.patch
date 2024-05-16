@@ -1,0 +1,46 @@
+diff -ruN ParaView-5.10.1.orig/VTK/IO/Image/vtkSEPReader.h ParaView-5.10.1/VTK/IO/Image/vtkSEPReader.h
+--- ParaView-5.10.1.orig/VTK/IO/Image/vtkSEPReader.h	2022-03-11 22:19:30.000000000 +0000
++++ ParaView-5.10.1/VTK/IO/Image/vtkSEPReader.h	2024-05-16 15:10:37.175816582 +0100
+@@ -26,6 +26,7 @@
+ #include "vtkNew.h" // for ivars
+ 
+ #include <array>  // for std::array
++#include <cstdint> // for std::uint8_t and std::uint32_t
+ #include <string> // for std::string
+ 
+ namespace details
+diff -ruN ParaView-5.10.1.orig/VTK/IO/PIO/PIOData.h ParaView-5.10.1/VTK/IO/PIO/PIOData.h
+--- ParaView-5.10.1.orig/VTK/IO/PIO/PIOData.h	2022-03-11 22:19:30.000000000 +0000
++++ ParaView-5.10.1/VTK/IO/PIO/PIOData.h	2024-05-16 15:10:37.175816582 +0100
+@@ -1,6 +1,7 @@
+ #if !defined(_PIODATA_H)
+ #define _PIODATA_H
+ 
++#include <cstdint>
+ #include <fstream>
+ #include <iostream>
+ #include <list>
+diff -ruN ParaView-5.10.1.orig/VTK/Rendering/Matplotlib/vtkMatplotlibMathTextUtilities.h ParaView-5.10.1/VTK/Rendering/Matplotlib/vtkMatplotlibMathTextUtilities.h
+--- ParaView-5.10.1.orig/VTK/Rendering/Matplotlib/vtkMatplotlibMathTextUtilities.h	2022-03-11 22:19:30.000000000 +0000
++++ ParaView-5.10.1/VTK/Rendering/Matplotlib/vtkMatplotlibMathTextUtilities.h	2024-05-16 15:56:31.818767407 +0100
+@@ -50,6 +50,7 @@
+ #include "vtkMathTextUtilities.h"
+ #include "vtkRenderingMatplotlibModule.h" // For export macro
+ 
++#include <cstdint> // for std::uint64_t
+ #include <vector> // for std::vector
+ 
+ struct _object;
+diff -ruN ParaView-5.10.1.orig/VTK/ThirdParty/netcdf/vtknetcdf/include/vtk_netcdf_mangle.h ParaView-5.10.1/VTK/ThirdParty/netcdf/vtknetcdf/include/vtk_netcdf_mangle.h
+--- ParaView-5.10.1.orig/VTK/ThirdParty/netcdf/vtknetcdf/include/vtk_netcdf_mangle.h	2022-03-11 22:19:30.000000000 +0000
++++ ParaView-5.10.1/VTK/ThirdParty/netcdf/vtknetcdf/include/vtk_netcdf_mangle.h	2024-05-16 15:10:37.175816582 +0100
+@@ -1229,9 +1229,4 @@
+ #define UDF1_magic_number vtknetcdf_UDF1_magic_number
+ #define write_numrecs vtknetcdf_write_numrecs
+ 
+-/* Only define strlcat conditionally, as it's provided by system headers on the BSDs. */
+-#if !defined(__APPLE__) && !defined(__FreeBSD__) && !defined(__NetBSD__) && !defined(__OpenBSD__) && !defined(_BSD_SOURCE)
+-#define strlcat vtknetcdf_strlcat
+-#endif
+-
+ #endif
