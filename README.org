@@ -2,10 +2,10 @@
 #
 #+TITLE:              OpenFOAM-dev Third-Party packages
 #+AUTHOR:                  The OpenFOAM Foundation
-#+DATE:                       11th July 2023
+#+DATE:                       21st May 2024
 #+LINK:                     http://www.openfoam.org
 #+OPTIONS: author:nil ^:{}
-# Copyright (c) 2014-2023 OpenFOAM Foundation.
+# Copyright (c) 2014-2024 OpenFOAM Foundation.
 
 * Description
   Scripts for building third-party packages.
@@ -34,6 +34,9 @@
       + Scotch/PtScotch: https://gforge.inria.fr/frs/download.php/file/38187/scotch_6.0.9.tar.gz
 ***** OpenMPI
       + OpenMPI: https://www.open-mpi.org/software/ompi/v2.1/downloads/openmpi-2.1.1.tar.bz2
+***** METIS
+      + METIS: http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/metis-5.1.0.tar.gz
+      + ParMETIS: http://glaros.dtc.umn.edu/gkhome/fetch/sw/parmetis/parmetis-4.0.3.tar.gz
 ***** Zoltan
       + Zoltan: https://github.com/sandialabs/Zoltan/archive/refs/tags/v3.90.tar.gz
 *** ParaView

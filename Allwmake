@@ -348,6 +348,54 @@ fi
 
 #------------------------------------------------------------------------------
 
+# ParMetis is optional
+echo ========================================
+echo Build ParMetis decomposition
+
+# get PARMETIS_VERSION, PARMETIS_ARCH_PATH
+if settings=`$WM_PROJECT_DIR/bin/foamEtcFile config.sh/parMetis`
+then
+    . $settings
+fi
+if [ -d "$PARMETIS_VERSION" ]
+then
+
+    if [ -f $PARMETIS_ARCH_PATH/include/parmetis.h \
+      -a -r $FOAM_EXT_LIBBIN/libparmetis.so ]
+    then
+        echo "    metis header in $PARMETIS_ARCH_PATH/include"
+        echo "    metis libs   in $FOAM_EXT_LIBBIN"
+        echo
+    else
+    (
+        set -x
+        cd $PARMETIS_VERSION  || exit 1
+
+        # Change user settings automatically
+        sed -i -e 's=\(#define IDXTYPEWIDTH\).*=\1 '$WM_LABEL_SIZE'=' \
+            metis/include/metis.h
+
+        REALTYPEWIDTH=64
+        if [ "$WM_PRECISION_OPTION" = "SP" ]
+        then
+            REALTYPEWIDTH=32
+        fi
+        sed -i -e 's=\(#define REALTYPEWIDTH\).*=\1 '$REALTYPEWIDTH'=' \
+            metis/include/metis.h
+
+        make config shared=1 prefix=$PARMETIS_ARCH_PATH
+        make -j $WM_NCOMPPROCS install
+        cp metis/include/metis.h $PARMETIS_ARCH_PATH/include
+        cp $PARMETIS_ARCH_PATH/lib/libparmetis.so $FOAM_EXT_LIBBIN
+    )
+    fi
+else
+    echo "    optional component ParMetis was not found"
+fi
+
+
+#------------------------------------------------------------------------------
+
 # Zoltan is optional
 echo ========================================
 echo Build Zoltan decomposition
