@@ -126,56 +126,6 @@ downloadParaView()
 }
 
 #
-# Extract and echo date stamp information from
-#     VTK/Utilities/kwsys/kwsysDateStamp.cmake
-# since the order of the entries is already correct, can use simple sed script
-#
-echoDateStamp()
-{
-    (
-        set -- $(
-            sed -ne 's/^SET(KWSYS_DATE_STAMP_[A-Z]*\([ 0-9]*\)).*$/\1/p' \
-            $ParaView_SOURCE_DIR/VTK/Utilities/kwsys/kwsysDateStamp.cmake
-        )
-
-        IFS='-'
-        echo "date-stamp: $*"
-    )
-}
-
-#
-# Extract version information from
-#     CMakeLists.txt
-# since the order of the entries is already correct, can use simple sed script
-#
-getVersion()
-{
-    (
-        set -- $(
-            sed -ne 's/^SET(PARAVIEW_VERSION_[A-Z]*\([ 0-9]*\)).*$/\1/p' \
-            $ParaView_SOURCE_DIR/CMakeLists.txt
-        )
-
-        IFS='.'
-        echo "$*"
-    )
-}
-
-#
-# Compare version information
-#
-checkVersion()
-{
-    local ver=$(getVersion)
-    if [ "$ParaView_VERSION" != "$ver" ]
-    then
-        echo "MISMATCH!"
-        echo "    specified $ParaView_VERSION"
-        echo "    found     $ver"
-    fi
-}
-
-#
 # Set CMake cache variables
 #
 addCMakeVariable()
@@ -227,58 +177,16 @@ addPythonSupport()
 
     OBJ_ADD="$OBJ_ADD-py"
 
-    if pythonBin=$(which python 2>/dev/null)
+    if pythonBin=$(which python3 2>/dev/null)
     then
-        if [ -n "$PYTHON_LIBRARY" ]
-        then
-            # Check $PYTHON_LIBRARY if it has been set
-            if [ ! -e "$PYTHON_LIBRARY" ]
-            then
-                echo "*** Error: libpython not found at location specified " \
-                     "by -python-lib input: PYTHON_LIBRARY=$PYTHON_LIBRARY"
-            fi
-        else
-            # Try to get $PYTHON_LIBRARY from dynamically linked binary
-            PYTHON_LIBRARY=$(ldd $pythonBin | \
-                sed -ne '/libpython/s/.* => \(.*\) (.*/\1/p')
+        addCMakeVariable  "PARAVIEW_USE_PYTHON=ON"
 
-           [ -e "$PYTHON_LIBRARY" ] || {
-               echo "*** Error: Unable to determine path to python library."
-           }
-        fi
-
-        [ -e "$PYTHON_LIBRARY" ] || {
-            echo "    Please set the full path to the python library "
-            echo "    (including libpython) using the -python-lib option, "
-            echo "    or deactivate python support by not using the -python "
-            echo "    option"
-            exit 1
-        }
-
-        pythonMajor=$(echo $PYTHON_LIBRARY | sed 's/.*libpython\(.*\)\.so.*/\1/')
-
-        if [ -z "$PYTHON_INCLUDE" ]
-        then
-            PYTHON_INCLUDE=/usr/include/python$pythonMajor
-        fi
-
-        [ -d "$PYTHON_INCLUDE" ] || {
-            echo "    No python headers found in $PYTHON_INCLUDE/"
-            echo "    Please install python headers or deactivate "
-            echo "    python support by not using the -python option"
-            exit 1
-        }
-
-        addCMakeVariable  "PARAVIEW_ENABLE_PYTHON=ON"
-        addCMakeVariable  "PYTHON_INCLUDE_PATH=$PYTHON_INCLUDE"
-        addCMakeVariable  "PYTHON_LIBRARY=$PYTHON_LIBRARY"
+        pythonVersion=$(python3 -c "import platform; print(platform.python_version())")
 
         echo "----"
         echo "Python information:"
         echo "    executable     : $pythonBin"
-        echo "    version        : $pythonMajor"
-        echo "    include path   : $PYTHON_INCLUDE"
-        echo "    library        : $PYTHON_LIBRARY"
+        echo "    version        : $pythonVersion"
 
         unset pythonBin pythonMajor
     else
@@ -332,9 +240,11 @@ addQtSupport()
         return
     fi
 
-    addCMakeVariable "PARAVIEW_BUILD_QT_GUI=ON"
+    addCMakeVariable "PARAVIEW_USE_QT=ON"
 
     unset qmakeExe
+
+    # Try and use the specified qmake path
     if [ -n "$QMAKE_PATH" ]
     then
         if [ -d "$QMAKE_PATH" ]
@@ -353,7 +263,6 @@ addQtSupport()
 
         if [ -n "$qmakeExe" ]
         then
-            # Use absolute path
             if [ "${qmakeExe#/}" = "$qmakeExe" ]
             then
                 qmakeExe="$(cd ${qmakeExe%/qmake} 2>/dev/null && pwd)/qmake"
@@ -368,71 +277,16 @@ addQtSupport()
     fi
 
     # Default to using qmake from the path
-    if [ -n "$qmakeExe" ]
+    if [ -z "$qmakeExe" ]
     then
-        addCMakeVariable "QT_QMAKE_EXECUTABLE:FILEPATH=$qmakeExe"
-    else
         qmakeExe=qmake
     fi
 
-
     # Check qmake can be found
-    if type $qmakeExe >/dev/null 2>&1
+    if ! type $qmakeExe >/dev/null 2>&1
     then
-        # Check the Qt version selected
-        # parse -> "Using Qt version X.Y.Z in ..."
-        QtVersion=$($qmakeExe -query QT_VERSION)
-
-        # Split Major.Minor.Revision - could also use IFS hacking
-        set -- $(echo "$QtVersion" | sed -e 's/\./ /g')
-
-        QtMajor=$1
-        QtMinor=$2
-
-        if [ $QtMajor -lt 4 -o $QtMajor -eq 4 -a $QtMinor -lt 7 ]
-        then
-            echo "*** Error: Qt 4 version provided < 4.7"
-            echo "***     Please use the -qmake option to specify the location of a version of Qt >= 4.7"
-            echo "***     e.g."
-            echo "***         -qmake /usr/local/qt-4.7.2/bin/qmake"
-            echo "***         -qmake $installBASE/qt-4.7.2/bin/qmake"
-            exit 1
-        elif [ $QtMajor -eq 5 -a $QtMinor -lt 6 ]
-        then
-            echo "*** Error: Qt 5 version provided < 5.6"
-            echo "***     Please use the -qmake option to specify the location of a version of Qt >= 5.6"
-            echo "***     e.g."
-            echo "***         -qmake /usr/local/qt-5.6.0/bin/qmake"
-            echo "***         -qmake $installBASE/qt-5.6.0/bin/qmake"
-            exit 1
-        else
-            # Enforce the Qt version to be used, so that users don't have to
-            # guess how to tell ParaView to use the desired Qt version
-            addCMakeVariable "PARAVIEW_QT_VERSION=$QtMajor"
-        fi
-    else
         echo "*** Error: cannot find qmake either at \$QMAKE_PATH or in current \$PATH"
         exit 1
-    fi
-}
-
-
-#
-# Configure ParaView/VTK rendering backend
-#
-configRenderingBackend()
-{
-    # Choose the rendering engine
-    if [ -n "${RENDERING_BACKEND}" ]
-    then
-        addCMakeVariable  "VTK_RENDERING_BACKEND=${RENDERING_BACKEND}"
-
-        if [ "${RENDERING_BACKEND}" = "OpenGL" ]
-        then
-            addCMakeVariable  "VTK_LEGACY_SILENT=ON"
-        fi
-    else
-        usage "*** Error: No rendering backend is defined"
     fi
 }
 
@@ -574,7 +428,7 @@ unset OBJ_ADD
 unset buildType
 
 # Start with these general settings
-addCMakeVariable  "BUILD_SHARED_LIBS:BOOL=ON  VTK_USE_RPATH:BOOL=OFF"
+addCMakeVariable  "PARAVIEW_BUILD_SHARED_LIBS:BOOL=ON"
 
 # Include development files in "make install"
 addCMakeVariable  "PARAVIEW_INSTALL_DEVELOPMENT_FILES:BOOL=ON"
