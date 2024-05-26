@@ -309,9 +309,9 @@ fi
 
 #------------------------------------------------------------------------------
 
-# Metis is optional
+# METIS is optional
 echo ========================================
-echo Build Metis decomposition
+echo Build METIS decomposition
 
 # get METIS_VERSION, METIS_ARCH_PATH
 if settings=`$WM_PROJECT_DIR/bin/foamEtcFile config.sh/metis`
@@ -324,8 +324,8 @@ then
     if [ -f $METIS_ARCH_PATH/include/metis.h \
       -a -r $FOAM_EXT_LIBBIN/libmetis.so ]
     then
-        echo "    metis header in $METIS_ARCH_PATH/include"
-        echo "    metis libs   in $FOAM_EXT_LIBBIN"
+        echo "    METIS header in $METIS_ARCH_PATH/include"
+        echo "    METIS libs   in $FOAM_EXT_LIBBIN"
         echo
     else
     (
@@ -342,15 +342,15 @@ then
     )
     fi
 else
-    echo "    optional component Metis was not found"
+    echo "    optional component METIS was not found"
 fi
 
 
 #------------------------------------------------------------------------------
 
-# ParMetis is optional
+# ParMETIS is optional
 echo ========================================
-echo Build ParMetis decomposition
+echo Build ParMETIS decomposition
 
 # get PARMETIS_VERSION, PARMETIS_ARCH_PATH
 if settings=`$WM_PROJECT_DIR/bin/foamEtcFile config.sh/parMetis`
@@ -363,8 +363,8 @@ then
     if [ -f $PARMETIS_ARCH_PATH/include/parmetis.h \
       -a -r $FOAM_EXT_LIBBIN/libparmetis.so ]
     then
-        echo "    metis header in $PARMETIS_ARCH_PATH/include"
-        echo "    metis libs   in $FOAM_EXT_LIBBIN"
+        echo "    parMETIS header in $PARMETIS_ARCH_PATH/include"
+        echo "    parMETIS libs   in $FOAM_EXT_LIBBIN"
         echo
     else
     (
@@ -375,14 +375,6 @@ then
         sed -i -e 's=\(#define IDXTYPEWIDTH\).*=\1 '$WM_LABEL_SIZE'=' \
             metis/include/metis.h
 
-        REALTYPEWIDTH=64
-        if [ "$WM_PRECISION_OPTION" = "SP" ]
-        then
-            REALTYPEWIDTH=32
-        fi
-        sed -i -e 's=\(#define REALTYPEWIDTH\).*=\1 '$REALTYPEWIDTH'=' \
-            metis/include/metis.h
-
         make config shared=1 prefix=$PARMETIS_ARCH_PATH
         make -j $WM_NCOMPPROCS install
         cp metis/include/metis.h $PARMETIS_ARCH_PATH/include
@@ -390,7 +382,7 @@ then
     )
     fi
 else
-    echo "    optional component ParMetis was not found"
+    echo "    optional component ParMETIS was not found"
 fi
 
 
