@@ -58,20 +58,18 @@ echo Start ThirdParty Allwmake
 echo ========================================
 echo
 
+#------------------------------------------------------------------------------
 
 echo ========================================
 echo Build MPI libraries if required
-echo
 case "$WM_MPLIB" in
 OPENMPI)
     if [ -r $MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH}/libmpi.so ]
     then
         echo "    have $WM_MPLIB shared library ($FOAM_MPI)"
-        echo
     elif [ -r $MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH}/libmpi.a ]
     then
         echo "    have $WM_MPLIB static library ($FOAM_MPI)"
-        echo
     else
     (
         set -x
@@ -112,12 +110,9 @@ MPICH)
     if [ -r $MPI_ARCH_PATH/lib/libmpich.so ]
     then
         echo "    have $WM_MPLIB shared library ($FOAM_MPI)"
-        echo
-        echo
     elif [ -r $MPI_ARCH_PATH/lib/libmpich.a ]
     then
         echo "    have $WM_MPLIB static library ($FOAM_MPI)"
-        echo
     else
     (
         set -x
@@ -171,269 +166,340 @@ MPICH)
     ;;
 
 esac
+echo
 
 
-# get SCOTCH_VERSION, SCOTCH_ARCH_PATH
-if settings=`$WM_PROJECT_DIR/bin/foamEtcFile config.sh/scotch`
-then
-    . $settings
-else
-    echo
-    echo "Error: no config.sh/scotch settings"
-    echo
-fi
+#------------------------------------------------------------------------------
 
-# building scotch is still a bit of a pain
-echo ========================================
-echo "Build Scotch decomposition library $SCOTCH_VERSION"
-echo "    $SCOTCH_ARCH_PATH"
+checkSystemLibrary()
+{
+    libraryName=$1
+    includeName=$2
+    reportName=$3
 
-# this needs generalizing for any compiler, since it's hard-coded to GCC
-scotchMakefile=../../etc/wmakeFiles/scotch/Makefile.inc.i686_pc_linux2.shlib-OpenFOAM
-
-if [ -f $SCOTCH_ARCH_PATH/include/scotch.h \
-  -a -r $FOAM_EXT_LIBBIN/libscotch.so \
-  -a -r $FOAM_EXT_LIBBIN/libscotcherrexit.so ]
-then
-    echo "    scotch header in $SCOTCH_ARCH_PATH/include"
-    echo "    scotch libs   in $FOAM_EXT_LIBBIN"
-    echo
-else
-(
-    set -x
-    cd $SCOTCH_VERSION/src || exit 1
-
-    prefixDIR=$SCOTCH_ARCH_PATH
-    libDIR=$FOAM_EXT_LIBBIN
-
-    mkdir -p $prefixDIR 2>/dev/null
-    mkdir -p $libDIR 2>/dev/null
-
-    configOpt="prefix=$prefixDIR libdir=$libDIR"
-
-    if [ -f $scotchMakefile ]
+    if ! $CXX $LDFLAGS -shared --output=/dev/null -l$libraryName > /dev/null 2>&1
     then
-        rm -f Makefile.inc
-        ln -s $scotchMakefile Makefile.inc
+        echo "    Error: A system installation of the $reportName library (lib$libraryName.so) was not found"
+        exit 1
     fi
 
-    [ -f Makefile.inc ] || {
-        echo " Error: scotch needs an appropriate Makefile.inc"
+    if ! echo \#include \"$includeName.h\" | $CXX $CXXFLAGS -xc++ -E - > /dev/null 2>&1
+    then
+        echo "    Error: A system installation of $reportName headers ($includeName.h) was not found"
         exit 1
-    }
-
-    # handle non-gcc compilers
-    unset configEnv
-    [ "${WM_CC:-gcc}" != gcc ] && configEnv="CC=$WM_CC CCS=$WM_CC"
-
-    make realclean 2>/dev/null  # for safety
-
-    make -j $WM_NCOMPPROCS $configEnv scotch \
-    && make $configOpt install
-
-    # cleanup, could also remove Makefile.inc
-    make realclean 2>/dev/null
-)
-fi
-
-# verify existence of scotch include
-[ -f $SCOTCH_ARCH_PATH/include/scotch.h ] || {
-    echo
-    echo "    WARNING: required include file 'scotch.h' not found!"
-    echo
+    fi
 }
 
 
-# build ptscotch if MPI (ThirdParty or system) is available
-if [ "${FOAM_MPI:-dummy}" != dummy ]
-then
-    echo ========================================
-    echo "Build PTScotch decomposition library $SCOTCH_VERSION (uses MPI)"
-    echo "    $SCOTCH_ARCH_PATH"
-    echo
+#------------------------------------------------------------------------------
 
-    if [ -f $SCOTCH_ARCH_PATH/include/$FOAM_MPI/ptscotch.h \
-      -a -r $FOAM_EXT_LIBBIN/$FOAM_MPI/libptscotch.so \
-      -a -r $FOAM_EXT_LIBBIN/$FOAM_MPI/libptscotcherrexit.so ]
+# Scotch
+
+# Scotch Makefile. Currently this is GCC specific.
+scotchMakefile=../../etc/wmakeFiles/scotch/Makefile.inc.i686_pc_linux2.shlib-OpenFOAM
+
+echo ========================================
+case $SCOTCH_TYPE in
+none)
+    echo "Scotch decomposition is disabled"
+    ;;
+system)
+    echo "The system installation of Scotch decomposition will be used"
+    checkSystemLibrary scotch scotch Scotch
+    ;;
+OpenFOAM | ThirdParty)
+    . $($WM_PROJECT_DIR/bin/foamEtcFile config.sh/scotch)
+    if [ -f $SCOTCH_ARCH_PATH/include/scotch.h \
+      -a -r $FOAM_EXT_LIBBIN/libscotch.so \
+      -a -r $FOAM_EXT_LIBBIN/libscotcherrexit.so ]
     then
-        echo "    ptscotch header in $SCOTCH_ARCH_PATH/include/$FOAM_MPI"
-        echo "    ptscotch libs   in $FOAM_EXT_LIBBIN/$FOAM_MPI"
-        echo
+        echo "ThirdParty installation of Scotch decomposition found"
+        echo "    scotch header in $SCOTCH_ARCH_PATH/include"
+        echo "    scotch libs   in $FOAM_EXT_LIBBIN"
     else
-    (
-        set -x
-        cd $SCOTCH_VERSION/src || exit 1
-
-        prefixDIR=$SCOTCH_ARCH_PATH
-        libDIR=$FOAM_EXT_LIBBIN/$FOAM_MPI
-        incDIR=$SCOTCH_ARCH_PATH/include/$FOAM_MPI
-
-        mkdir -p $prefixDIR 2>/dev/null
-        mkdir -p $libDIR 2>/dev/null
-
-        configOpt="prefix=$prefixDIR libdir=$libDIR includedir=$incDIR"
-
-        if [ -f $scotchMakefile ]
+        if [ -d "scotch_$SCOTCH_VERSION" ]
         then
-            rm -f Makefile.inc
-            ln -s $scotchMakefile Makefile.inc
-        fi
+        (
+            echo "Building a ThirdParty installation of Scotch decomposition"
 
-        [ -f Makefile.inc ] || {
-            echo " Error: scotch needs an appropriate Makefile.inc"
+            set -x
+            cd scotch_$SCOTCH_VERSION/src || exit 1
+
+            prefixDIR=$SCOTCH_ARCH_PATH
+            libDIR=$FOAM_EXT_LIBBIN
+
+            mkdir -p $prefixDIR 2>/dev/null
+            mkdir -p $libDIR 2>/dev/null
+
+            configOpt="prefix=$prefixDIR libdir=$libDIR"
+
+            if [ -f $scotchMakefile ]
+            then
+                rm -f Makefile.inc
+                ln -s $scotchMakefile Makefile.inc
+            fi
+
+            [ -f Makefile.inc ] || {
+                echo "    Error: scotch needs an appropriate Makefile.inc"
+                exit 1
+            }
+
+            # handle non-gcc compilers
+            unset configEnv
+            [ "${WM_CC:-gcc}" != gcc ] && configEnv="CC=$WM_CC CCS=$WM_CC"
+
+            make realclean 2>/dev/null  # for safety
+
+            make -j $WM_NCOMPPROCS $configEnv scotch \
+            && make $configOpt install
+
+            # cleanup, could also remove Makefile.inc
+            make realclean 2>/dev/null
+        )
+        else
+            echo "    Error: ThirdPaty sources for Scotch (scotch_$SCOTCH_VERSION) were not found"
             exit 1
-        }
-
-        # handle non-gcc compilers
-        unset configEnv
-        [ "${WM_CC:-gcc}" != gcc ] && configEnv="CC=$WM_CC CCS=$WM_CC"
-
-        make realclean 2>/dev/null  # for safety
-
-        make -j $WM_NCOMPPROCS $configEnv ptscotch \
-        && make $configOpt install
-
-        # cleanup, could also remove Makefile.inc
-        make realclean 2>/dev/null
-    )
+        fi
     fi
 
     # verify existence of scotch include
-    [ -f $SCOTCH_ARCH_PATH/include/$FOAM_MPI/ptscotch.h ] || {
+    [ -f $SCOTCH_ARCH_PATH/include/scotch.h ] || {
         echo
-        echo "    WARNING: required include file 'ptscotch.h' not found!"
-        echo
+        echo "    WARNING: required include file 'scotch.h' not found!"
     }
-fi
-
+    ;;
+esac
+echo
 
 #------------------------------------------------------------------------------
 
-# METIS is optional
-echo ========================================
-echo Build METIS decomposition
+# PT-Scotch if MPI (ThirdParty or system) is available
 
-# get METIS_VERSION, METIS_ARCH_PATH
-if settings=`$WM_PROJECT_DIR/bin/foamEtcFile config.sh/metis`
+if [ "${FOAM_MPI:-dummy}" != dummy ]
 then
-    . $settings
+    echo ========================================
+    case $SCOTCH_TYPE in
+    none)
+        echo "PT-Scotch decomposition is disabled"
+        ;;
+    system)
+        echo "The system installation of PT-Scotch decomposition will be used"
+        checkSystemLibrary ptscotch ptscotch PT-Scotch
+        ;;
+    OpenFOAM | ThirdParty)
+        . $($WM_PROJECT_DIR/bin/foamEtcFile config.sh/scotch)
+        if [ -f $SCOTCH_ARCH_PATH/include/$FOAM_MPI/ptscotch.h \
+          -a -r $FOAM_EXT_LIBBIN/$FOAM_MPI/libptscotch.so \
+          -a -r $FOAM_EXT_LIBBIN/$FOAM_MPI/libptscotcherrexit.so ]
+        then
+            echo "ThirdParty installation of PT-Scotch decomposition found"
+            echo "    ptscotch header in $SCOTCH_ARCH_PATH/include/$FOAM_MPI"
+            echo "    ptscotch libs   in $FOAM_EXT_LIBBIN/$FOAM_MPI"
+        else
+            if [ -d "scotch_$SCOTCH_VERSION" ]
+            then
+            (
+                echo "Building a ThirdParty installation of PT-Scotch decomposition"
+
+                set -x
+                cd scotch_$SCOTCH_VERSION/src || exit 1
+
+                prefixDIR=$SCOTCH_ARCH_PATH
+                libDIR=$FOAM_EXT_LIBBIN/$FOAM_MPI
+                incDIR=$SCOTCH_ARCH_PATH/include/$FOAM_MPI
+
+                mkdir -p $prefixDIR 2>/dev/null
+                mkdir -p $libDIR 2>/dev/null
+
+                configOpt="prefix=$prefixDIR libdir=$libDIR includedir=$incDIR"
+
+                if [ -f $scotchMakefile ]
+                then
+                    rm -f Makefile.inc
+                    ln -s $scotchMakefile Makefile.inc
+                fi
+
+                [ -f Makefile.inc ] || {
+                    echo "    Error: scotch needs an appropriate Makefile.inc"
+                    exit 1
+                }
+
+                # handle non-gcc compilers
+                unset configEnv
+                [ "${WM_CC:-gcc}" != gcc ] && configEnv="CC=$WM_CC CCS=$WM_CC"
+
+                make realclean 2>/dev/null  # for safety
+
+                make -j $WM_NCOMPPROCS $configEnv ptscotch \
+                && make $configOpt install
+
+                # cleanup, could also remove Makefile.inc
+                make realclean 2>/dev/null
+            )
+            else
+                echo "    Error: ThirdPaty sources for PT-Scotch (scotch_$SCOTCH_VERSION) were not found"
+                exit 1
+            fi
+        fi
+
+        # Verify existence of PT-Scotch include
+        [ -f $SCOTCH_ARCH_PATH/include/$FOAM_MPI/ptscotch.h ] || {
+            echo
+            echo "    WARNING: required include file 'ptscotch.h' not found!"
+        }
+        ;;
+    esac
 fi
-if [ -d "$METIS_VERSION" ]
-then
+echo
 
+#------------------------------------------------------------------------------
+
+# METIS
+
+echo ========================================
+case $METIS_TYPE in
+none)
+    echo "METIS decomposition is disabled"
+    ;;
+system)
+    echo "The system installation of METIS decomposition will be used"
+    checkSystemLibrary metis metis METIS
+    ;;
+OpenFOAM | ThirdParty)
+    . $($WM_PROJECT_DIR/bin/foamEtcFile config.sh/metis)
     if [ -f $METIS_ARCH_PATH/include/metis.h \
       -a -r $FOAM_EXT_LIBBIN/libmetis.so ]
     then
-        echo "    METIS header in $METIS_ARCH_PATH/include"
-        echo "    METIS libs   in $FOAM_EXT_LIBBIN"
-        echo
+        echo "ThirdParty installation of METIS decomposition found"
+        echo "    metis header in $METIS_ARCH_PATH/include"
+        echo "    metis libs   in $FOAM_EXT_LIBBIN"
     else
-    (
-        set -x
-        cd $METIS_VERSION  || exit 1
+        if [ -d "metis-$METIS_VERSION" ]
+        then
+        (
+            echo "Building a ThirdParty installation of METIS decomposition"
 
-        # Change user settings automatically
-        sed -i -e 's=\(#define IDXTYPEWIDTH\).*=\1 '$WM_LABEL_SIZE'=' \
-            include/metis.h
+            set -x
+            cd metis-$METIS_VERSION  || exit 1
 
-        make config shared=1 prefix=$METIS_ARCH_PATH
-        make -j $WM_NCOMPPROCS install
-        cp $METIS_ARCH_PATH/lib/libmetis.so $FOAM_EXT_LIBBIN
-    )
+            # Change user settings automatically
+            sed -i -e 's=\(#define IDXTYPEWIDTH\).*=\1 '$WM_LABEL_SIZE'=' \
+                include/metis.h
+
+            make config shared=1 prefix=$METIS_ARCH_PATH
+            make -j $WM_NCOMPPROCS install
+            cp $METIS_ARCH_PATH/lib/libmetis.so $FOAM_EXT_LIBBIN
+        )
+        else
+            echo "    Error: ThirdPaty sources for METIS (metis-$METIS_VERSION) were not found"
+            exit 1
+        fi
     fi
-else
-    echo "    optional component METIS was not found"
-fi
-
+    ;;
+esac
+echo
 
 #------------------------------------------------------------------------------
 
-# ParMETIS is optional
+# ParMETIS
+
 echo ========================================
-echo Build ParMETIS decomposition
-
-# get PARMETIS_VERSION, PARMETIS_ARCH_PATH
-if settings=`$WM_PROJECT_DIR/bin/foamEtcFile config.sh/parMetis`
-then
-    . $settings
-fi
-if [ -d "$PARMETIS_VERSION" ]
-then
-
+case $PARMETIS_TYPE in
+none)
+    echo "ParMETIS decomposition is disabled"
+    ;;
+system)
+    echo "The system installation of ParMETIS decomposition will be used"
+    checkSystemLibrary parmetis parmetis ParMETIS
+    ;;
+OpenFOAM | ThirdParty)
+    . $($WM_PROJECT_DIR/bin/foamEtcFile config.sh/parMetis)
     if [ -f $PARMETIS_ARCH_PATH/include/parmetis.h \
       -a -r $FOAM_EXT_LIBBIN/libparmetis.so ]
     then
-        echo "    parMETIS header in $PARMETIS_ARCH_PATH/include"
-        echo "    parMETIS libs   in $FOAM_EXT_LIBBIN"
-        echo
+        echo "ThirdParty installation of ParMETIS decomposition found"
+        echo "    parmetis header in $PARMETIS_ARCH_PATH/include"
+        echo "    parmetis libs   in $FOAM_EXT_LIBBIN"
     else
-    (
-        set -x
-        cd $PARMETIS_VERSION  || exit 1
+        echo "Building a ThirdParty installation of ParMETIS decomposition"
+        if [ -d "parmetis-$PARMETIS_VERSION" ]
+        then
+        (
+            set -x
+            cd parmetis-$PARMETIS_VERSION  || exit 1
 
-        # Change user settings automatically
-        sed -i -e 's=\(#define IDXTYPEWIDTH\).*=\1 '$WM_LABEL_SIZE'=' \
-            metis/include/metis.h
+            # Change user settings automatically
+            sed -i -e 's=\(#define IDXTYPEWIDTH\).*=\1 '$WM_LABEL_SIZE'=' \
+                metis/include/metis.h
 
-        make config shared=1 prefix=$PARMETIS_ARCH_PATH
-        make -j $WM_NCOMPPROCS install
-        cp metis/include/metis.h $PARMETIS_ARCH_PATH/include
-        cp $PARMETIS_ARCH_PATH/lib/libparmetis.so $FOAM_EXT_LIBBIN
-    )
+            make config shared=1 prefix=$PARMETIS_ARCH_PATH
+            make -j $WM_NCOMPPROCS install
+            cp metis/include/metis.h $PARMETIS_ARCH_PATH/include
+            cp $PARMETIS_ARCH_PATH/lib/libparmetis.so $FOAM_EXT_LIBBIN
+        )
+        else
+            echo "    Error: ThirdPaty sources for ParMETIS (parmetis-$PARMETIS_VERSION) were not found"
+            exit 1
+        fi
     fi
-else
-    echo "    optional component ParMETIS was not found"
-fi
+    ;;
+esac
+echo
+
+#------------------------------------------------------------------------------
+
+echo ========================================
+case $ZOLTAN_TYPE in
+none)
+    echo "Zoltan decomposition is disabled"
+    ;;
+system)
+    echo "The system installation of Zoltan decomposition will be used"
+    checkSystemLibrary zoltan zoltan Zoltan
+    ;;
+OpenFOAM | ThirdParty)
+    . $($WM_PROJECT_DIR/bin/foamEtcFile config.sh/zoltan)
+    if [ -f $ZOLTAN_ARCH_PATH/include/zoltan.h \
+      -a -r $FOAM_EXT_LIBBIN/$FOAM_MPI/libzoltan.a ]
+    then
+        echo "ThirdParty installation of Zoltan decomposition found"
+        echo "    Zoltan header in $ZOLTAN_ARCH_PATH/include"
+        echo "    Zoltan libs   in $FOAM_EXT_LIBBIN/$FOAM_MPI"
+    else
+        echo "Building a ThirdParty installation of Zoltan decomposition"
+        if [ -d "Zoltan-$ZOLTAN_VERSION" ]
+        then
+        (
+            set -x
+            cd Zoltan-$ZOLTAN_VERSION  || exit 1
+            mkdir -p build
+            cd build
+            ../configure \
+                --prefix=$ZOLTAN_ARCH_PATH \
+                --libdir=$FOAM_EXT_LIBBIN/$FOAM_MPI \
+                --with-mpi=$MPI_ARCH_PATH \
+                --with-mpi-compilers=no \
+                --with-mpi-libdir=$MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH} \
+                --disable-zoltan-cppdriver \
+                --with-ccflags=-fPIC --with-cxxflags=-fPIC
+            make everything
+            make install
+        )
+        else
+            echo "    Error: ThirdPaty sources for Zoltan (Zoltan-$ZOLTAN_VERSION) were not found"
+            exit 1
+        fi
+    fi
+    ;;
+esac
+echo
 
 
 #------------------------------------------------------------------------------
 
-# Zoltan is optional
-echo ========================================
-echo Build Zoltan decomposition
-
-# Get ZOLTAN_VERSION, ZOLTAN_ARCH_PATH
-if settings=`$WM_PROJECT_DIR/bin/foamEtcFile config.sh/zoltan`
-then
-    . $settings
-fi
-if [ -d "$ZOLTAN_VERSION" ]
-then
-
-    if [ -f $ZOLTAN_ARCH_PATH/include/zoltan.h \
-      -a -r $FOAM_EXT_LIBBIN/$FOAM_MPI/libzoltan.a ]
-    then
-        echo "    Zoltan header in $ZOLTAN_ARCH_PATH/include"
-        echo "    Zoltan libs   in $FOAM_EXT_LIBBIN/$FOAM_MPI"
-        echo
-    else
-    (
-        set -x
-        cd $ZOLTAN_VERSION  || exit 1
-        mkdir -p build
-        cd build
-        ../configure \
-            --prefix=$ZOLTAN_ARCH_PATH \
-            --libdir=$FOAM_EXT_LIBBIN/$FOAM_MPI \
-            --with-mpi=$MPI_ARCH_PATH \
-            --with-mpi-compilers=no \
-            --with-mpi-libdir=$MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH} \
-            --disable-zoltan-cppdriver \
-            --with-ccflags=-fPIC --with-cxxflags=-fPIC
-        make everything
-        make install
-    )
-    fi
-else
-    echo "    optional component Zoltan was not found"
-fi
-
-
-echo
 echo ========================================
 echo Done ThirdParty Allwmake
 echo ========================================
 echo
-
 
 #------------------------------------------------------------------------------
