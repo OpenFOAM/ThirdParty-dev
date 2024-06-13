@@ -177,15 +177,21 @@ checkSystemLibrary()
     includeName=$2
     reportName=$3
 
-    if ! $CXX $LDFLAGS -shared --output=/dev/null -l$libraryName > /dev/null 2>&1
+    if ! \
+        $CXX $LDFLAGS -shared --output=/dev/null ${4:+"-L$4"} -l$libraryName \
+        > /dev/null 2>&1
     then
-        echo "    Error: A system installation of the $reportName library (lib$libraryName.so) was not found"
+        echo -n "    Error: A system installation of the $reportName library "
+        echo "(lib$libraryName.so) was not found"
         exit 1
     fi
 
-    if ! echo \#include \"$includeName.h\" | $CXX $CXXFLAGS -xc++ -E - > /dev/null 2>&1
+    if ! echo \#include \"$includeName.h\" | \
+        $CXX $CXXFLAGS ${5:+"-I$5"} -I"$MPI_ARCH_PATH"/include -xc++ -E - \
+        > /dev/null 2>&1
     then
-        echo "    Error: A system installation of $reportName headers ($includeName.h) was not found"
+        echo -n "    Error: A system installation of $reportName headers "
+        echo "($includeName.h) was not found"
         exit 1
     fi
 }
@@ -205,7 +211,8 @@ none)
     ;;
 system)
     echo "The system installation of Scotch decomposition will be used"
-    checkSystemLibrary scotch scotch Scotch
+    checkSystemLibrary scotch scotch Scotch \
+        "$SCOTCH_LIB_DIR" "${SCOTCH_INCLUDE_DIR:-/usr/include/scotch}"
     ;;
 OpenFOAM | ThirdParty)
     . $($WM_PROJECT_DIR/bin/foamEtcFile config.sh/scotch)
@@ -257,7 +264,8 @@ OpenFOAM | ThirdParty)
             make realclean 2>/dev/null
         )
         else
-            echo "    Error: ThirdPaty sources for Scotch (scotch_$SCOTCH_VERSION) were not found"
+            echo -n "    Error: ThirdPaty sources for Scotch "
+            echo "(scotch_$SCOTCH_VERSION) were not found"
             exit 1
         fi
     fi
@@ -284,7 +292,8 @@ then
         ;;
     system)
         echo "The system installation of PT-Scotch decomposition will be used"
-        checkSystemLibrary ptscotch ptscotch PT-Scotch
+        checkSystemLibrary ptscotch ptscotch PT-Scotch \
+            "$PTSCOTCH_LIB_DIR" "${PTSCOTCH_INCLUDE_DIR:-/usr/include/scotch}"
         ;;
     OpenFOAM | ThirdParty)
         . $($WM_PROJECT_DIR/bin/foamEtcFile config.sh/scotch)
@@ -337,7 +346,8 @@ then
                 make realclean 2>/dev/null
             )
             else
-                echo "    Error: ThirdPaty sources for PT-Scotch (scotch_$SCOTCH_VERSION) were not found"
+                echo -n "    Error: ThirdPaty sources for PT-Scotch "
+                echo "(scotch_$SCOTCH_VERSION) were not found"
                 exit 1
             fi
         fi
@@ -363,7 +373,8 @@ none)
     ;;
 system)
     echo "The system installation of METIS decomposition will be used"
-    checkSystemLibrary metis metis METIS
+    checkSystemLibrary metis metis METIS \
+        "$METIS_LIB_DIR" "$METIS_INCLUDE_DIR"
     ;;
 OpenFOAM | ThirdParty)
     . $($WM_PROJECT_DIR/bin/foamEtcFile config.sh/metis)
@@ -391,7 +402,8 @@ OpenFOAM | ThirdParty)
             cp $METIS_ARCH_PATH/lib/libmetis.so $FOAM_EXT_LIBBIN
         )
         else
-            echo "    Error: ThirdPaty sources for METIS (metis-$METIS_VERSION) were not found"
+            echo -n "    Error: ThirdPaty sources for METIS "
+            echo "(metis-$METIS_VERSION) were not found"
             exit 1
         fi
     fi
@@ -410,7 +422,8 @@ none)
     ;;
 system)
     echo "The system installation of ParMETIS decomposition will be used"
-    checkSystemLibrary parmetis parmetis ParMETIS
+    checkSystemLibrary parmetis parmetis ParMETIS \
+        "$PARMETIS_LIB_DIR" "$PARMETIS_INCLUDE_DIR"
     ;;
 OpenFOAM | ThirdParty)
     . $($WM_PROJECT_DIR/bin/foamEtcFile config.sh/parMetis)
@@ -438,7 +451,8 @@ OpenFOAM | ThirdParty)
             cp $PARMETIS_ARCH_PATH/lib/libparmetis.so $FOAM_EXT_LIBBIN
         )
         else
-            echo "    Error: ThirdPaty sources for ParMETIS (parmetis-$PARMETIS_VERSION) were not found"
+            echo -n "    Error: ThirdPaty sources for ParMETIS "
+            echo "(parmetis-$PARMETIS_VERSION) were not found"
             exit 1
         fi
     fi
@@ -455,7 +469,8 @@ none)
     ;;
 system)
     echo "The system installation of Zoltan decomposition will be used"
-    checkSystemLibrary zoltan zoltan Zoltan
+    checkSystemLibrary zoltan zoltan Zoltan \
+        "$ZOLTAN_LIB_DIR" "$ZOLTAN_INCLUDE_DIR"
     ;;
 OpenFOAM | ThirdParty)
     . $($WM_PROJECT_DIR/bin/foamEtcFile config.sh/zoltan)
@@ -486,7 +501,8 @@ OpenFOAM | ThirdParty)
             make install
         )
         else
-            echo "    Error: ThirdPaty sources for Zoltan (Zoltan-$ZOLTAN_VERSION) were not found"
+            echo -n "    Error: ThirdPaty sources for Zoltan "
+            echo "(Zoltan-$ZOLTAN_VERSION) were not found"
             exit 1
         fi
     fi
