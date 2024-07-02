@@ -76,14 +76,12 @@ setVersion()
 {
     if [ "$#" -ge 1 ]
     then
-        ParaView_VERSION="${1##paraview-}"
+        export ParaView_VERSION="$1"
     fi
 
     # The major version is "<digits>.<digits>"
-    ParaView_MAJOR=$(echo $ParaView_VERSION | \
+    export ParaView_MAJOR=$(echo $ParaView_VERSION | \
         sed -e 's/^\([0-9][0-9]*\.[0-9][0-9]*\).*$/\1/')
-
-    export ParaView_VERSION ParaView_MAJOR
 }
 
 
