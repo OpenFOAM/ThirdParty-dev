@@ -42,7 +42,7 @@
 . $WM_PROJECT_DIR/etc/config.sh/functions
 _foamSource $($WM_PROJECT_DIR/bin/foamEtcFile config.sh/compiler)
 
-llvmPACKAGE=${clang_version:-llvm-3.6.0}
+llvmPACKAGE=${clang_version:-llvm-19.1.7}
 
 #------------------------------------------------------------------------------
 # run from third-party directory only
