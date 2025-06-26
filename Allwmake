@@ -107,60 +107,32 @@ OPENMPI)
     ;;
 
 MPICH)
-    if [ -r $MPI_ARCH_PATH/lib/libmpich.so ]
+    if [ -r $MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH}/libmpich.so ]
     then
         echo "    have $WM_MPLIB shared library ($FOAM_MPI)"
-    elif [ -r $MPI_ARCH_PATH/lib/libmpich.a ]
+    elif [ -r $MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH}/libmpich.a ]
     then
         echo "    have $WM_MPLIB static library ($FOAM_MPI)"
     else
     (
         set -x
-        cd $MPI_HOME || exit 1    # change to mpich-VERSION
+        cd $WM_THIRD_PARTY_DIR/$FOAM_MPI || exit 1
 
         [ -e Makefile ] && make distclean 2>/dev/null
         rm -rf $MPI_ARCH_PATH
-        rm util/machines/machines.*
 
         ./configure \
             --prefix=$MPI_ARCH_PATH \
             --without-mpe \
-            --disable-f77 \
-            --disable-f90 \
-            --disable-f90modules \
+            --disable-fortran \
             --disable-mpedbg \
             --disable-devdebug \
             --disable-debug \
             --enable-sharedlib=$MPI_ARCH_PATH/lib \
-            --with-device=ch_p4 \
             ;
 
-        # For MPICH2 below 1.5a1 uncomment this line and comment next
-        # make && make install
-
-        # For MPICH2 1.5a1 or above
         make -j $WM_NCOMPPROCS && make install
-
         make distclean
-
-        if [ -r $MPI_ARCH_PATH ]
-        then
-            cd $MPI_ARCH_PATH/bin
-            for file in *
-            do
-                sed s%$MPI_ARCH_PATH%'$MPI_ARCH_PATH'%g $file > temp.$$
-                mv temp.$$ $file
-                chmod 0755 $file
-            done
-
-            cd $MPI_ARCH_PATH/lib
-
-            if [ -r libmpich.so.1.0 ]
-            then
-                rm *.so
-                ln -s libmpich.so.1.0 libmpich.so
-            fi
-        fi
     )
     fi
     ;;
