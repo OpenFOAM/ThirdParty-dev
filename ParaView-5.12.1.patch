@@ -1,0 +1,48 @@
+diff -ruN ParaView-5.12.1.orig/VTK/ThirdParty/vtkm/vtkvtkm/vtk-m/vtkm/filter/contour/worklet/mir/MIRTables.h ParaView-5.12.1/VTK/ThirdParty/vtkm/vtkvtkm/vtk-m/vtkm/filter/contour/worklet/mir/MIRTables.h
+--- ParaView-5.12.1.orig/VTK/ThirdParty/vtkm/vtkvtkm/vtk-m/vtkm/filter/contour/worklet/mir/MIRTables.h	2025-07-06 22:18:08.827993409 +0100
++++ ParaView-5.12.1/VTK/ThirdParty/vtkm/vtkvtkm/vtk-m/vtkm/filter/contour/worklet/mir/MIRTables.h	2025-07-08 08:34:20.061729418 +0100
+@@ -11400,11 +11400,6 @@
+       return FacesLookup[shape];
+     }
+ 
+-    VTKM_EXEC vtkm::UInt8 GetPoint(vtkm::Id pointIndex) const
+-    {
+-      return this->CellFacePortal.Get(pointIndex);
+-    }
+-
+   private:
+     typename vtkm::cont::ArrayHandle<vtkm::UInt8>::ReadPortalType MIRTablesDataPortal;
+     typename vtkm::cont::ArrayHandle<vtkm::UInt16>::ReadPortalType MIRTablesIndicesPortal;
+diff -ruN ParaView-5.12.1.orig/VTK/ThirdParty/vtkm/vtkvtkm/vtk-m/vtkm/filter/scalar_topology/worklet/contourtree_distributed/HierarchicalContourTree.h ParaView-5.12.1/VTK/ThirdParty/vtkm/vtkvtkm/vtk-m/vtkm/filter/scalar_topology/worklet/contourtree_distributed/HierarchicalContourTree.h
+--- ParaView-5.12.1.orig/VTK/ThirdParty/vtkm/vtkvtkm/vtk-m/vtkm/filter/scalar_topology/worklet/contourtree_distributed/HierarchicalContourTree.h	2025-07-06 22:18:08.846451210 +0100
++++ ParaView-5.12.1/VTK/ThirdParty/vtkm/vtkvtkm/vtk-m/vtkm/filter/scalar_topology/worklet/contourtree_distributed/HierarchicalContourTree.h	2025-07-08 08:27:44.496800419 +0100
+@@ -663,7 +663,7 @@
+   auto hyperarcsPortal = this->Hyperarcs.ReadPortal();
+   auto regularNodeGlobalIdsPortal = this->RegularNodeGlobalIds.ReadPortal();
+   auto whichIterationPortal = this->WhichIteration.ReadPortal();
+-  auto whichRoundPortal = this->whichRound.ReadPortal();
++  auto whichRoundPortal = this->WhichRound.ReadPortal();
+   auto superarcsPortal = this->Superarcs.ReadPortal();
+   auto superparentsPortal = this->Superparents.ReadPortal();
+   for (vtkm::Id supernode = 0; supernode < this->Supernodes.GetNumberOfValues(); supernode++)
+@@ -708,7 +708,7 @@
+     if (contourtree_augmented::NoSuchElement(superarcTo))
+     { // no superarc
+       // if it occurred on the final round, it's the global root and is shown as the NULL node
+-      if (whichRoundPortal.Get(superarcFrom) == this->NRounds)
++      if (whichRoundPortal.Get(superarcFrom) == this->NumRounds)
+       { // root node
+         outstream << "\tSN" << std::setw(1) << superarcFrom << " -> SA" << std::setw(1) << superarc
+                   << " [label=\"S" << std::setw(1) << superarc << "\",style=dotted]\n";
+diff -ruN ParaView-5.12.1.orig/VTK/Utilities/octree/octree/octree_node.txx ParaView-5.12.1/VTK/Utilities/octree/octree/octree_node.txx
+--- ParaView-5.12.1.orig/VTK/Utilities/octree/octree/octree_node.txx	2025-07-06 22:18:09.686567872 +0100
++++ ParaView-5.12.1/VTK/Utilities/octree/octree/octree_node.txx	2025-07-08 08:49:33.635583103 +0100
+@@ -210,7 +210,7 @@
+   {
+     throw std::domain_error("Attempt to access children of an octree leaf node.");
+   }
+-  return this->_M_chilren[child];
++  return this->m_children[child];
+ }
+ 
+ /**\brief Return a reference to a child node.
