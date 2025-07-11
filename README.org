@@ -2,10 +2,10 @@
 #
 #+TITLE:              OpenFOAM-dev Third-Party packages
 #+AUTHOR:                  The OpenFOAM Foundation
-#+DATE:                        5th July 2024
+#+DATE:                        11th July 2025
 #+LINK:                    https://www.openfoam.org
 #+OPTIONS: author:nil ^:{}
-# Copyright (c) 2014-2024 OpenFOAM Foundation.
+# Copyright (c) 2014-2025 OpenFOAM Foundation.
 
 * Description
   OpenFOAM uses some additional software for visualisation (ParaView), parallelisation
@@ -21,7 +21,7 @@
   Links to the source code of recommended versions of additional packages are listed below.  Any
   package selected should be downloaded and unpacked in the third-party directory (~ThirdParty-dev~).
 *** Scotch/PtScotch
-    + https://gforge.inria.fr/frs/download.php/file/38187/scotch_6.0.9.tar.gz
+    + https://gitlab.inria.fr/scotch/scotch/-/archive/v7.0.8/scotch-v7.0.8.tar.bz2
     + This package is already present in the third-party directory.
 *** Zoltan
     + https://github.com/sandialabs/Zoltan/archive/refs/tags/v3.90.tar.gz
