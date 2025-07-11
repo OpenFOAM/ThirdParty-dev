@@ -1,0 +1,281 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                  %
+% Titre  : h_p.tex                 %
+% Sujet  : Hands-on guide          %
+%          Programming             %
+% Auteur : Francois Pellegrini     %
+%                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Programming with \scotch}
+
+\subsection{Integer type}
+
+All integer values used by \scotch\ to describe its objects are of
+type \texttt{SCOTCH\_\lbt Num}, which may not be the standard integer
+type, depending on compilation options (see
+Section~\ref{sec-c-integer}). Make sure to declare and use
+\texttt{SCOTCH\_\lbt Num}s in your program whenever necessary, even
+for integer constants.
+
+\begin{lstlisting}[style=language-c]
+#include <scotch.h>
+  ...
+  SCOTCH_Num                  vertnum;
+\end{lstlisting}
+
+\begin{lstlisting}[style=language-f]
+INCLUDE "scotchf.h"
+  ...
+  INTEGER*SCOTCH_NUMSIZE      VERTNUM
+\end{lstlisting}
+
+\begin{lstlisting}[style=language-f]
+include 'scotchf.h'
+  ...
+  integer(SCOTCH_NUMSIZE) ::  vertnum
+\end{lstlisting}
+
+\begin{center}
+\framebox{\begin{minipage}[t]{0.9\textwidth}%
+\noi
+\textbf{RULE}: In \textsc{FORTRAN}, in the absence of function
+prototypes, always pass integer constants through variables of
+type \texttt{SCOTCH\_\lbt Num}, to make sure the integer type width
+will always be the proper one.
+\end{minipage}}
+\end{center}
+
+\subsection{Data structures}
+
+All data structures in the \scotch\ API are ``opaque objects'', that
+is, mock data structures meant to hide their contents from the
+user. Hence, interactions with \scotch\ can only take place through
+its API, which preserves ascending compatibility with future versions
+(and backwards compatibility as well, to some extent).
+
+\subsubsection{Allocation of data structures}
+
+\scotch\ data structures can be allocated at compile time by
+specifying memory areas of the adequate size. For data alignment
+concerns, these structures are exposed as arrays of \texttt{double}s,
+of a size defined in the API.
+
+\begin{lstlisting}[style=language-c]
+#include <scotch.h>
+  ...
+  SCOTCH_Graph                grafdat;
+\end{lstlisting}
+
+\begin{lstlisting}[style=language-f]
+INCLUDE "scotchf.h"
+  ...
+  DOUBLEPRECISION             GRAFDAT (SCOTCH_GRAPHDIM)
+\end{lstlisting}
+
+\begin{lstlisting}[style=language-f]
+include 'scotchf.h'
+  ...
+  doubleprecision, dimension (SCOTCH_GRAPHDIM) ::  grafdat
+\end{lstlisting}
+
+Alternately, users can allocate memory for \scotch\ objects from the
+heap at run time. The size of these objects can be based on the size
+values provided at compile time (\eg, \texttt{SCOTCH\_\lbt GRAPHDIM}),
+or returned by the API routines \texttt{SCOTCH\_\lbt *Sizeof()}. In
+the latter case, users will be able to link with any version of the
+\scotch\ library without having to recompile their code.
+
+Users may also directly obtain a memory pointer to dynamically
+allocated \scotch\ objects, using the \textsc{C} API
+\texttt{SCOTCH\_\lbt *Alloc()} routines. In this case, this memory
+must be freed using the \texttt{SCOTCH\_\lbt mem\lbt Free()} routine.
+
+\subsubsection{Initialization and deconstruction of data structures}
+
+Whether they are statically or dynamically allocated, all
+\scotch\ opaque objects should be initialized before use. To do so,
+one must use the \texttt{*Init()} routine defined for each object
+category.
+
+Similarly, after their last use, these structures must be
+deconstructed, using the \texttt{*Exit()} routine associated with each
+object category. The deconstructor routine is needed to free the
+internal memory associated with the object. When objects depend on
+other objects, by way of references, the referenced object must not be
+deconstructed before the referring object (\eg, a \texttt{SCOTCH\_\lbt
+Graph} refrenced by a \texttt{SCOTCH\_\lbt Mapping}).
+
+\subsection{Error handling}
+
+For the \textsc{C}-language API of \scotch, errors are usually
+reported by returning a non-zero \textit{int} value~; please check the
+user's manuals for more information. For the \textsc{FORTRAN}-language
+API, errors are reported through a specific variable, of
+\texttt{integer} type, which is passed as the last argument of
+\scotch\ routines. This variable should be initialized to $0$, and
+checked afterwards to see whether its value has changed. For both
+APIs, the type of these error values is a standard \texttt{int}, not a
+\texttt{SCOTCH\_\lbt Num}.
+
+\begin{lstlisting}[style=language-c]
+  SCOTCH_Graph              grafdat;
+  FILE *                    fileptr;
+
+  if (SCOTCH_graphLoad (&grafdat, fileptr, -1, 0) != 0) {
+    fprintf (stderr, "Could not read graph\n");
+    fclose  (fileptr);
+    exit    (EXIT_FAILURE);
+  }
+\end{lstlisting}
+
+\begin{lstlisting}[style=language-f]
+  DOUBLEPRECISION           GRAFDAT (SCOTCH_GRAPHDIM)
+  INTEGER                   FILENUM
+  INTEGER                   IERR
+
+  IERR = 0
+  ...
+  CALL SCOTCHFGRAPHLOAD (GRAFDAT (1), 42, -1, 0, IERR)
+  IF IERR .NEQ. 0 THEN
+    PRINT *, "Could not read graph"
+    CALL CLOSE  (42)
+    CALL EXIT_C (EXIT_FAILURE)
+  END IF
+\end{lstlisting}
+
+\subsection{File input/output}
+
+\textsc{C}-language API routines handle files as streams, of type
+\texttt{FILE~*}. This allows users to read and/or write from any kind
+of I/O structure (\eg, regular files, but also pipes, network sockets,
+etc.). \textsc{FORTRAN}-language API routines handle files as I/O
+units, which are turned internally into file descriptors and then
+into \textsc{C} streams, by adding buffering capabilities. This added
+buffering improves performance but may bring input over-consumption,
+if the same unit is used for different read operations.
+
+\begin{lstlisting}[style=language-c]
+  SCOTCH_Graph              grafdat;
+  FILE *                    fileptr;
+
+  SCOTCH_graphInit (&grafdat);
+  fileptr = fopen ("path/to/the/graph/file.grf");
+  SCOTCH_graphLoad (&grafdat, fileptr, -1, 0);
+  fclose (fileptr);
+\end{lstlisting}
+
+\begin{lstlisting}[style=language-f]
+  DOUBLEPRECISION           GRAFDAT (SCOTCH_GRAPHDIM)
+  INTEGER                   FILENUM
+  INTEGER                   IERR
+
+  IERR = 0
+  CALL SCOTCHFGRAPHINIT (GRAFDAT (1), IERR)
+  OPEN (UNIT = 42, FILE = "path/to/the/graph/file.grf")
+  CALL SCOTCHFGRAPHLOAD (GRAFDAT (1), 42, -1, 0, IERR)
+  CLOSE (UNIT = 42)
+\end{lstlisting}
+
+\subsection{Checking user input}
+
+\scotch\ provides graph consistency checking routines, both for
+centralized and distributed graphs. These routines will perform a set
+of sanity checks on the graph data (\eg, assert that when vertex $v'$
+is in the list of neighbors of $v$, then $v$ is in the list of
+neighbors of $v'$, etc.).
+
+Before considering reporting an issue to the \scotch\ team, please run
+the graph checking routine on your graph structure (similarly, the
+\texttt{gtst} and \texttt{dgtst} command-line programs check the
+consistency of graph files). If the graph consistency checking routine
+reports an error, then all subsequent \scotch\ errors are likely to
+derive from this non-consistent input. If no error is reported and
+\scotch\ crashes afterwards, then the issue is most likely on
+\scotch's side.
+
+\begin{center}
+\framebox{\begin{minipage}[t]{0.9\textwidth}%
+\noi
+\textbf{ADVICE}: In the early stages of development of your program
+and/or in debug mode, always call the relevant \scotch\ graph checking
+routine (\texttt{SCOTCH\_\lbt graph\lbt Check()} or
+\texttt{SCOTCH\_\lbt dgraph\lbt Check()} before launching partitioning
+tasks.
+\end{minipage}}
+\end{center}
+
+\subsection{Basic use of \scotch}
+
+The behavior of \scotch\ can be parametrized in many ways (threading,
+strategy strings, etc.). However, routines have been designed for a
+simplified use, for graph partitioning, static mapping, and sparse
+mapping ordering.
+
+\subsubsection{Graph partitioning}
+
+\begin{lstlisting}[style=language-c]
+  SCOTCH_Strat              stradat;
+  SCOTCH_Graph              grafdat;
+  SCOTCH_Num                vertnbr;
+  SCOTCH_Num                partnbr;
+  SCOTCH_Num *              parttab;
+
+  SCOTCH_StratInit (&stradat);  /* Default strategy will be used */
+  SCOTCH_graphInit (&grafdat);
+  ...                           /* Fill-in graph structure */
+  SCOTCH_graphSize (&grafdat, &vertnbr, NULL);
+  parttab = (SCOTCH_Num *) malloc (vertnbr * sizeof (SCOTCH_Num));
+  partnbr = ...                 /* Set number of parts */
+  SCOTCH_graphPart (&grafdat, partnbr, &stradat, parttab);
+  SCOTCH_graphExit (&grafdat);
+  SCOTCH_StratExit (&stradat);
+\end{lstlisting}
+
+\begin{lstlisting}[style=language-f]
+  doubleprecision ::                      stradat (SCOTCH_STRATDIM)
+  doubleprecision ::                      grafdat (SCOTCH_GRAPHDIM)
+  integer(SCOTCH_NUMSIZE) ::              vertnbr
+  integer(SCOTCH_NUMSIZE), allocatable :: parttab (:)
+  integer ::                              ierr
+
+  ierr = 0
+  call scotchfstratinit (stradat (1), ierr)
+  call scotchfgraphinit (grafdat (1), ierr)
+  ...                           ! Fill-in graph structure
+  call scotchfgraphsize (grafdat (1), vertnbr, grafdat (1), ierr)
+  allocate (parttab (vertnbr))
+  partnbr = ...                 ! Set number of parts
+  call scotchfgraphpart (grafdat (1), partnbr, stradat (1), parttab (1), ierr)
+  call scotchfgraphexit (grafdat (1))
+  call scotchfstratexit (stradat (1))
+\end{lstlisting}
+
+\subsubsection{Static mapping}
+
+Static mapping is carried out in the same way as graph
+partitioning. The sole difference is that, instead of providing a
+number of parts, one has to provide a target architecture, on a
+prescribed topology. See the \scotch\ user's manual for all the
+available sorts of target architectures, including how to turn a graph
+into a target architecture.
+
+\subsubsection{Sparse matrix ordering}
+
+\subsection{Multi-threading}
+
+Since version \texttt{v7.0}, \scotch\ implements a dynamic thread
+management system.
+
+\begin{center}
+\framebox{\begin{minipage}[t]{0.9\textwidth}%
+\noi
+\textbf{RULE}: Only activate multi-threaded, distributed memory
+algorithms at compile-time if your local MPI implementation supports
+it.
+
+\noi
+\textbf{ADVICE}: 4 to~8 threads per MPI process is a good compromise in
+terms of performance.
+\end{minipage}}
+\end{center}

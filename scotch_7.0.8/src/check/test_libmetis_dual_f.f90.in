@@ -1,0 +1,140 @@
+!* Copyright 2021,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+!*
+!* This file is part of the Scotch software package for static mapping,
+!* graph partitioning and sparse matrix ordering.
+!*
+!* This software is governed by the CeCILL-C license under French law
+!* and abiding by the rules of distribution of free software. You can
+!* use, modify and/or redistribute the software under the terms of the
+!* CeCILL-C license as circulated by CEA, CNRS and INRIA at the following
+!* URL: "http://www.cecill.info".
+!*
+!* As a counterpart to the access to the source code and rights to copy,
+!* modify and redistribute granted by the license, users are provided
+!* only with a limited warranty and the software's author, the holder of
+!* the economic rights, and the successive licensors have only limited
+!* liability.
+!*
+!* In this respect, the user's attention is drawn to the risks associated
+!* with loading, using, modifying and/or developing or reproducing the
+!* software by the user in light of its specific status of free software,
+!* that may mean that it is complicated to manipulate, and that also
+!* therefore means that it is reserved for developers and experienced
+!* professionals having in-depth computer knowledge. Users are therefore
+!* encouraged to load and test the software's suitability as regards
+!* their requirements in conditions enabling the security of their
+!* systems and/or data to be ensured and, more generally, to use and
+!* operate it in the same conditions as regards security.
+!*
+!* The fact that you are presently reading this means that you have had
+!* knowledge of the CeCILL-C license and that you accept its terms.
+!
+!***********************************************************
+!*                                                        **
+!*   NAME       : test_libmetis_dual_f.f90                **
+!*                                                        **
+!*   AUTHOR     : Marc FUENTES                            **
+!*                Francois PELLEGRINI                     **
+!*                                                        **
+!*   FUNCTION   : This module tests te operation of       **
+!*                libscotchmetis dual graph routines.     **
+!*                                                        **
+!*   DATES      : # Version 6.1  : from : 10 feb 2021     **
+!*                                 to     22 jun 2021     **
+!*                # Version 7.0  : from : 09 aug 2024     **
+!*                                 to     11 aug 2024     **
+!*                                                        **
+!234567*****************************************************
+
+program test_libmetis_dual
+  use iso_c_binding
+  implicit none
+  interface
+    subroutine free_c(ptr) bind(c, name='free')
+      use, intrinsic :: iso_c_binding, only: c_ptr
+      type(c_ptr), value, intent(in) :: ptr
+    end subroutine free_c
+    subroutine exit_c(val) bind(c, name='exit')
+      use, intrinsic :: iso_c_binding, only: c_int
+      integer(c_int), value, intent(in) :: val
+    end subroutine exit_c
+  end interface
+
+  include 'scotchf.h'
+  include 'metisf.h'
+
+  integer ::                              i, argc
+  type(c_ptr) ::                          xadj
+  type(c_ptr) ::                          adjncy
+  integer(SCOTCH_NUMSIZE), pointer ::     xadj_f(:)
+  integer(SCOTCH_NUMSIZE), pointer ::     adjncy_f(:)
+
+  integer(SCOTCH_NUMSIZE), allocatable :: epart(:)
+  integer(SCOTCH_NUMSIZE), allocatable :: npart(:)
+  integer(SCOTCH_NUMSIZE) ::              nparts
+  integer(SCOTCH_NUMSIZE) ::              objval
+
+  integer(SCOTCH_NUMSIZE), parameter ::   baseval      = 1
+  integer(SCOTCH_NUMSIZE), parameter ::   ne           = 6
+  integer(SCOTCH_NUMSIZE), parameter ::   nn           = 7
+  integer(SCOTCH_NUMSIZE) ::              eptr(7)      = [ 0, 3, 6, 9, 12, 15, 18 ]
+  integer(SCOTCH_NUMSIZE) ::              eind(18)     = [ 0, 1, 2, 0, 1, 5, 1, 5, 4, 1, 4, 6, 1, 6, 3, 1, 3, 2 ]
+  integer(SCOTCH_NUMSIZE) ::              xadj_c(7)    = [ 0, 5, 10, 15, 20, 25, 30 ]
+  integer(SCOTCH_NUMSIZE) ::              adjncy_c(30) = [ 1, 2, 3, 4, 5, 0, 2, 3, 4, 5, 0, 1, 3, 4, 5, 0, 1, 2, 4, 5, 0, &
+                                                           1, 2, 3, 5, 0, 1, 2, 3, 4 ]
+
+  integer(SCOTCH_NUMSIZE) ::              options(METIS_NOPTIONS)
+
+  integer(SCOTCH_NUMSIZE) ::              ncommon = 1
+
+  allocate (epart(ne))
+  allocate (npart(nn))
+
+  eind (:)     = eind (:)     + baseval
+  eptr (:)     = eptr (:)     + baseval
+  xadj_c (:)   = xadj_c (:)   + baseval
+  adjncy_c (:) = adjncy_c (:) + baseval
+
+  call SCOTCHMETISNAMEFU (METIS_MeshToDual) (ne, nn, eptr, eind, ncommon, baseval, xadj, adjncy)
+  if (.not. c_associated (xadj)) then
+    print *, "ERROR: main: error in METIS_MeshToDual"
+    call exit_c (1)
+  end if
+
+  call c_f_pointer (xadj, xadj_f, [7])            ! convert c_pointers to fortran arrays
+  call c_f_pointer (adjncy, adjncy_f, [30])
+
+  do i = 1, 7
+    if (xadj_f(i) /= xadj_c(i)) then
+      print *, "ERROR: main: invalid vertex array"
+      call exit_c (1)
+    end if
+  end do
+  do i = 1, 30
+    if (adjncy_f(i) /= adjncy_c(i)) then
+      print *, "ERROR: main: invalid edge array"
+      call exit_c (1)
+    end if
+  end do
+
+  ! free c pointers calling the stdlib free function
+  call free_c (xadj)
+  call free_c (adjncy)
+
+  block
+    real(c_double)          :: tpwgt(3) = [ 0.75, 0.125, 0.125 ]
+    integer(SCOTCH_NUMSIZE) :: vgwt(6)  = [ 1, 2, 1, 1, 1, 1 ]
+    integer(SCOTCH_NUMSIZE) :: vsize(6) = [ 2, 1, 2, 2, 3, 1 ]
+
+    nparts  = 3
+    ncommon = ncommon + 1
+    call SCOTCHMETISNAMEFU (METIS_SetDefaultOptions) (options)
+    options (METIS_OPTION_NUMBERING) = baseval
+
+    call SCOTCHMETISNAMEFU (METIS_PartMeshDual) (ne, nn, eptr, eind, vgwt, vsize, ncommon, nparts, tpwgt, options, objval, epart, npart)
+  end block
+
+  deallocate (npart)
+  deallocate (epart)
+
+end program test_libmetis_dual

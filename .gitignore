@@ -27,7 +27,7 @@ makeQt
 /*[-_][0-9]*
 
 # Include decomposition library sources
-!/scotch_6.0.9
+!/scotch_7.0.8
 !/Zoltan-3.90
 
 # End-of-file

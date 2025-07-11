@@ -1,0 +1,412 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                         %
+% Title   : m_d.tex                       %
+% Subject : Maintenance manual of Scotch  %
+%           Style and naming conventions  %
+% Author  : Francois Pellegrini           %
+%                                         %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Coding style}
+
+The \scotch\ coding style is now well established. Hence, potential
+contributors are requested to abide by it, to provide a global ease of
+reading while browsing the code, and to ease the work of their
+followers.
+
+In this section, the numbering of the characters of each line is
+assumed to start from zero.
+
+\subsection{Typing}
+
+\subsubsection{Spacing}
+
+Expressions are like sentences, where words are separated by
+spaces. Hence, an expression like ``\texttt{if~(n == NULL)~\{}''
+reads: ``if $n$ is-equal-to NULL then'', with words separated by
+single spaces.
+
+As in standard typesetting, there is no space after an opening
+parenthesis, nor before a closing one, because they are not words.
+
+When it follows a keyword, an opening brace is always on the same line
+as the keyword (save for special cases, e.g. preprocessing macros
+between the keyword and the opening brace). This is meant to maximize
+the number of ``useful readable lines'' on the screen. However,
+closing braces are on a separate line, aligned with the indent of the
+line that contains the matching opening brace. This is meant to find
+in a glance the line that contains this opening brace.
+
+Brackets are not considered as words: they are stuck both to the word
+on their left and the word on their right.
+
+Reference and dereference operators ``\texttt{\&}'' and ``\texttt{*}''
+are stuck to the word on their right. However, the multiplication
+operator ``\texttt{*}'' counts as a word in arithmetic expressions.
+
+Semicolons are always stuck to the word on their left, except when
+they follow an empty instruction, e.g., an empty loop body or an empty
+\texttt{for} field. Empty instructions are materialized by a single
+space character, which makes the semicolon separated from the
+preceding word. For instance: ``\texttt{for~(~;~;~)~;}''.
+
+Ternary operator elements ``\texttt{?}'' and ``\texttt{:}'' are
+considered as words and are surrounded by spaces. When the ternary
+construct spans across multiple lines, they are placed at the
+beginning of each line, before the expression they condition, and not
+at the end of the previous line.
+
+\subsubsection{Aligning}
+
+When several consecutive lines contain similar expressions that are
+strongly connected, e.g. arguments of a \texttt{mem\lbt Alloc\lbt
+  Group()} routine, or assignments of multiple fields of the same
+structure(s), extra spaces can be added to align parts of the
+expressions. This is a matter of style and opportunity.
+
+For instance, when consecutive lines contain function calls where
+opening parentheses are close to each other and their arguments
+overlap, open parentheses have to be aligned. However, when arguments
+do not overlap, alignment is not required (e.g., for \texttt{return}
+statements with small parameters).
+
+\subsubsection{Idiomatic specificities}
+
+While, in C, \texttt{return} is a keyword which does not need
+parentheses around its argument, the \scotch\ coding style treats it
+as if it were a function call, thus requiring parentheses around its
+argument when it has one.
+
+\subsection{Indenting}
+
+Indenting is subject to the following rules:
+\begin{itemize}
+\item
+  All indents are of two characters. Hence, starting from column zero,
+  all lines start at even column numbers.
+\item
+  Tabs are never used in the source code. If your text editor replaces
+  chunks of spaces by tabs, it is your duty to disable this feature or
+  to make sure to replace all tabs by spaces before the files are
+  committed. Unwanted tabs are shown in red when performing a
+  ``\texttt{git diff}'' prior to committing.
+\end{itemize}
+
+Condition bodies are always indented on the line below the condition
+statement. ``\texttt{if}'' statements are always placed at the beginning
+of a new line, except when used as an ``\texttt{else~if}''
+construct, in which the two keywords appear on the same line,
+separated by a single space.
+
+Loop bodies are always indented on the line below the loop statement,
+except when the loop body is an empty instruction. In this case, the
+terminating semicolon is placed on the same line as the loop
+statement, after a single space.
+
+\subsection{Comments}
+
+All comments are C-style, that is, of the form
+``\texttt{/*}$\ldots$\texttt{*/}''. C++-style comments should never be
+used.
+
+There are three categories of comments: file comments, function/data
+structure comments, and line comments. Commenting is subject to the
+following rules:
+\begin{itemize}
+\item
+  File comments are standard header blocks that must be copied as
+  is. Hence, there is little to say about them. On top of each file
+  should be placed a license header, which depends on the origin of
+  the file.
+\item
+  Block comments start with ``\texttt{/*}'' and end with
+  ``\texttt{*/}'' on a separate subsequent line. Intermediate lines
+  start with ``\texttt{**}''. All these comment markers are placed at
+  colums zero. Comment text is separated from the comment markers by a
+  single space character. Text in block comments is made of titles or
+  of full sentences, that are terminated with a punctuation sign (most
+  often a final dot).
+\item
+  Line comments are of two types: structure definition line comments
+  in header files, and code line comments.
+
+  Structure definition line comments in header files start with
+  ``\texttt{/*+}'' and end with ``\texttt{+*/}''. This is an old
+  Doxygen syntax, which has been preserved over time. Code line
+  comments start classically with ``\texttt{/*}'' and end with
+  ``\texttt{*/}''.
+
+  All these comments start at least at character~$50$. If the C code
+  line is longer, comment lines start one character after the end of
+  the line, after a single space. End comment markers are placed at
+  least one character after the end of the comment text. When several
+  line comments are present on consecutive lines, comment terminators
+  are aligned to the farthest comment terminator.
+
+  Comment text always starts with an uppercase letter, and have no
+  terminating punctuation sign. They are written in the imperative
+  mode, and a positive form (no question asked).
+
+  Line comments for C pre-processing conditional macros
+  (e.g. ``\texttt{\#else}'' or ``\texttt{\#endif}'') are not subject
+  to indentation rules. They start one character after the keyword,
+  and are not subject to end marker alignment, except when consecutive
+  lines bear the same keyword (\textit{i.e.}, a ``\texttt{\#endif}''
+  statement).
+\end{itemize}
+
+\section{Naming conventions}
+\label{sec-naming}
+
+Data types, variables, structure fields and function names follow
+strict naming conventions. These conventions strongly facilitate the
+understanding of the meaning of the expressions, and prevent from
+coding mistakes. For instance, ``\texttt{verttax[edgenum]}'' would
+clearly be an invalid expression, as a vertex array cannot be indexed
+by an edge number. Hence, potential contributors are required to
+follow them strictly.
+
+\subsection{File inclusion markers}
+\label{sec-naming-file-inclusion-markers}
+
+File inclusion markers are \texttt{\#define}'s which indicate that a
+given source file (either a ``\texttt{.c}'' source code file or a
+``\texttt{.h}'' header file) has been already encountered.
+
+To minimize risks of collisions with symbols of external libraries,
+file inclusion markers start with a prefix that represents the name of
+the project, followed by the name of the file in question (without its
+type suffix). While filenames can be long, this is not an issue since
+the length of the significant part of C~preprocessor symbols is at
+least 63~characters\footnote{See e.g.
+\url{https://gcc.gnu.org/onlinedocs/cpp/Implementation-limits.html}},
+thus longer than that of C identifiers, which is 32~characters.
+Header file marker identifiers are suffixed with ``\texttt{\_H}'',
+while C source file markers have no suffix.
+
+In order to further minimize risks of collisions, file inclusion
+markers should be placed in a file only when needed, that is, when
+effectively used as the parameter of a conditional inclusion statement
+within another source file.
+
+The current project prefixes are:
+\begin{itemize}
+\item
+  \texttt{SCOTCH\_}: the \scotch\ project itself;
+\item
+  \texttt{ESMUMPS\_}: the \esmumps\ library, which is treated as a
+  separate project to avoid conflicts with data structures and files
+  that exist in both libraries, such as \texttt{Graph}'s.
+\end{itemize}
+
+\subsection{Variables and fields}
+\label{sec-naming-variables}
+
+Variables and fields of the sequential \scotch\ software are commonly
+built from a radical and a suffix. When contextualization is required,
+e.g., the same kind of variable appear in two different objects, a
+prefix is added. In \ptscotch, a second radical is commonly used, to
+inform on variable locality or duplication across processes.
+
+Common radicals are:
+\begin{itemize}
+\item
+\texttt{vert}: vertex.
+\item
+\texttt{velo}: vertex load.
+\item
+\texttt{vnoh}: non-halo vertex, as used in the \texttt{Hgraph}
+structure.
+\item
+\texttt{vnum}: vertex number, used as an index to access another vertex
+structure. This radical typically relates to an array that contains
+the vertex indices, in some original graph, corresponding to the
+vertices of a derived graph (e.g., an induced graph).
+\item
+\texttt{vlbl}: user-defined vertex label (at the user API level).
+\item
+\texttt{edge}: edge (\ie., arcs, in fact).
+\item
+\texttt{edlo}: edge (arc) load.
+\item
+\texttt{enoh}: non-halo edge (\ie., arcs, in fact).
+\item
+\texttt{arch}: target architecture.
+\item
+\texttt{graf}: graph.
+\item
+\texttt{mesh}: mesh.
+\end{itemize}
+
+Common suffices are:
+\begin{itemize}
+\item
+\texttt{bas}: start ``based'' value for a number range; see the
+``\texttt{nnd}'' suffix below. For number basing and array indexing,
+see Section~\ref{sec-basing}.
+\item
+\texttt{end}: vertex end index of an edge (\eg, \texttt{vertend},
+wrt. \texttt{vertnum}). The \texttt{end} suffix is a sub-category of
+the \texttt{num} suffix.
+\item
+\texttt{nbr}: number of instances of objects of a given radical
+type (e.g., \texttt{vertnbr}, \texttt{edgenbr}). They are commonly
+used within ``un-based'' loop constructs, such as:
+``\texttt{for (vertnum = 0; vertnum < vertnbr; vertnum ++)} \ldots''.
+\item
+\texttt{nnd}: end based value for a number range, commonly used
+for loop boundaries. Usually, $\mathtt{*nnd} =
+\mathtt{*nbr} + \mathtt{baseval}$. For instance,
+$\mathtt{vertnnd} = \mathtt{vertnbr} + \mathtt{baseval}$. They are
+commonly used in based loop constructs, such as:
+``\texttt{for (vertnum = baseval; vertnum < vertnnd; vertnum ++)}
+\ldots''. For local vertex ranges, e.g., within a thread that manages
+only a partial vertex range, the loop construct would be:
+``\texttt{for (vertnum = vertbas; vertnum < vertnnd; vertnum ++)}
+\ldots''.
+\item
+\texttt{num}: based or un-based number (index) of some instance of an
+object of a given radical type. For instance, \texttt{vertnum} is the
+index of some (graph) vertex, that can be used to access adjacency
+(\texttt{verttab}) or vertex load (\texttt{velotab}) arrays.
+$0 \leq \mathtt{vertnum} < \mathtt{vertnbr}$ if the
+vertex index is un-based, and $\mathtt{baseval} \leq
+\mathtt{vertnum} < \mathtt{vertnnd}$
+if the index is based, that it, counted starting from
+$\mathtt{baseval}$.
+\item
+\texttt{ptr}: pointer to an instance of an item of some radical type
+(e.g., \texttt{grafptr}).
+\item
+\texttt{sum}: sum of several values of the same radical type (e.g.,
+\texttt{velosum}, \texttt{edlosum}).
+\item
+\texttt{tab}: reference to the first memory element of an array. Such
+a reference is returned by a memory allocation routine (e.g.,
+\texttt{mem\lbt Alloc}) or allocated from the stack.
+\item
+\texttt{tax} (for ``\textit{table access}''): reference to an array
+that will be accessed using based indices. See
+Section~\ref{sec-basing}.
+\item
+\texttt{tnd}: pointer to the based after-end of an array of items
+of radix type (e.g. \texttt{velotnd}). Variables of this suffix are
+mostly used as bounds in loops.
+\item
+\texttt{val}: value of an item. For instance, \texttt{baseval} is the
+indexing base value, and \texttt{veloval} is the load of some vertex,
+that may have been read from a file.
+\end{itemize}
+
+Common prefixes are:
+\begin{itemize}
+\item
+\texttt{src}: source, wrt. active. For instance, a source graph is a
+plain \texttt{Graph} structure that contains only graph topology,
+compared to enriched graph data structures that are used for specific
+computations such as bipartitioning.
+\item
+\texttt{act}: active, wrt. source. An active graph is a data structure
+enriched with information required for specific computations, e.g. a
+\texttt{Bgraph}, a \texttt{Kgraph} or a \texttt{Vgraph} compared to a
+\texttt{Graph}.
+\item
+\texttt{ind}: induced, wrt. original.
+\item
+\texttt{src}: source, wrt. active or target.
+\item
+\texttt{org}: original, wrt. induced. An original graph is a graph
+from which a derived graph will be computed, e.g. an induced subgraph.
+\item
+\texttt{tgt}: target.
+\item
+\texttt{coar}: coarse, wrt. fine (e.g. \texttt{coarvertnum}, as a
+variable that holds the number of a coarse vertex, within some
+coarsening algorithm).
+\item
+\texttt{fine}: fine, wrt. coarse.
+\item
+\texttt{mult}: multinode, for coarsening.
+\end{itemize}
+
+\subsection{Functions}
+\label{sec-naming-functions}
+
+Like variables, routines of the \scotch\ software package follow a
+strict naming scheme, in an object-oriented fashion. Routines are
+always prefixed by the name of the data structure on which they
+operate, then by the name of the method that is applied to the said
+data structure. Some method names are standard for each class.
+
+Standard method names are:
+\begin{itemize}
+\item
+\texttt{Alloc}: dynamically allocate an object of the given class. Not
+always available, as many objects are allocated on the stack as local
+variables.
+\item
+\texttt{Init}: initialization of the object passed as parameter.
+\item
+\texttt{Free}: freeing of the external structures of the object, to save
+space. The object may still be used, but it is considered as ``empty''
+(e.g., an empty graph). The object may be re-used after it is
+initialized again.
+\item
+\texttt{Exit}: freeing of the internal structures of the object. The
+object must not be passed to other routines after the \texttt{Exit}
+method has been called.
+\item
+\texttt{Copy}: make a fully operational, independent, copy of the
+object, like a ``clone'' function in object-oriented languages.
+\item
+\texttt{Load}: load object data from stream.
+\item
+\texttt{Save}: save object data to stream.
+\item
+\texttt{View}: display internal structures and statistics, for debugging
+purposes.
+\item
+\texttt{Check}: check internal consistency of the object data, for
+debugging purposes. A \texttt{Check} method must be created for any
+new class, and any function that creates or updates an instance of
+some class must call the appropriate \texttt{Check} method, when
+compiled in debug mode.
+\end{itemize}
+
+\subsection{Array index basing}
+\label{sec-basing}
+
+The \libscotch\ library can accept data structures that come both from
+FORTRAN, where array indices start at $1$, and C, where they start at
+$0$. The start index for arrays is called the ``base value'', commonly
+stored in a variable (or field) called \texttt{baseval}.
+
+In order to manage based indices elegantly, most references to arrays
+are based as well. The ``table access'' reference, suffixed as
+``\texttt{tax}'' (see Section~\ref{sec-naming-variables}), is defined
+as the reference to the beginning of an array in memory, minus the
+base value (with respect to pointer arithmetic, that is, in terms of
+bytes, times the size of the array cell data type). Consequently, for
+any array whose beginning is pointed to by $\mathtt{*tab}$, we have
+$\mathtt{*tax} = \mathtt{*tab} - \mathtt{baseval}$.
+Consequently $\mathtt{*tax[baseval}$ always represents the first
+cell in the array, whatever the base value is.
+Of course, memory allocation and freeing operations must always
+operate on $\mathtt{*tab}$ pointers only.
+
+In terms of indices, if the size of the array is \texttt{xxxxnbr},
+then
+$\mbox{\texttt{xxxxnnd}} = \mbox{\texttt{xxxxnbr}} + \mbox{\texttt{baseval}}$,
+so that valid indices \texttt{xxxxnum} always belong to the range
+$[\mbox{\texttt{baseval}};\mbox{\texttt{vertnnd}}[$. Consequently,
+loops often take the form:
+\begin{center}
+{\renewcommand{\baselinestretch}{1.05}
+\footnotesize\tt
+\begin{verbatim}
+  for (xxxxnum = baseval; xxxxnum < xxxxnnd; xxxxnum ++) {
+    xxxxtax[xxxxnum] = ...;
+  }
+\end{verbatim}
+}
+\end{center}

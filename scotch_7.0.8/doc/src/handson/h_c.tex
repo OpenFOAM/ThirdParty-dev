@@ -1,0 +1,262 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                  %
+% Titre  : h_c.tex                 %
+% Sujet  : Hands-on guide          %
+%          Compilation/Execution   %
+% Auteur : Francois Pellegrini     %
+%                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Compiling and executing \scotch}
+
+\subsection{Required tools}
+
+In order to compile \scotch, one needs:
+\begin{itemize}
+\item
+  GNU make;
+\item
+  possibly CMake, version at least~3.10;
+\item
+  a C compiler that can handle the C99 standard (and is parametrized
+  to do so);
+\item
+  Flex and Bison, version at least~3.4;
+\item
+  a MPI implementation, for \ptscotch.
+\end{itemize}
+
+\subsection{32 or 64 bits?}
+\label{sec-c-integer}
+
+\scotch\ libraries can typically be found in 32~bit or 64~bit
+implementations. It is possible to use both, but this requires a bit
+of tweaking (using the \texttt{SCOTCH\_\lbt NAME\_\lbt SUFFIX} flag),
+because two coexisting versions cannot expose simultaneously routines
+with same names, all the more when they expect integer types of
+different sizes. In most of the cases, however, only one version will
+be linked against the user's program, which requires no specific
+action.
+
+One should not mistake the size of machine integers, that is,
+\texttt{int}s, and the size of integer values used within \scotch,
+that is, \texttt{SCOTCH\_Num}s and \texttt{SCOTCH\_Idx}s.
+\begin{itemize}
+\item
+  \texttt{SCOTCH\_Num} is the generic \scotch\ integer type for
+  values. It is used, e.g., as the cell type for vertex and edge
+  arrays that describe graphs. Its width can be defined at compile
+  time by way of the \texttt{INTSIZE32} or \texttt{INTSIZE64}
+  flags. By default, its width is that of the \texttt{int} type.
+\item
+  \texttt{SCOTCH\_Idx} is the generic \scotch\ memory index type. Its
+  width should be that of the address space. It is used, e.g., to
+  represent the global amount of memory consumed by \scotch\ routines
+  (see, e.g., \texttt{SCOTCH\_\lbt memMax()}), or the indices in
+  memory of the cells of vertex and edge arrays, with respect to a
+  given reference (see, e.g., \texttt{scotchf\lbt graph\lbt data()}).
+  Its witdh can be defined at compile time by way of the
+  \texttt{IDXSIZE32} or \texttt{IDXSIZE64} flags. By default, its
+  width is that of the \texttt{int} type.
+\end{itemize}
+
+\subsubsection{Integer size issues in \scotch}
+
+Since \scotch\ does not depend on third-party libraries, there is no
+risk induced by using \scotch\ integer datatypes of a size that differs
+from that of the \texttt{int} type. One may use 32-bit
+\texttt{SCOTCH\_\lbt Num}s in a 64-bit environment, in order to save
+memory, or use 64-bit \texttt{SCOTCH\_\lbt Num}s in a 32-bit
+environment, to handle big graphs (provided the address space is large
+enough). In all cases, the width of \texttt{SCOTCH\_\lbt Idx} should
+be that of an address, that is, nowadays, 64~bits.
+
+\begin{center}
+\framebox{\begin{minipage}[t]{0.9\textwidth}%
+\noi
+\textbf{RULE}: \Verb+sizeof (SCOTCH\_Num) <= sizeof (SCOTCH\_Idx)+~.
+
+\noi
+\textbf{RULE}: \Verb+sizeof (SCOTCH\_Idx) >= sizeof (void *)+~.
+\end{minipage}}
+\end{center}
+
+\subsubsection{Integer size issues in \ptscotch}
+
+The fact that \texttt{SCOTCH\_\lbt Num}s are bigger than \texttt{int}s
+may cause integer overflow issues in \ptscotch. Indeed, in the
+prototypes of most communication routines of the MPI interface, counts
+and array indices are declared as \texttt{int}s. Consequently, for big
+graphs comprising more that $2$~billion vertices and/or edges, that
+can only be represented with 64-bit \texttt{SCOTCH\_\lbt Num}s, it may
+happen that message counts and displacement values go beyond the
+$2$~billion boundary, inevitably resulting in a communication
+subsystem crash.
+
+The ability to use 64-bit \texttt{SCOTCH\_\lbt Num}s with 32-bit MPI
+implementations was a temporary hack to break the ``2-billion
+barrier'', in a time when there were no 64-bit implementations of MPI,
+while knowing that there would be a breaking point beyond which this
+solution would not work (\ie, when the amount of data to be exchanged
+also breaks this boundary).
+
+To be on the safe side when using \ptscotch\ on big graphs, the width
+of the \texttt{SCOTCH\_\lbt Num} datatype should always be that of the
+\texttt{int} datatype, whatever it is.
+
+\begin{center}
+\framebox{\begin{minipage}[t]{0.9\textwidth}%
+\noi
+\textbf{ADVICE}: \Verb+sizeof (SCOTCH\_Num) == sizeof (int)+~. This is
+the behavior by default.
+
+\noi
+\textbf{ADVICE}: To use \ptscotch\ on big graphs, use 64-bit
+\texttt{int}s and link against a 64-bit implementation of MPI.
+\end{minipage}}
+\end{center}
+
+\begin{lstlisting}[style=language-c]
+  if (sizeof (SCOTCH_Num) > sizeof (int)) {
+    SCOTCH_errorPrintW ("PT-Scotch users, beware: here be dragons");
+    proceedWithCaution ();
+  }
+\end{lstlisting}
+
+\subsection{Linking with the proper \scotch\ library}
+
+Users should make sure that they link their programs with the proper
+\scotch\ library, that is, the library whose type width matches the
+one which was defined in the \texttt{scotch.h} and \texttt{ptscotch.h}
+header files.
+
+This can be verified dynamically at run time, by comparing the value
+returned by the \texttt{SCOTCH\_\lbt num\lbt Sizeof()} routine with
+that defined in the \scotch\ header files that were used at compile
+time.
+
+\begin{center}
+\framebox{\begin{minipage}[t]{0.9\textwidth}%
+\noi
+\textbf{RULE}: \Verb+SCOTCH\_numSizeof () == sizeof (SCOTCH\_Num)+~.
+
+\noi
+\textbf{ADVICE}: Insert a sanity check at the beginning of your code,
+to rule out this issue.
+\end{minipage}}
+\end{center}
+
+\begin{lstlisting}[style=language-c]
+  if (SCOTCH_numSizeof () != sizeof (SCOTCH_Num)) {
+    SCOTCH_errorPrint ("Don't even try to call any Scotch routine");
+    betterQuitNow ();
+  }
+\end{lstlisting}
+
+\subsection{Linking with the proper \scotch\ error handling library}
+\label{sec-c-scotcherr}
+
+When a \scotch\ routine encounters an error, it generates an error
+message, by calling the \texttt{SCOTCH\_\lbt error\lbt Print()}
+routine, and tries to returns an error value. By design, this routine
+is not part of the standard \scotch\ libraries, to allow editors of
+third-party software to funnel \scotch\ error messages to their own
+error logging system, by providing their own implementation of
+\texttt{SCOTCH\_\lbt error\lbt Print()}. \scotch\ users who do not
+want to undertake this task have just to link their software with one
+of the defaut error handling libraries that are part of the
+\scotch\ distribution.
+\begin{itemize}
+\item
+\texttt{libscotcherr}, which sends the error message to the standard
+error stream, and tries to return an error value to the caller
+routine. Several error messages may be produced, as control returns to
+upper layers of \scotch\ routines and errors are detected in turn;
+\item
+\texttt{libscotcherrexit}, which sends the error message to the standard
+error stream, and exits immediately after. No subsequent messages are
+produced, which may have helped to locate the error;
+\item
+\texttt{libptscotcherr}, which sends the error message, comprising the
+MPI process number, to the standard error stream, and tries to return
+an error value to the caller routine;
+\item
+\texttt{libptscotcherrexit}, which sends the error message, comprising
+the MPI process number, to the standard error stream, and exits
+immediately after.
+\end{itemize}
+
+\begin{center}
+\framebox{\begin{minipage}[t]{0.9\textwidth}%
+\noi
+\textbf{RULE}: Do not link with a \Verb+libptscotcherr*+ library if
+you do not use MPI within your program.
+
+\noi
+\textbf{ADVICE}: Link with a \Verb+libptscotcherr*+ library when
+using \ptscotch\ routines within a MPI program.
+\end{minipage}}
+\end{center}
+
+\subsection{Multi-threading}
+
+Since version \textsc{v7.0}, \scotch\ benefits from dynamic
+multi-threading: most compute-intensive algorithms will use several
+threads, whenever available. The use of threaded algorithms has to be
+activated by setting some compilation flags, notably:
+\begin{itemize}
+\item
+\texttt{COMMON\_PTHREAD}: activate threads at the service routine
+level (\eg: I/O compression-decompression).
+\item
+\texttt{COMMON\_\lbt PTHREAD\_\lbt AFFINITY\_\lbt LINUX}: use
+the Linux API for thread affinity management. Indeed, to enhance
+memory locality and efficiency, it is better for each thread to be
+assigned to a given processing element. While the API for this feature
+is not normalized, the Linux API is quite standard. No other thread
+affinity API is used in \scotch\ at the time being.
+\item
+\texttt{SCOTCH\_PTHREAD}: activate threads for the shared-memory
+algorithms of \scotch\ and \ptscotch\ (which do not require to have
+a thread-safe implementation of MPI);
+\item
+\texttt{SCOTCH\_PTHREAD\_MPI}: activate threads for the
+distributed-memory algorithms of \ptscotch. Starting from
+\textsc{v7.0.4}, \ptscotch\ dynamically adapts its behavior to the
+thread-safety level of the MPI library against which it is linked. In
+particular, it will take advantage of the capabilities of the
+\texttt{MPI\_\lbt THREAD\_\lbt MULTIPLE} level, if it is enabled, to
+run some threaded algorithms in parallel across compute nodes.
+\item
+\texttt{SCOTCH\_PTHREAD\_NUMBER}: default maximum number of threads to
+be used. A value of \texttt{1} means that no multi-threading will take
+place in absence of specific user action, and a value of \texttt{-1}
+that \scotch\ will use all the threads provided by the system at run
+time. Set to \texttt{-1} by default if no value provided.
+\end{itemize}
+These flags are usually activated in compilation configuration files,
+but this may depend on the packager for your distribution and of the
+thread-safety level of your local MPI package. For each of these
+classes, there exist sub-flags to activate or deactivate specific
+features and algorithms (e.g.,
+\texttt{COMMON\_\lbt PTHREAD\_\lbt FILE}). For CMake, these flags may
+have different names. Please refer to the
+\href{https://gitlab.inria.fr/scotch/scotch/-/blob/master/INSTALL.txt}{\texttt{INSTALL.txt}}
+file of your version of \scotch.
+
+\begin{center}
+\framebox{\begin{minipage}[t]{0.9\textwidth}%
+\noi
+\textbf{RULE}: Only activate multi-threaded, distributed memory
+algorithms at compile-time if your local MPI implementation supports
+it.
+
+\noi
+\textbf{ADVICE}: Activate threads whenever possible, since they are
+likely to speed-up computations.
+
+\noi
+\textbf{ADVICE}: Activate the extension for thread affinity whenever
+possible.
+\end{minipage}}
+\end{center}

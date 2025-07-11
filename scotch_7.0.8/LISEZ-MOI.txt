@@ -1,0 +1,8 @@
+Les clauses selon lesquelles cet exemplaire de la distribution
+logicielle Scotch 7.0 est mis à votre disposition sont définies dans
+le fichier "LICENCE_fr.txt", situé dans le même répertoire que le
+présent fichier.
+
+Si vous les acceptez, veuillez vous référer au fichier "INSTALL.txt",
+également situé dans ce répertoire, pour consulter les instructions
+d'installation.

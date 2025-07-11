@@ -1,0 +1,88 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                  %
+% Titre  : h_t.tex                 %
+% Sujet  : Hands-on guide          %
+%          Troubleshooting         %
+% Auteur : Francois Pellegrini     %
+%                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Troubleshooting}
+
+Although \scotch\ is a mature and extensively tested software, it is
+still possible that remaining bugs may show off in specific cases, or
+that specific configurations and graph topologies may induce an
+exceptional behavior (poor partition quality, etc.).
+
+Most systematic errors, which occur when using \scotch\ for the first
+time, are due to configuration issues, such as integer type mismatch
+(see Section~\ref{sec-c-integer}). These errors can be ruled out quite
+quickly, \eg\ by comparing the sizes of integer types used by the
+application and by \scotch, etc.
+\\
+
+In case of execution errors (\eg, memory shortage, or other run-time
+errors), \scotch\ routines will output an error message on the
+standard error stream, and either return an error value or terminate
+the program, depending on the \scotch\ error handling library against
+which the program is linked (see Section~\ref{sec-c-scotcherr}).
+
+Debug compilation flags can make \scotch\ perform more internal checks
+and provide finer insights into execution issues. Of course, the level
+of extra sanity checking impacts compute time. The most relevant
+debugging level for assessing issues is obtained by compiling
+\scotch\ with the flag \texttt{-DSCOTCH\_\lbt DEBUG\_\lbt ALL}.
+\\
+
+\subsection{Troubleshooting check-list}
+
+\begin{enumerate}
+\item
+Check whether the \scotch\ test programs run without errors.
+\item
+Check integer size match between your code and the \libscotch, using
+the library function \texttt{SCOTCH\_\lbt numSizeof()}. This general
+sanity check may be beneficially included in all software linked
+against the \libscotch\ library.
+\item
+In case \scotch\ works for small cases, yet produces ``out of memory''
+errors for bigger cases when the number of vertices and/or edges
+nears the billion, \scotch\ must be recompiled in 64-bit integer mode,
+by setting the \texttt{INTSIZE64} flag (see
+Section~\ref{sec-c-integer}); the \texttt{IDXSIZE64} flag should
+always be set on current architectures.
+\item
+Apply the \scotch\ input data consistency checking routines (\eg,
+\texttt{SCOTCH\_\lbt graph\lbt Check()}, \texttt{SCOTCH\_\lbt
+dgraph\lbt Check()}, etc.) before calling partitioning or ordering
+routines.
+\item
+Compile \scotch\ with symbolic debugging options, so that system error
+messages (\eg, stack traces) are as informative as possible.
+\item
+Whenever possible, run a memory checker (\eg, \textsc{Valgrind}) on
+the executables. Alternately, use a memory library that allows for
+consistency checking (\eg, by setting the \texttt{MALLOC\_\lbt
+CHECK\_} environment variable when using the \textsc{glibc}).
+Alternately, compile \scotch\ with the \texttt{-DCOMMON\_\lbt
+MEMORY\_\lbt CHECK} flag, to activate a (minimal) memory consistency
+checking in \scotch.
+\item
+Whenever possible, try to find the smallest possible reproducer, in
+terms of graph size and/or number of nodes and threads.
+\end{enumerate}
+
+\begin{center}
+\framebox{\begin{minipage}[t]{0.9\textwidth}%
+\noi
+\textbf{ADVICE}: Configure your execution environment so that
+error messages are collected and displayed to the end user. For
+\ptscotch, this may require to tweak your MPI execution environment so
+as to funnel error messages from remote nodes.
+
+\noi
+\textbf{RULE}: Before reporting a bug to the \scotch\ team, always run
+\scotch\ in debug mode and collect its error messages from the
+standard error stream.
+\end{minipage}}
+\end{center}

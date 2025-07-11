@@ -1,0 +1,30 @@
+NAME
+  gmk_msh - create source graph from source mesh
+
+SYNOPSIS
+  gmk_msh [options] [mfile] [gfile]
+
+DESCRIPTION
+  The gmk_msh program creates a source graph from a source mesh.
+  The vertices of the graph are the nodes of the mesh, and all mesh
+  elements are turned into cliques, that is, there exists an edge
+  between two vertices in the graph if there exists at least an
+  element in the mesh which comprises the two associated nodes.
+
+OPTIONS
+  -h          Display some help.
+  -V          Display program version and copyright.
+
+EXAMPLE
+  Create a source graph brol.grf from a source mesh brol.msh:
+
+    $ gmk_msh brol.msh brol.grf
+
+SEE ALSO
+  dgmap (1), dgord(1), gbase(1), gmap(1), gord(1), gtst(1), mmk_m2(1),
+  mord(1), mcv(1), mtst(1).
+
+  Scotch user's manual.
+
+AUTHOR
+  Francois Pellegrini <francois.pellegrini@labri.fr>

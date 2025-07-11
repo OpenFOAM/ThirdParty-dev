@@ -1,0 +1,46 @@
+NAME
+  gmk_m2, gmk_m3 - create 2D and 3D grid source graphs
+
+SYNOPSIS
+  gmk_m2 [options] [-bbval] [-gcfile] [-t] [-y] dimX dimY [ofile]
+
+  gmk_m3 [options] [-bbval] [-gcfile] [-t] [-y] dimX dimY dimZ [ofile]
+
+DESCRIPTION
+  The gmk_* programs create source graph files for some common,
+  regular topologies.
+
+  gmk_m2 creates a 2D regular grid graph of dimX times dimY vertices,
+  such that vertex (i,j) is connected to vertices (i,j-1), (i-1,j),
+  (i+1,j) and (i,j+1), if they exist. If the -e option is set, it is
+  additionally connected to vertices (i-1,j-1), (i+1,j-1),
+  (i-1,j+1) and (i+1,j+1), if they exist.
+
+  gmk_m3 creates a 3D regular grid graph of dimX times dimY times dimZ
+  vertices, such that vertex (i,j,k) is connected to vertices
+  (i,j,k-1), (i,j-1,k), (i-1,j,k), (i+1,j,k), (i,j+1,k) and (i,j,k+1),
+  if they exist.
+
+OPTIONS
+  -bbval   Set the base value of the graph to bval. Default base value is 0.
+  -e         Build a 8-neighbor grid rather than a 4-neighbor one (for
+             gmk_m2 only).
+  -gcfile  Output graph vertex coordinates (that is, geometry data to be used by
+	     gout) in file cfile.
+  -h         Display some help.
+  -t         Builds a torus rather than a grid.
+  -V         Display program version and copyright.
+  -y         Invert y coordinate in geometry.
+
+EXAMPLE
+  Create a 2D graph of 5x7 vertices, of base 1, along with its geometry:
+
+    $ gmk_m2 5 7 -b1 -g/tmp/m5x7.xyz /tmp/m5x7.grf
+
+SEE ALSO
+  gtst(1), gout(1), gmap(1), gord(1), gpart(1).
+
+  Scotch user's manual.
+
+AUTHOR
+  Francois Pellegrini <francois.pellegrini@labri.fr>

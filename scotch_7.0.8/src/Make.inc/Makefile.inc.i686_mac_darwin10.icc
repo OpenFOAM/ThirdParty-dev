@@ -1,0 +1,21 @@
+EXE		=
+LIB		= .a
+OBJ		= .o
+
+MAKE		= make
+AR		= ar
+ARFLAGS		= -ruv
+CAT		= cat
+CCS		= icc
+CCP		= mpicc
+CCD		= icc
+CFLAGS		= -O3 -restrict -DCOMMON_FILE_COMPRESS_GZ -DCOMMON_OS_MACOS -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED -DCOMMON_TIMING_OLD -DSCOTCH_MPI_ASYNC_COLL -DSCOTCH_PTHREAD -DSCOTCH_PTHREAD_MPI -DSCOTCH_RENAME
+CLIBFLAGS	=
+LDFLAGS		= -lz -lm
+CP		= cp
+FLEX		= flex
+LN		= ln
+MKDIR		= mkdir -p
+MV		= mv
+RANLIB		= ranlib
+BISON		= bison

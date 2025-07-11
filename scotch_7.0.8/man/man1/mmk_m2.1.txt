@@ -1,0 +1,39 @@
+NAME
+  mmk_m2, mmk_m3 - create source meshes
+
+SYNOPSIS
+  mmk_m2 [options] [-gcfile] dimX dimY [ofile]
+
+  mmk_m3 [options] [-gcfile] dimX dimY dimZ [ofile]
+
+DESCRIPTION
+  The mmk_* programs create source mesh files for some common,
+  regular topologies.
+
+  mmk_m2 creates a 2D regular grid mesh of dimX times dimY elements
+  and (dimX+1) times (dimY+1) nodes, such that element (i,j) is
+  connected to nodes (i,j), (i,j+1), (i+1,j) and (i+1,j+1).
+
+  mmk_m3 creates a 3D regular grid mesh of dimX times dimY times dimZ
+  elements and (dimX+1) times (dimY+1) times (dimZ+1) nodes, such that
+  element (i,j,k) is connected to nodes (i,j,k), (i,j,k+1), (i,j+1,k),
+  (i,j+1,k+1), (i+1,j,k), (i+1,j,k+1), (i+1,j+1,k) and (i+1,j+1,k+1).
+
+OPTIONS
+  -gcfile  Output graph vertex coordinates (that is, geometry data to be used by
+	     gout(1)) in file cfile.
+  -h         Display some help.
+  -V         Display program version and copyright.
+
+EXAMPLE
+  Create a mesh of 5x7 elements, along with its geometry:
+
+    $ mmk_m2 5 7 -g/tmp/m5x7.xyz /tmp/m5x7.msh
+
+SEE ALSO
+  mord(1), mtst(1), gmk_msh(1).
+
+  Scotch user's manual.
+
+AUTHOR
+  Francois Pellegrini <francois.pellegrini@labri.fr>

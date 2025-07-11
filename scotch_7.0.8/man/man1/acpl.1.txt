@@ -1,0 +1,56 @@
+NAME
+  acpl - compile a target architectures
+
+SYNOPSIS
+  acpl [options] [itfile] [otfile]
+
+DESCRIPTION
+  The acpl program compiles a decomposition-defined target
+  architecture file itfile of type 'deco 0' into a compiled
+  decomposition-defined target architecture of type 'deco 1', stored
+  in file otfile.
+
+  Compiling a decomposition-defined architecture amounts to computing
+  the distance matrix of all possible subdomains, from the distance
+  matrix of all terminal subdomains provided in the 'deco 0' format.
+  Since this computation is internally performed every time a 'deco 0'
+  format is read, and is quadratic in time, pre-compiling the target
+  architecture by means of acpl can save some time when repeatedly
+  computing mappings on a large decomposition-defined 'deco 0' target
+  architecture.
+
+  When the proper libraries have been included at compile time, acpl
+  can directly handle compressed files, both as input and output. A
+  stream is treated as compressed whenever its name is postfixed with
+  a compressed file extension, such as in 'brol.tgt.bz2' or '-.gz'. The
+  compression formats which can be supported are the bzip2 format
+  ('.bz2'), the gzip format ('.gz'), and the lzma format ('.lzma').
+
+  Since decomposition-defined target architecture files have a size
+  which is quadratic in the number of target vertices, because of the
+  distance matrix structures, using compressed files to store them may
+  save a lot of space, especially for compiled target architecture
+  files.
+
+OPTIONS
+  -h          Display some help.
+
+  -V          Display program version and copyright.
+
+EXAMPLE
+  Create a compiled cube-connected-cycle target architecture
+  of dimension 4, and save it under the gzip(1) format to
+  file 'ccc4c.tgt.gz'. The dash '-' standard file name is
+  used so that the 'deco 0' target architecture description
+  produced by amk_ccc(1) is read from the standard input,
+  through the pipe.
+
+    $ amk_ccc 4 | acpl - ccc4c.tgt.gz
+
+SEE ALSO
+  amk_grf(1), amk_ccc(1), atst(1), dgmap(1), gmap(1), gmtst(1).
+
+  Scotch user's manual.
+
+AUTHOR
+  Francois Pellegrini <francois.pellegrini@labri.fr>

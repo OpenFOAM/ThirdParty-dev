@@ -1,0 +1,151 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                  %
+% Titre  : h.tex                   %
+% Sujet  : Hands-on guide          %
+%          Document body           %
+% Auteur : Francois Pellegrini     %
+%                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Formatting and pagination.
+
+\documentclass{article}
+\usepackage{a4}
+\usepackage{courier}
+\usepackage{fancyvrb}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{breakurl}
+\hypersetup{pdfborder={0 0 0},colorlinks=false}
+\usepackage[dvips]{graphicx}
+\usepackage{xspace}
+
+\usepackage{listings}
+% http://mirrors.fe.up.pt/pub/CTAN/macros/latex/contrib/listings/listings.pdf
+\lstset{
+  basicstyle=\footnotesize\ttfamily,
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny,
+  stepnumber=1,
+  columns=fullflexible,
+  showstringspaces=false,
+% tabsize=1,
+  breaklines=true,
+  breakatwhitespace=false,
+}
+\lstdefinestyle{language-b}
+{
+  language=bash,
+}
+\lstdefinestyle{language-c}
+{
+  language=C,
+}
+\lstdefinestyle{language-f}
+{
+  language=Fortran,
+}
+
+\sloppy                                          % Get rid of overfull hbox'es
+\renewcommand{\baselinestretch}{1.05}            % Height of linex x 1.05
+
+\setcounter{secnumdepth}{3}                      % Numbered sub-subsections
+\setcounter{tocdepth}{3}                         % Sub-subsections in table of contents
+
+%% Macros and useful commands.
+
+\makeatletter
+\@definecounter{enumv}                           % 8 levels of itemization
+\@definecounter{enumvi}
+\@definecounter{enumvii}
+\@definecounter{enumviii}
+\def\itemize{\ifnum \@itemdepth >8 \@toodeep\else \advance\@itemdepth \@ne
+\edef\@itemitem{labelitem\romannumeral\the\@itemdepth}%
+\list{\csname\@itemitem\endcsname}{\def\makelabel##1{\hss\llap{##1}}}\fi}
+\let\enditemize =\endlist
+
+\def\@iteme[#1]{\if@noparitem \@donoparitem      % Item long pour options
+  \else \if@inlabel \indent \par \fi
+         \ifhmode \unskip\unskip \par \fi
+         \if@newlist \if@nobreak \@nbitem \else
+                        \addpenalty\@beginparpenalty
+                        \addvspace\@topsep \addvspace{-\parskip}\fi
+           \else \addpenalty\@itempenalty \addvspace\itemsep
+          \fi
+    \global\@inlabeltrue
+\fi
+\everypar{\global\@minipagefalse\global\@newlistfalse
+          \if@inlabel\global\@inlabelfalse
+             \setbox\@tempboxa\hbox{#1}\relax
+             \hskip \itemindent \hskip -\parindent
+             \hskip -\labelwidth \hskip -\labelsep
+             \ifdim \wd\@tempboxa > \labelwidth
+               \box\@tempboxa\hfil\break
+             \else
+               \hbox to\labelwidth{\box\@tempboxa\hfil}\relax
+               \hskip \labelsep
+             \fi
+             \penalty\z@ \fi
+          \everypar{}}\global\@nobreakfalse
+\if@noitemarg \@noitemargfalse \if@nmbrlist \refstepcounter{\@listctr}\fi \fi
+\ignorespaces}
+\def\iteme{\@ifnextchar [{\@iteme}{\@noitemargtrue \@iteme[\@itemlabel]}}
+
+\let\@Hxfloat\@xfloat
+\def\@xfloat#1[{\@ifnextchar{H}{\@HHfloat{#1}[}{\@Hxfloat{#1}[}}
+\def\@HHfloat#1[H]{%
+\expandafter\let\csname end#1\endcsname\end@Hfloat
+\vskip\intextsep\def\@captype{#1}\parindent\z@
+\ignorespaces}
+\def\end@Hfloat{\vskip \intextsep}
+\makeatother
+
+\newcommand{\lbo}{\linebreak[0]}
+\newcommand{\lbt}{\linebreak[2]}
+\newcommand{\noi}{{\noindent}}                   % No indentation
+\newcommand{\spa}{{\protect \vspace{\bigskipamount}}} % Vertical spacing
+
+\newcommand{\eg}{{e\@.g\@.}\xspace}              % e.g.
+\newcommand{\ie}{\textit{i\@.e\@.}\xspace}       % i.e.
+
+\newcommand{\scotch}{\textsc{Scotch}\xspace}     % "scotch"
+\newcommand{\libscotch}{\textsc{libScotch}\xspace} % "libscotch"
+\newcommand{\ptscotch}{\textsc{PT-Scotch}\xspace} % "PT-Scotch"
+\newcommand{\libptscotch}{\textsc{libPTScotch}\xspace} % "libPTScotch"
+\newcommand{\esmumps}{\textsc{esMUMPS}\xspace}   % "esMUMPS"
+
+%% Document version.
+
+\input{../version.tex}
+
+%% Title page.
+
+\begin{document}
+
+\date{\today}
+
+\title{\includegraphics[scale=0.8]{../misc/scotch_logo_color.ps}\\[0.3em]
+       \includegraphics[scale=0.8]{../misc/ptscotch_logo_color.ps}\\[1em]
+       {\LARGE\bf \scotch\ and \ptscotch\ \textsc{\scotchver}\\ Hands-On Guide}\\[1em]%
+       {\normalsize (version \scotchversub)}\\[1em]}
+
+\author{Fran\c cois Pellegrini\\
+Universit\'e de Bordeaux \& LaBRI, UMR CNRS 5800\\
+TadAAM team, INRIA Bordeaux Sud-Ouest\\
+351 cours de la Lib\'eration, 33405 TALENCE, FRANCE\\
+{\tt francois.pellegrini@u-bordeaux.fr}}
+
+\maketitle
+
+\clearpage
+
+\tableofcontents
+
+\input{h_i.tex}                                  % Introduction
+\input{h_c.tex}                                  % Compilation and execution 
+\input{h_p.tex}                                  % Programming examples
+\input{h_r.tex}                                  % Running Scotch
+\input{h_t.tex}                                  % Troubleshooting Scotch
+
+\end{document}

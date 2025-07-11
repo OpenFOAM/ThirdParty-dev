@@ -1,0 +1,67 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                  %
+% Titre  : h_r.tex                 %
+% Sujet  : Hands-on guide          %
+%          Running Scotch          %
+% Auteur : Francois Pellegrini     %
+%                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Running \scotch}
+
+In addition to the functions it provides through the \scotch\ and
+\ptscotch\ libraries, the \scotch\ project provides a set of
+standalone programs to perform basic functions: graph and target
+architecture management, partitioning and mapping, and sparse matrix
+reordering.
+
+Centralized-memory programs can be launched directly from the command
+line, while distributed-memory program, based on MPI, have to be
+launched through a specific program like \texttt{mpiexec} or
+\texttt{mpirun}, depending on the MPI implementations.
+
+\subsection{Multi-threading}
+
+Since version \texttt{v7.0}, \scotch\ implements a dynamic thread
+management system. Without specific user instruction,
+\scotch\ programs and routines will try to use all the threads
+available on the node. The user can coerce the behavior of \scotch\ at
+run time by using the \texttt{SCOTCH\_\lbt PTHREAD\_\lbt NUMBER}
+environment variable, which can override the \texttt{-DSCOTCH\_\lbt
+PTHREAD\_\lbt NUMBER=x} definition provided at compile time. Setting
+its value to \texttt{-1} lets the software use all the threads
+available, while a positive value defines the maimum number of threads
+that can be used at run time, among all the available threads.
+
+\begin{lstlisting}[style=language-b]
+% export SCOTCH_PTHREAD_NUMBER=2
+% gpart 5 /tmp/brol.grf /tmp/brol.map -vmt
+% export SCOTCH_PTHREAD_NUMBER=4
+% gpart 5 /tmp/brol.grf /tmp/brol.map -vmt
+% export SCOTCH_PTHREAD_NUMBER=-1
+% gpart 5 /tmp/brol.grf /tmp/brol.map -vmt
+\end{lstlisting}
+
+When running \ptscotch\ in a multi-threaded way, and in case several
+MPI processes are mapped onto the same compute nodes, it is important
+to ensure that each of these processes will not try to create as many
+threads as it can on its node. Else, a plethora of competing threads
+would lead to huge performance loss on each node. Options can be
+passed to the \texttt{mpiexec} command to make sure each MPI process
+spawned on some node is assigned a non-overlapping set of thread
+slots, within which it can safely create a smaller set of threads.
+
+\begin{center}
+\framebox{\begin{minipage}[t]{0.9\textwidth}%
+\noi
+\textbf{ADVICE}: Make sure MPI processes have dedicated,
+non-overlapping, thread slots attached to them, so that the threads
+they may create will not overlap and compete for the same thread slots
+on the same compute nodes.
+
+\noi
+\textbf{ADVICE}: In case non-overlapping thread slots cannot be
+created for MPI processes, coerce \scotch\ to using only one thread
+per MPI process.
+\end{minipage}}
+\end{center}

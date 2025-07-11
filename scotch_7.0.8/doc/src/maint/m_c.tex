@@ -1,0 +1,383 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                  %
+% Title   : m_c.tex                %
+% Subject : Maintenance manual of  %
+%           Scotch                 %
+%           Code explanations      %
+% Author  : Francois Pellegrini    %
+%                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Code explanations}
+\label{sec-code}
+
+This section explains some of the most complex algorithms implemented
+in \scotch\ and \ptscotch.
+
+\subsection{\texttt{dgraphCoarsenBuild()}}
+
+The \texttt{dgraphCoarsenBuild()} routine creates a coarse distributed
+graph from a fine distributed graph, using the result of a distributed
+matching. The result of the matching is available on all MPI processes
+as follows:
+\begin{itemize}
+\iteme[\texttt{coardat.\lbt multlocnbr}]
+  The number of local coarse vertices to be created.
+\iteme[\texttt{coardat.\lbt multloctab}]
+  The local multinode array. For each local coarse vertex to be
+  created, it contains two values. The first one is always positive,
+  and represents the global number of the first local fine vertex to
+  be mated. The second number can be either positive or negative. If
+  it is positive, it represents the global number of the second local
+  fine vertex to be mated. If it is negative, its opposite, minus two,
+  represents the local edge number pointing to the remote vertex to be
+  mated.
+\iteme[\texttt{coardat.\lbt procgsttax}]
+  Array (restricted to ghost vertices only) that records on which
+  process is located each ghost fine vertex.
+\end{itemize}
+
+\subsubsection{Creating the fine-to-coarse vertex array}
+
+In order to build the coarse graph, one should create the array that
+provides the coarse global vertex number for all fine vertex ends
+(local and ghost). This information will be stored in the
+\texttt{coardat.\lbt coargsttax} array.
+
+Hence, a loop on local multinode data fills
+\texttt{coardat.\lbt coargsttax}. The first local multinode vertex
+index is always local, by nature of the matching algorithm.
+If the second vertex is local too, \texttt{coardat.\lbt coargsttax} is
+filled instantly. Else, a request for the global coarse vertex number
+of the remote vertex is forged, in the \texttt{vsnddattab} array,
+indexed by the current index \texttt{coarsndidx} extracted from the
+neighbor process send index table \texttt{nsndidxtab}. Each request
+comprises two numbers: the global fine number of the remote vertex for
+which the coarse number is seeked, and the global number of the
+coarse multinode vertex into which it will be merged.
+
+Then, an all-to-all-v data exchange by communication takes place,
+using either the \texttt{dgraph\lbt Coarsen\lbt Build\lbt Ptop()} or
+\texttt{dgraph\texttt Coarsen\lbt Build\lbt Coll()} routines.  Apart
+from the type of communication they implement (either point-to-point
+or collective), these routines do the same task: they process the
+pairs of values sent from the \texttt{vsnddattab} array. For each pair
+(the order of processing is irrelevant), the \texttt{coargsttax} array
+of the receiving process is filled-in with the global multinode value
+of the remotely mated vertex. Hence, at the end of this phase, all
+processes have a fully valid local part of the \texttt{coargsttax}
+array; no value should remain negative (as set by default). Also, the
+\texttt{nrcvidxtab} array is filled, for each neighbor process, of the
+number of data it has sent. This number is preserved, as it will serve
+to determine the number of adjacency data to be sent back to each
+neighbor process.
+
+Then, data arrays for sending edge adjacency are filled-in. The
+\texttt{ercvdsptab} and \texttt{ercvcnttab} arrays, of size
+\texttt{procglbnbr}, are computed according to the data stored in
+\texttt{coardat.\lbt dcntglbtab}, regarding the number of vertex- and
+edge-related data to exchange.
+
+By way of a call to \texttt{dgraphHaloSync()}, the ghost data of the
+\texttt{coargsttax} array are exchanged.
+
+Then, \texttt{edgelocnbr}, an upper bound on the number of local
+edges, as well as \texttt{ercvdatsiz} and \texttt{esnddatsiz}, the
+edge receive and send array sizes, respectively.
+
+Then, all data arrays for the coarse graph are allocated, plus the
+main adjacency send array \texttt{esnddsptab}, its receive counterpart
+\texttt{ercvdattab}, and the index send arrays \texttt{esnddsptab} and
+\texttt{esndcnttab}, among others.
+
+Then, adjacency send arrays are filled-in. This is done by performing
+a loop on all processes, within which only neighbor processes are
+actually considered, while index data in \texttt{esnddsptab} and
+\texttt{esndcnttab} is set to $0$ for non-neighbor processes. For each
+neighbor process, and for each vertex local which was remotely mated
+by this neighbor process, the vertex degree is written in the
+\texttt{esnddsptab} array, plus optionally its load, plus the edge
+data for each of its neighbor vertices: the coarse number of its end,
+obtained through the \texttt{coargsttax} array, plus optionally the
+edge load. At this stage, two edges linking to the same coarse
+multinode will not be merged together, because this would have
+required a hash table on the send side. The actual merging will be
+performed once, on the receive side, in the next stage of the
+algorithm.
+
+\subsection{\texttt{dgraphFold()} and \texttt{dgraphFoldDup()}}
+
+The \texttt{dgraph\lbt Fold()} routine creates a ``folded''
+distributed graph from the input distributed graph. The folded graph
+is such that it spans across only one half of the processing elements
+of the initial graph (either the first half, or the second half). The
+purpose of this folding operation is to preserve a minimum average
+number of vertices per processing element, so that communication cost
+is not dominated by message start-up time. In case of an odd number
+of input processing elements, the first half of them is always bigger
+that the second.
+
+The \texttt{dgraph\lbt Fold\lbt Dup()} routine creates two folded
+graphs: one for each half. Hence, each processing element hosting the
+initial graph will always participate in hosting a new graph, which
+will depend on the rank of the processing element. When the MPI
+implementation supports multi-threading, and multi-threading is
+activated in \scotch, both folded graphs are created concurrently.
+
+The folding routines are based on the computation of a set of
+(supposedly efficient) point-to-point communications between the
+\textit{sender processes}, which will not retain any graph data, and
+the \textit{receiver processes}, which will host the folded
+graph. However, in case of unbalanced vertex distributions, overloaded
+receiver processes (called \textit{sender receiver processes}) may
+also have to send their extra vertices to underloaded receiver
+processes. A receiver process may receive several chunks of vertex
+data (including their adjacency) from several sender processes. Hence,
+folding amounts to a redistribution of vertex indices across all
+receiver processes. In particular, end vertex indices have to be
+renumbered according to the global order in which the chunks of data
+are exchanged. This is why the computation of these exchanges, by way
+of the \texttt{dgraph\lbt Fold\lbt Comm()} routine, has to be fully
+deterministic and reproducible across all processing elements, to
+yield consistent communication data. The result of this computation
+is a list of point-to-point communications (either all sends or
+receives) to be performed by the calling process, and an array of
+sorted global vertex indices, associated with vertex index adjustment
+values, to convert global vertex indices in the adjacency of the
+initial graph into global vertex indices in the adjacency of the
+folded graph. This array can be used, by way of dichotomy search, to
+find the proper adjustment value for any end vertex number.
+
+To date, the \texttt{dgraph\lbt Redist()} routine is not based on a
+set of point-to-point communications, but collectives. It could well
+be redesigned to re-use the mechanisms implemented here, with relevant
+code factorization.
+
+\subsubsection{\texttt{dgraphFoldComm()}}
+
+The \texttt{dgraphFoldComm()} routine is at the heart of the folding
+operation. It computes the sets of point-to-point communications
+required to move vertices from the sending half of processing elements
+to the receiving half, trying to balance the folded graph as much as
+possible in terms of number of vertices. For receiver processes, it
+also computes the data needed for the renumbering of the adjacency
+arrays of the graph chunks received from sender (or sender receiver)
+processes.
+
+It is to be noted that the end user and the \scotch\ algorithms may
+have divergent objectives regarding balancing: in the case of a
+weighted graph representing a computation, where some vertices bear a
+higher load than others, the user may want to balance the load of its
+computations, even if it results in some processing elements having
+less vertices than others, provided the sums of the loads of these
+vertices are balanced across processing elements. On the opposite, the
+algorithms implemented in \scotch\ operate on the vertices themselves,
+irrespective of the load values that is attached to them (save for
+taking them into account for computing balanced partitions). Hence,
+what matters to \scotch\ is that the number of vertices is balanced
+across processing elements. Whenever \scotch\ is provided with an
+unbalanced graph, it will try to rebalance it in subsequent
+computations (\eg, folding). However, the bulk of the work, on the
+initial graph, will be unbalanced according to the user's
+distribution.
+
+During a folding onto one half of the processing elements, the
+processing elements of the other half will be pure
+senders, that need to dispose of all of their vertices and
+adjacency. Processing elements of the first half will likely be
+receivers, that will take care of the vertices sent to them by
+processing elements of the other half. However, when a processing
+element in the first half is overloaded, it may behave as a
+sender rather than a receiver, to dispose of its extra vertices and
+send it to an underloaded peer.
+
+The essential data that is produced by the \texttt{dgraph\lbt Fold\lbt
+Comm()} routine for the calling processing element is the following:
+\begin{itemize}
+\iteme[\texttt{commmax}]
+  The maximum number of point-to-point communications that can be
+  performed by any processing element. The higher this value, the
+  higher the probability to spread the load of a highly overloaded
+  processing element to (underloaded) receivers. In the extreme case
+  where all the vertices are located on a single processing element,
+  $(\mbox{\texttt{procglbnbr}} - 1)$ communications would be
+  necessary. To prevent such a situation, the number of communications
+  is bounded by a small number, and receiver processing elements can
+  be overloaded by an incoming communication. The algorithm strives to
+  provide a \textit{feasible} communication scheme, where the current
+  maximum number of communications per processing element suffices to
+  send the load of all sender processing elements. When the number of
+  receivers is smaller than the number of senders (in practice, only
+  by one, in case of folding from an odd number of processing
+  elements), at least two communications have to take place on some
+  receiver, to absorb the vertices sent. The initial maximum number of
+  communications is defined by \texttt{DGRAPH\lbt FOLD\lbt COMM\lbt
+  NBR};
+\iteme[\texttt{commtypval}]
+  The type of communication and processing that the processing element
+  will have to perform: either as a sender, a receiver, or a sender
+  receiver. Sender receivers will keep some of their vertex data, but
+  have to send the rest to other receivers. Sender receivers do send
+  operations only, and never receive data from a sender;
+\iteme[\texttt{commdattab}]
+  A set of slots, of type \texttt{Dgraph\lbt Fold\lbt Comm\lbt Data},
+  that describe the point-to-point communications that the processing
+  element will initiate on its side. Each slot contains the number of
+  vertices to send or receive, and the target or source process index,
+  respectively;
+\iteme[\texttt{commvrttab}]
+  A set of values associated to each slot in \texttt{comm\lbt dat\lbt
+  tab}, each of which contains the global index number of the first
+  vertex of the graph chunk that will be transmitted;
+\iteme[\texttt{proccnttab}]
+  For receiver processes only, the count array of same name of the
+  folded distributed graph structure;
+\iteme[\texttt{vertadjnbr}]
+  For receiver processes only, the number of elements in the dichotomy
+  array \texttt{vert\lbt adj\lbt tab};
+\iteme[\texttt{vertadjtab}]
+  A sorted array of global vertex indices. Each value represent the
+  global start index of a graph chunk that will been exchanged (or
+  which will remain in place on a receiver processing element);
+\iteme[\texttt{vertdlttab}]
+  The value which has to be added to the indices of the vertices in
+  the corresponding chunk represented in \texttt{vert\lbt adj\lbt
+  tab}. This array and the latter serve to find, by dichotomy, to
+  which chunk an end vertex belongs, and modify its global vertex
+  index in the edge array in the receiver processing element. Although
+  \texttt{vert\lbt adj\lbt tab} and \texttt{vert\lbt dlt\lbt tab}
+  contain strongly related information, they are separate arrays, for
+  the sake of memory locality. Indeed, \texttt{vert\lbt adj\lbt tab}
+  will be subject to a dichotomy search, involving many memory reads,
+  before the proper index is found and a single value is retrieved
+  from the \texttt{vert\lbt dlt\lbt tab} array.
+\end{itemize}
+
+The first stage of the algorithm consists in sorting a global process
+load array in ascending order, in two parts: the sending half, and the
+receiving half. These two sorted arrays will contain the source
+information which the redistribution algorithm will use. Because the
+receiver part of the sort array can be modified by the algorithm, it
+is recomputed whenever \texttt{commmax} is incremented. It is the same
+for \texttt{sort\lbt snd\lbt bas}, the index of the first non-empty
+sender in the sort array.
+\\
+
+In a second stage, the algorithm will try to compute a valid
+communication scheme for vertex redistribution, using as many as
+\texttt{commmax} communications (either sends or receives) per
+processing element. During this outermost loop, if a valid
+communication scheme cannot be created, then \texttt{commmax} is
+incremented and the communication scheme creation algorithm is
+restarted. The initial value for \texttt{commmax} is
+\texttt{DGRAPH\lbt FOLD\lbt COMM\lbt NBR}.
+
+The construction of a valid communication scheme is performed within
+an intermediate loop. At each step, a candidate sender process is
+searched for: either a sender process which has to dispose of all of
+its vertices, or an overloaded receiver process, depending on which
+has the biggest number of vertices to send. If candidate senders can
+no longer be found, the stage has succeeded with the current value of
+\texttt{commmax}; if a candidate sender has been found but a candidate
+receiver has not, the outermost loop is restarted with an incremented
+\texttt{commmax} value, so as to balance loads better.
+
+Every time a sender has been found and one or more candidate receivers
+exist, an inner loop creates as many point-to-point communications as
+to spread the vertices in chunks, across one or more available
+receivers, depending on their capacity (\ie, the number of vertices
+they can accept). If the selected sender is a sender receiver, the
+inner loop will try to interleave small communications from pure
+senders with communications of vertex chunks from the selected
+sender receiver. The purpose of this interleaving is to reduce the
+number of messages per process: a big message from a sender receiver
+is likely to span across several receivers, which will then perform
+only a single receive communication. By interleaving a small
+communication on each of the receivers involved, the latter will only
+have to perform one more communication (\ie, two communications only),
+and the interleaved small senders will be removed off the list,
+reducing the probability that afterwards many small messages will sent
+to the same (possibly eventually underloaded) receiver.
+\\
+
+In a third stage, all the data related to chunk exchange, which was
+recorded in a temporary form in the \texttt{vertadjtab},
+\texttt{vertdlttab} and \texttt{slotsndtab} arrays, is compacted to
+remove empty slots and to form the final \texttt{vertadjtab} and
+\texttt{vertdlttab} arrays to be used for dichotomy search.
+\\
+
+The data structures that are used during the computation of
+vertex global index update arrays are the following:
+\begin{itemize}
+\iteme[\texttt{vertadjtab} and \texttt{vertdlttab}]
+  These two arrays have been presented above. They are created only
+  for receiver processes, and will be filled concurrently. They are of
+  size $((\mbox{\texttt{commmax}} + 1) * \mbox{\texttt{orgprocnbr}})$,
+  because in case a process is a sender receiver, it has to use a
+  first slot to record the vertices it will keep locally, plus
+  \texttt{commmax} for outbound communications.  During the second
+  stage of the algorithm, for some slot \texttt{i},
+  \texttt{vertadjtab[i]} holds the start global index of the chunk of
+  vertices that will be kept, sent or received, and
+  \texttt{vertdlttab[i]} holds the number of vertices that will be
+  sent or received.  During the third stage of the algorithm, all this
+  data will be compacted, to remove empty slots. After this,
+  \texttt{vertadjtab} will be an array of global indices used for
+  dichotomy search in \texttt{dgraph\lbt Fold()}, and
+  \texttt{vertdlttab[i]} will hold the adjustment value to apply to
+  vertices whose global indices are comprised between
+  \texttt{vertadjtab[i]} and \texttt{vertadjtab[i+1]}.
+\iteme[\texttt{slotsndtab}]
+  This array only has cells for receiver-slide slots, hence a size of
+  $((\mbox{\texttt{commmax}} + 1) * \mbox{\texttt{procfldnbr}})$
+  items. During the second stage of the algorithm, it is filled so
+  that, for any non-empty communication slot \texttt{i} in
+  \texttt{vertadjtab} and \texttt{vertdlttab}, representing a receive
+  operation, \texttt{slotsndtab[i]} is the slot index of the
+  corresponding send operation. During the third stage of the
+  algorithm, it is used to compute the accumulated vertex indices
+  across processes.
+\end{itemize}
+
+Here are some examples of redistributions that are computed by the
+\texttt{dgraph\lbt Fold\lbt Comm()} routine.
+
+\begin{lstlisting}
+orgvertcnttab = { 20, 20, 20, 20, 20, 20, 20, 1908 }
+partval = 1
+vertglbmax = 1908
+Proc [0] (SND) 20 -> 0 : { [4] <- 20 }
+Proc [1] (SND) 20 -> 0 : { [5] <- 20 }
+Proc [2] (SND) 20 -> 0 : { [6] <- 20 }
+Proc [3] (SND) 20 -> 0 : { [6] <- 20 }
+Proc [4] (RCV) 20 -> 512 : { [0] -> 20 }, { [7] -> 472 }
+Proc [5] (RCV) 20 -> 512 : { [1] -> 20 }, { [7] -> 472 }
+Proc [6] (RCV) 20 -> 512 : { [2] -> 20 }, { [7] -> 452 }, { [3] -> 20 }
+Proc [7] (RSD) 1908 -> 512 : { [4] <- 472 }, { [5] <- 472 }, { [6] <- 452 }
+commmax = 4
+commsum = 14
+\end{lstlisting}
+We can see in the listing above that some interleaving took place
+on the first receiver (proc.~4) before the sender receiver (proc.~7)
+did its first communication towards it.
+
+\begin{lstlisting}
+orgvertcnttab = { 0, 0, 0, 20, 40, 40, 40, 100 }
+partval = 1
+vertglbmax = 100
+Proc [0] (SND) 0 -> 0 : 
+Proc [1] (SND) 0 -> 0 : 
+Proc [2] (SND) 0 -> 0 : 
+Proc [3] (SND) 20 -> 0 : { [4] <- 20 }
+Proc [4] (RCV) 40 -> 60 : { [3] -> 20 }
+Proc [5] (RCV) 40 -> 60 : { [7] -> 20 }
+Proc [6] (RCV) 40 -> 60 : { [7] -> 20 }
+Proc [7] (RSD) 100 -> 60 : { [5] <- 20 }, { [6] <- 20 }
+commmax = 4
+commsum = 6
+\end{lstlisting}
+In the latter case, one can see that the pure sender that has been
+interleaved (proc.~3) sufficed to fill-in the first receiver
+(proc.~4), so the first communication of the sender receiver (proc.~7)
+was towards the next receiver (proc.~5).

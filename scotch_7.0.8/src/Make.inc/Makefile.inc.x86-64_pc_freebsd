@@ -1,0 +1,26 @@
+# -Dcpu_set_t=cpuset_t is self-explanatory
+#   https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=259787#c3
+# -D__BSD_VISIBLE to have access to _SC_NPROCESSORS_ONLN
+#   https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=259787#c3
+
+EXE		=
+LIB		= .a
+OBJ		= .o
+
+MAKE		= gmake
+AR		= ar
+ARFLAGS		= -ruv
+CAT		= cat
+CCS		= cc
+CCP		= mpicc
+CCD		= cc
+CFLAGS		+= -std -fPIC -DCOMMON_FILE_COMPRESS_GZ -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_MPI_ASYNC_COLL -DSCOTCH_PTHREAD -DSCOTCH_PTHREAD_MPI -DSCOTCH_RENAME -DSCOTCH_RENAME_PARSER -DIDXSIZE64 -Dcpu_set_t=cpuset_t -D__BSD_VISIBLE
+CLIBFLAGS	=
+LDFLAGS		+= -lz -lm -lthread
+CP		= cp
+FLEX		= flex
+LN		= ln
+MKDIR		= mkdir -p
+MV		= mv
+RANLIB		= ranlib
+BISON		= bison
