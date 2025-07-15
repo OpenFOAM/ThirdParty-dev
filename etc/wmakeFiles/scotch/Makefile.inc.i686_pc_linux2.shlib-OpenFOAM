@@ -1,3 +1,6 @@
+GENERAL_RULES=$(WM_DIR)/rules/General
+-include $(GENERAL_RULES)/mplibType
+
 EXE		=
 LIB		= .so
 OBJ		= .o
@@ -7,16 +10,16 @@ AR		= gcc
 ARFLAGS		= $(WM_CFLAGS) -shared -o
 CAT		= cat
 CCS		= gcc
-CCP		= mpicc
-CCD		= mpicc
-CFLAGS		= $(WM_CFLAGS) -std=gnu11 -O3 -DCOMMON_FILE_COMPRESS_GZ -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_RENAME -Drestrict=__restrict
+CCP		= gcc
+CCD		= gcc
+CFLAGS		= $(WM_CFLAGS) -std=gnu11 -O3 -DCOMMON_FILE_COMPRESS_GZ -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_RENAME -Drestrict=__restrict $(PFLAGS) $(PINC)
 
 ifeq ($(WM_LABEL_OPTION),Int64)
 CFLAGS		+= -DINTSIZE64
 endif
 
 CLIBFLAGS	= -shared
-LDFLAGS		= -Xlinker --no-as-needed $(WM_LDFLAGS) -lz -lm -lrt
+LDFLAGS		= -Xlinker --no-as-needed $(WM_LDFLAGS) -lz -lm -lrt $(PLIBS)
 CP		= cp
 LEX		= flex -Pscotchyy -olex.yy.c
 FLEX    = $(LEX)
