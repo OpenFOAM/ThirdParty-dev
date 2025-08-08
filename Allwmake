@@ -64,10 +64,12 @@ echo ========================================
 echo Build MPI libraries if required
 case "$WM_MPLIB" in
 OPENMPI)
-    if [ -r $MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH}/libmpi.so ]
+    if [ -r $MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH}/libmpi.so ] ||
+       [ -r $MPI_ARCH_PATH/lib/libmpi.so ]
     then
         echo "    have $WM_MPLIB shared library ($FOAM_MPI)"
-    elif [ -r $MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH}/libmpi.a ]
+    elif [ -r $MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH}/libmpi.a ] ||
+         [ -r $MPI_ARCH_PATH/lib/libmpi.a ]
     then
         echo "    have $WM_MPLIB static library ($FOAM_MPI)"
     else
@@ -109,10 +111,12 @@ OPENMPI)
     ;;
 
 MPICH)
-    if [ -r $MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH}/libmpich.so ]
+    if [ -r $MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH}/libmpich.so ] ||
+       [ -r $MPI_ARCH_PATH/lib/libmpich.so ]
     then
         echo "    have $WM_MPLIB shared library ($FOAM_MPI)"
-    elif [ -r $MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH}/libmpich.a ]
+    elif [ -r $MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH}/libmpich.a ] ||
+         [ -r $MPI_ARCH_PATH/lib/libmpich.a ]
     then
         echo "    have $WM_MPLIB static library ($FOAM_MPI)"
     else
