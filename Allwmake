@@ -64,10 +64,12 @@ echo ========================================
 echo Build MPI libraries if required
 case "$WM_MPLIB" in
 OPENMPI)
-    if [ -r $MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH}/libmpi.so ]
+    if [ -r $MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH}/libmpi.so ] ||
+       [ -r $MPI_ARCH_PATH/lib/libmpi.so ]
     then
         echo "    have $WM_MPLIB shared library ($FOAM_MPI)"
-    elif [ -r $MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH}/libmpi.a ]
+    elif [ -r $MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH}/libmpi.a ] ||
+         [ -r $MPI_ARCH_PATH/lib/libmpi.a ]
     then
         echo "    have $WM_MPLIB static library ($FOAM_MPI)"
     else
@@ -109,10 +111,12 @@ OPENMPI)
     ;;
 
 MPICH)
-    if [ -r $MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH}/libmpich.so ]
+    if [ -r $MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH}/libmpich.so ] ||
+       [ -r $MPI_ARCH_PATH/lib/libmpich.so ]
     then
         echo "    have $WM_MPLIB shared library ($FOAM_MPI)"
-    elif [ -r $MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH}/libmpich.a ]
+    elif [ -r $MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH}/libmpich.a ] ||
+         [ -r $MPI_ARCH_PATH/lib/libmpich.a ]
     then
         echo "    have $WM_MPLIB static library ($FOAM_MPI)"
     else
@@ -145,6 +149,18 @@ echo
 
 #------------------------------------------------------------------------------
 
+mplibVariable()
+{
+    make --no-print-directory \
+    "GENERAL_RULES=\$(WM_DIR)/rules/General" \
+    --file="$WM_DIR/rules/General/mplibType" \
+    --eval="print-variable:
+	@echo \$($1)" print-variable
+}
+
+
+#------------------------------------------------------------------------------
+
 checkSystemLibrary()
 {
     libraryName=$1
@@ -161,7 +177,7 @@ checkSystemLibrary()
     fi
 
     if ! echo \#include \"$includeName.h\" | \
-        $CXX $CXXFLAGS ${5:+"-I$5"} -I"$MPI_ARCH_PATH"/include -xc++ -E - \
+        $CXX $CXXFLAGS ${5:+"-I$5"} $(mplibVariable PINC) -xc++ -E - \
         > /dev/null 2>&1
     then
         echo -n "    Error: A system installation of $reportName headers "
@@ -466,11 +482,16 @@ OpenFOAM | ThirdParty)
             ../configure \
                 --prefix=$ZOLTAN_ARCH_PATH \
                 --libdir=$FOAM_EXT_LIBBIN/$FOAM_MPI \
-                --with-mpi=$MPI_ARCH_PATH \
+                --enable-mpi=yes \
                 --with-mpi-compilers=no \
-                --with-mpi-libdir=$MPI_ARCH_PATH/lib${WM_COMPILER_LIB_ARCH} \
+                --with-mpi-incdir="$(mplibVariable PINC \
+                | grep -o '\(-isystem[ ]\+\|-I\)[^ ]\+' \
+                | tr '\n' ' ' \
+                | sed 's/\(-isystem[ ]\+\|-I\)//')" \
+                --with-mpi-libs="$(mplibVariable PLIBS)" \
                 --disable-zoltan-cppdriver \
-                --with-ccflags=-fPIC --with-cxxflags=-fPIC
+                --with-ccflags=-fPIC \
+                --with-cxxflags=-fPIC
             make everything
             make install
         )
