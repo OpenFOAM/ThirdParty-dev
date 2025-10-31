@@ -1,0 +1,55 @@
+NAME
+  gmk_hy, gmk_m2, gmk_m3, gmk_ub2 - create source graphs
+
+SYNOPSIS
+  gmk_hy [options] dim [ofile]
+
+  gmk_m2 [options] [-gcfile] dimX dimY [ofile]
+
+  gmk_m3 [options] [-gcfile] dimX dimY dimZ [ofile]
+
+  gmk_ub2 [options] dim
+
+DESCRIPTION
+  The gmk_* programs create source graph files for some common,
+  regular topologies.
+
+  gmk_hy creates a hypercube of dimension dim.
+
+  gmk_m2 creates a 2D regular grid of dimensions dimX and dimY.
+
+  gmk_m3 creates a 3D regular grid of dimensions dimX, dimY and dimZ.
+
+  gmk_ub2 creates an unoriented de Bruijn graph of dimension dim.
+
+OPTIONS
+  -b base     For gmk_m2 and gmk_m3 only. Output graphs with base
+              value set to base. Default value is 0.
+
+  -e          For gmk_m2 only. Build a 8-neighbor grid rather than a
+              4-neighbor grid.
+
+  -gcfile   For gmk_m2 and gmk_m3 only. Output graph vertex
+              coordinates (that is, geometry data to be used by
+	      gout(1)) in file cfile.
+
+  -h          Display some help.
+
+  -t          For gmk_m2 and gmk_m3 only. Create torus graphs, that
+              is, graphs such that there exist loop edges between
+	      vertices of rank 0 and (dim-1) in every dimension.
+
+  -V          Display program version and copyright.
+
+EXAMPLE
+  Create a 5x7 grid along with its geometry:
+
+    $ gmk_m2 5 7 -g/tmp/m5x7.xyz /tmp/m5x7.grf
+
+SEE ALSO
+  gbase(1), gmk_msh(1), gtst(1), gmap(1), gord(1), gout(1), amk_grf(1).
+
+  Scotch user's manual.
+
+AUTHOR
+  Francois Pellegrini <francois.pellegrini@labri.fr>

@@ -1,0 +1,42 @@
+NAME
+  mtst - test the consistency of source meshes
+
+SYNOPSIS
+  mtst [options] [mfile] [lfile]
+
+DESCRIPTION
+  The mtst program checks, in a sequential way, the consistency of a
+  Scotch source mesh and, in case of success, outputs some statistics
+  regarding edge weights, node and element vertex weights, and node
+  and element vertex degrees.
+
+  Source mesh file mfile can only be a centralized mesh file. The
+  resulting statistics are stored in file lfile. When file names are
+  not specified, data is read from standard input and written to
+  standard output. Standard streams can also be explicitly
+  represented by a dash '-'.
+
+  When the proper libraries have been included at compile time, mtst
+  can directly handle compressed meshes, both as input and output. A
+  stream is treated as compressed whenever its name is postfixed with
+  a compressed file extension, such as in 'brol.msh.bz2' or '-.gz'. The
+  compression formats which can be supported are the bzip2 format
+  ('.bz2'), the gzip format ('.gz'), and the lzma format ('.lzma').
+
+OPTIONS
+  -h          Display some help.
+
+  -V          Display program version and copyright.
+
+EXAMPLE
+  Test the consistency of mesh brol.msh:
+
+    $ mtst brol.msh
+
+SEE ALSO
+  mcv(1), mord(1), gmk_msh(1).
+
+  Scotch user's manual.
+
+AUTHOR
+  Francois Pellegrini <francois.pellegrini@labri.fr>

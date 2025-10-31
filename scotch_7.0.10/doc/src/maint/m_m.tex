@@ -1,0 +1,366 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                  %
+% Title   : m_m.tex                %
+% Subject : Maintenance manual of  %
+%           Scotch                 %
+%           Procedures             %
+% Author  : Francois Pellegrini    %
+%                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Procedures for new developments and release}
+
+\subsection{Adding methods to the \libscotch\ library}
+\label{sec-method}
+
+The \libscotch\ has been carefully designed to allow external
+contributors to add their new partitioning or ordering methods, and
+to use \scotch\ as a testbed for them.
+
+\subsubsection{What to add}
+
+There are currently seven types of methods which can be added:
+\begin{itemize}
+\item
+k-way graph mapping methods, in module \texttt{kgraph};
+\item
+graph bipartitioning methods by means of edge separators, in module
+\texttt{bgraph}, used by the mapping method by dual recursive
+bipartitioning, implemented in \texttt{kgraph\_\lbt map\_\lbt rb.[ch]};
+\item
+graph ordering methods, in module \texttt{hgraph};
+\item
+graph separation methods by means of vertex separators, in module
+\texttt{vgraph}, used by the nested dissection ordering method
+implemented in \texttt{hgraph\_\lbt order\_\lbt nd.[ch]};
+\item
+mesh ordering methods, in module \texttt{hmesh};
+\item
+mesh separation methods with vertex separators, in module
+\texttt{vmesh}, used by the nested dissection ordering method
+implemented in \texttt{hmesh\_\lbt order\_\lbt nd.[ch]};
+\item
+graph partitioning methods with separator overlap, in module
+\texttt{wgraph}.
+\end{itemize}
+Every method of these seven types operates on instances of augmented
+graph structures that contain, in addition to the graph topology,
+data related to the current state of the partition or of the
+ordering. For instance, all of the graph bipartitioning methods
+operate on an instance of a \texttt{Bgraph}, defined in \texttt{bgraph.h},
+and which contains fields such as \texttt{compload0}, the current load
+sum of the vertices assigned to the first part, \texttt{commload}, the
+load sum of the cut edges, etc.
+
+In order to understand better the meaning of each of the fields
+used by some augmented graph or mesh structure, contributors can read
+the code of the consistency checking routines, located in files ending
+in \texttt{\_check.c}\enspace, such as \texttt{bgraph\_check.c} for a
+\texttt{Bgraph} structure. These routines are regularly called during the
+execution of the debug version of \scotch\ to ease bug tracking. They
+are time-consuming but proved very helpful in the development and
+testing of new methods.
+
+\subsubsection{Where to add}
+
+Let us assume that you want to code a new graph separation
+routine. Your routine will operate on a \texttt{Vgraph} structure, and
+thus will be stored in files called \texttt{vgraph\_\lbt separate\_
+xy\lbt .[ch]}, where \texttt{xy} is a two-letter reminder of the name
+of your algorithm. Look into the \libscotch\ source directory for
+already used codenames, and pick a free one.
+In case you have more that one single source file, use extended names,
+such as \texttt{vgraph\_\lbt separate\_\lbt xy\_\lbt subname\lbt
+.[ch]}\enspace .
+
+In order to ease your coding, copy the files of a simple and already
+existing method and use them as a pattern for the interface of your
+new method. Some methods have an optional parameter data structure,
+others do not. Browse through all existing methods to find the one
+that looks closest to what you want.
+
+Some methods can be passed parameters at run time from the strategy
+string parser. These parameters can be of fixed types only. These
+types are:
+\begin{itemize}
+\item
+an integer (\texttt{int}) type,
+\item
+a floating-point (\texttt{double}) type,
+\item
+an enumerated (\texttt{char}) type: this type is used to make a
+choice among a list of single character values, such as
+``\texttt{yn}''. It is more readable than giving integer numerical
+values to method option flags,
+\item
+a strategy (\scotch\ \texttt{Strat} type): a method can be passed a
+sub-strategy of a given type, which can be run on an augmented graph
+of the proper type. For instance, the nested dissection method in
+\texttt{hgraph\_\lbt order\_\lbt nd\lbt .c} uses a graph separation
+strategy to compute its vertex separators.
+\end{itemize}
+
+\subsubsection{Declaring the new method to the parser}
+
+Once the new method has been coded, its interface must be known to the
+parser, so that it can be used in strategy strings. All of this is
+done in the module strategy method files, the name of which always end
+in \texttt{\_st.[ch]}, that is, \texttt{vgraph\_\lbt separate\_\lbt st.[ch]}
+for the \texttt{vgraph} module. Both files are to be updated.
+
+In the header file {*\_st.h}, a new identifier must be created for the
+new method in the \texttt{St\lbt Method\lbt Type} enumeration type,
+preferrably placed in alphabetical order.
+
+In file {*\_st.c}, there are several places to update.
+First, in the beginning of the module file, the header file of the new
+method, \texttt{vgraph\_\lbt separate\_\lbt xy.h} in this example,
+must be added in alphabetical order to the list of included method
+header files.
+
+Then, if the new method has parameters, an instance of the method
+parameter structure must be created, which will hold the default
+values for the method. This is in fact a \texttt{union} structure,
+of the following form:
+{\tt\begin{verbatim}
+static union {
+  VgraphSeparateXyParam     param;
+  StratNodeMethodData       padding;
+} vgraphseparatedefaultxy = { { ... } };
+\end{verbatim}}
+where the dots should be replaced by the list of default values of the
+fields of the \texttt{Vgraph\lbt Separate\lbt Xy\lbt Param} structure.
+Note that the size of the \texttt{Strat\lbt Node\lbt Method\lbt Data}
+structure, which is used as a generic padding structure, must always
+be greater than or equal to the size of each of the parameter
+structures. If your new parameter structure is larger, you will have
+to update the size of the \texttt{Strat\lbt Node\lbt Method\lbt Data}
+type in file \texttt{parser.h}\enspace. The size of the \texttt{Strat\lbt
+Node\lbt Method\lbt Data} type does not depend directly on the size of
+the parameter structures (as could have been done by making it an union
+of all of them) so as to to reduce the dependencies between the files
+of the library. In most cases, the default size is sufficient, and a
+test is added in the beginning of all method routines to ensure it is
+the case in practice.
+
+Finally, the first two method tables must be filled accordingly. In the
+first one, of type \texttt{Strat\lbt Method\lbt Tab}, one must add a new
+line linking the method identifier to the character code used to name
+the method in strategy strings (which must be chosen among all of
+the yet unused letters), the pointer to the routine, and the pointer
+to the above default parameter structure if it exists (else, a
+\texttt{NULL} pointer must be provided).
+In the second one, of type \texttt{Strat\lbt Param\lbt Tab}, one must add
+one line per method parameter, giving the identifier of the method,
+the type of the parameter, the name of the parameter in the strategy
+string, the base address of the default parameter structure, the
+actual address of the field in the parameter structure (both fields
+are required because the relative offset of the field with respect to
+the starting address of the structure cannot be computed at
+compile-time), and an optional pointer that references either the
+strategy table to be used to parse the strategy parameter (for
+strategy parameters) or a string holding all of the values of the
+character flags (for an enumerated type), this pointer being set to
+\texttt{NULL} for all of the other parameter types (integer and floating
+point).
+
+\subsubsection{Adding the new method to the \textsc{Make} compilation environment}
+
+In order to be compiled with the \textsc{Make} environment, the new
+method must files be added to the \texttt{Makefile} of the
+\texttt{src/\lbt libscotch} source directory. There are several places
+to update.
+
+First, you have to create the entry for the new method source files
+themselves. The best way to proceed is to search for the one of an
+already existing method, such as \texttt{vgraph\_\lbt separate\_\lbt fm},
+and copy it to the right neighboring place, preferrably following the
+alphabetical order.
+
+Then, you have to add the new header file to the dependency list of
+the module strategy method, that is, \texttt{vgraph\_\lbt separate\_\lbt
+st} for graph separation methods. Here again, search for the
+occurences of string \texttt{vgraph\_\lbt separate\_\lbt fm} to see where
+it is done.
+
+Finally, add the new object file to the component list of the
+\texttt{libscotch} library file.
+
+\subsubsection{Adding the new method to the \textsc{CMake} compilation environment}
+
+In order to be compiled with the \textsc{Make} environment, the new
+method files must be added to the \texttt{CMakeLists.txt} of the
+\texttt{src/\lbt libscotch} source directory.
+\\
+
+Once all of the above is done, you can recompile \scotch\ and be able
+to use your new method in strategy strings.
+
+\subsection{Adding routines to the public API}
+\label{sec-routine}
+
+The public API of \scotch\ exposes a set of routines which can be
+called by user programs. These public symbols are subject to specific
+procedures, in particular to rename them according to the users'
+needs.
+\begin{itemize}
+\item
+Implement the C interface of the routine in a
+\texttt{src/\lbt libscotch/\lbt library\_*.c} source file. This source
+file must include \texttt{src/\lbt libscotch/\lbt module.h}\enspace,
+so that function renaming can take place whenever necessary;
+\item
+Whether appropriate, implement the Fortran interface of the routine
+within a \texttt{src/\lbt libscotch/\lbt library\_*\_f.c} source
+file. The routines in this file will call the former ones. This source
+file must include \texttt{src/\lbt libscotch/\lbt module.h} as well,
+so that function renaming can take place whenever necessary;
+\item
+Create a \texttt{SCOTCH\_\lbt NAME\_\lbt PUBLIC} macro in
+\texttt{src/\lbt libscotch/\lbt module.h}\enspace, so that function
+renaming can take place, for instance when symbols have to be
+suffixed;
+\item
+Create the relevant manual pages in the \scotch\ or \ptscotch\ user's
+manual.
+\end{itemize}
+
+\subsection{Release procedure}
+\label{sec-data}
+
+This section describes the procedure for releasing a new version of
+\scotch\ on the Inria GitLab repository:
+\url{https://gitlab.inria.fr/scotch/scotch}~.
+All commands are relative to the ``\texttt{./src}'' directory of the
+\scotch\ distribution.
+
+\subsubsection{Removal of debugging flags}
+
+Verification of the absence of level-3 debugging flags (such definitions
+should contain the keyword ``\texttt{BROL}'' in the associated
+comment, as an alternate search keyword):
+
+\begin{lstlisting}
+grep 'DEBUG_.\+3' *c | grep define
+\end{lstlisting}
+
+\subsubsection{Symbol renaming}
+
+After compiling with ``\texttt{SCOTCH\_\lbt RENAME}'', verification of
+the absence of unprotected names:
+
+\begin{lstlisting}
+make scotch ptscotch esmumps ptesmumps
+nm ../lib/libscotch.a | grep -v -e SCOTCH -e ESMUMPS -e " b " -e " d " -e " t " -e " U " -e "scotchf" -e "fprintf" -e "fscanf" -e "malloc" -e "realloc" -e "free" -e "memset" -e "random" -e "get_pc_thunk." -e " r .LC" | (sed -z 's/\n/#/g' ; echo -n '#') | sed 's/[a-zA-Z0-9_]\+[.]o[:]##//g' | sed 's/#/\n/g' > /tmp/brol.txt
+nm ../lib/libptscotch.a | grep -v -e SCOTCH -e ESMUMPS -e " b " -e " d " -e " t " -e " U " -e "scotchf" -e "fprintf" -e "fscanf" -e "malloc" -e "realloc" -e "free" -e "memset" -e "random" -e "get_pc_thunk." -e " r .LC"  | (sed -z 's/\n/#/g' ; echo -n '#') | sed 's/[a-zA-Z0-9_]\+[.]o[:]##//g' | sed 's/#/\n/g' >> /tmp/brol.txt
+nm ../lib/libesmumps.a | grep -v -e SCOTCH -e ESMUMPS -e " b " -e " d " -e " t " -e " U " -e "scotchf" -e "fprintf" -e "fscanf" -e "malloc" -e "realloc" -e "free" -e "memset" -e "random" -e "get_pc_thunk." -e " r .LC"  | (sed -z 's/\n/#/g' ; echo -n '#') | sed 's/[a-zA-Z0-9_]\+[.]o[:]##//g' | sed 's/#/\n/g' >> /tmp/brol.txt
+nm ../lib/libptesmumps.a | grep -v -e SCOTCH -e ESMUMPS -e " b " -e " d " -e " t " -e " U " -e "scotchf" -e "fprintf" -e "fscanf" -e "malloc" -e "realloc" -e "free" -e "memset" -e "random" -e "get_pc_thunk." -e " r .LC"  | (sed -z 's/\n/#/g' ; echo -n '#') | sed 's/[a-zA-Z0-9_]\+[.]o[:]##//g' | sed 's/#/\n/g' >> /tmp/brol.txt
+more /tmp/brol.txt
+\end{lstlisting}
+
+\subsubsection{Update of copyright year}
+
+Verification and possible modification of the copyright year, defined
+in the ``\texttt{SCOTCH\_\lbt COPYRIGHT\_\lbt STRING}'' macro:
+
+\begin{lstlisting}
+emacs libscotch/module.h
+\end{lstlisting}
+
+\noi
+In case the year is updated, create a commit with the message:
+\begin{quote}
+Set year to 20XX in copyright string
+\end{quote}
+
+\subsubsection{Update of version number}
+
+For minor revisions:
+\begin{lstlisting}
+emacs Makefile ../doc/src/version.tex ../CMakeLists.txt
+\end{lstlisting}
+
+\noi
+Then, for major releases:
+\begin{lstlisting}
+emacs ../doc/src/scotch/Makefile ../doc/src/ptscotch/Makefile ../doc/src/maint/Makefile ../INSTALL.txt ../README.txt
+\end{lstlisting}
+
+\noi
+Create a commit with the message:
+\begin{quote}
+Set revision marks to vX.Y.Z
+\end{quote}
+
+\subsubsection{Generation of documentation}
+
+Once the version number is changed in relevant files, generate the
+documentation:
+\begin{lstlisting}
+cd ../doc/src/maint
+make
+make install
+cd ../ptscotch
+make
+make install
+cd ../scotch
+make
+make install
+cd ../../../src
+\end{lstlisting}
+
+\noi
+In case of change of major or minor version, remove the old
+documentation files and add the new ones:
+\begin{lstlisting}
+cd ../doc/
+git rm -f *X.Y*
+git add *X'.Y'*
+git commit *X.Y* *X'.Y'*
+cd ../src
+\end{lstlisting}
+
+Create a commit with the message:
+\begin{quote}
+Generate documentation for vX.Y.Z
+\end{quote}
+
+\subsubsection{Creation of the local tag}
+
+On the local master branch:
+\begin{lstlisting}
+git tag vX.Y.Z
+git push --tags origin
+\end{lstlisting}
+
+\subsubsection{Merging}
+
+Check that the continuous integration went well.
+
+\noi
+In \texttt{fpellegr/scotch}, on the left, in tab ``Merge request'',
+clich on ``New merge request'', to \texttt{scotch/scotch}. Put version
+number as title (e.g.: ``v7.0.7''), and, in the message, a summary and
+itemized list of the improvements brought by the release. Then, click
+to generate the merge request.
+
+\noi
+In \texttt{scotch/scotch}, on the left, in tab ``Merge request'',
+click on the new merge request. Click on ``Approve'', then on
+``Merge''. A new (short) pipe-line is launched, this time in
+\texttt{scotch/scotch}.
+
+\noi
+If the pipe-line succeeds, click to finalize the merging.
+
+\subsubsection{Creation of the public tag}
+
+In the \texttt{scotch/scotch} home page, click on the icon with a
+label (``Tag''), then on ``New tag''. Put the version number as the
+tag name (\eg, ``v7.0.7'').
+
+\subsubsection{Generation of the asset}
+
+In the \texttt{scotch/scotch} home page, click on the icon with a
+rocket (``Releases''), then on ``New release''. Select the newly
+created tag. Put as comment the text of the merge request.

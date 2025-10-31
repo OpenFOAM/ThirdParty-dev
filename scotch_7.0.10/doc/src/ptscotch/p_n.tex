@@ -1,0 +1,195 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                  %
+% Titre  : s_n.tex                 %
+% Sujet  : Manuel de l'utilisateur %
+%          du projet 'Scotch'      %
+%          Codage de nouvelles     %
+%          methodes                %
+% Auteur : Francois Pellegrini     %
+%                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Adding new features to \scotch}
+\label{sec-coding}
+
+Since \scotch\ is libre/free software, users have the ability
+to add new features to it. Moreover, as \scotch\ is intended to be a
+testbed for new partitioning and ordering algorithms, it has been
+developed in a very modular way, to ease the development and inclusion
+of new partitioning and ordering methods to be called within
+\scotch\ strategies.
+
+All of the source code for partitioning and ordering methods for
+graphs and meshes is located in the {\tt src/\lbt libscotch/} source
+subdirectory. Source file names have a very regular pattern, based on
+the internal data structures they handle.
+
+\subsection{Graphs and meshes}
+
+The basic structures in \scotch\ are the {\tt Graph} and {\tt Mesh}
+structures, which model a simple symmetric graph the definition of
+which is given in file {\tt graph.h}, and a simple mesh, in the form
+of a bipartite graph, the definition of which is given in file {\tt
+mesh.h}, respectively. From this structure are derived enriched graph
+and mesh structures:
+\begin{itemize}
+\item
+{\tt Bgraph}, in file {\tt bgraph.h}: graph with bipartition, that is,
+edge separation, information attached to it;
+\item
+{\tt Kgraph}, in file {\tt kgraph.h}: graph with mapping information
+attached to it;
+\item
+{\tt Hgraph}, in file {\tt hgraph.h}: graph with halo information
+attached to it, for computing graph orderings;
+\item
+{\tt Vgraph}, in file {\tt vgraph.h}: graph with vertex bipartition
+information attached to it;
+\item
+{\tt Hmesh}, in file {\tt hmesh.h}: mesh with halo information
+attached to it, for computing graph orderings;
+\item
+{\tt Vmesh}, in file {\tt vmesh.h}: graph with vertex bipartition
+information attached to it.
+\end{itemize}
+As version {\sc 4.0} of the \libscotch\ does not provide mesh
+mapping capabilities, neither {\tt Bmesh} nor {\tt Kmesh} structures
+have been defined to date, but they well may be in the future.
+
+All of the structures are in fact defined as {\tt typedef}ed types.
+
+\subsection{Methods}
+
+\subsection{Adding a new method to \scotch}
+
+We will assume in this section that the new method to add is a graph
+separation method. The procedure explained below is exactly the same
+for graph bipartitioning, graph mapping, graph ordering, mesh
+separation, or mesh ordering methods.
+
+Please proceed as explained below.
+\begin{enumerate}
+\item
+Write the code of the method itself. First, choose a free two-letter
+code to describe your method, say ``xy''. In the {\tt libscotch}
+source directory, create files {\tt vgraph\_\lbt separate\_\lbt xy.c}
+and {\tt vgraph\_\lbt separate\_\lbt xy.h}, basing on existing
+files such as {\tt vgraph\_\lbt separate\_\lbt gg.c} and {\tt
+vgraph\_\lbt separate\_\lbt gg.h}, for instance.
+
+If the method is complex, it can be split across several other files,
+which will be named {\tt vgraph\_\lbt separate\_\lbt xy\_\lbt first\lbt
+module\lbt name.c}, {\tt vgraph\_\lbt separate\_\lbt xy\_\lbt second\lbt
+module\lbt name.c}, eventually with matching header files.
+
+If the method has parameters, create a structure called {\tt
+Vgraph\lbt Separate\lbt Xy\lbt Param}, which contains types that
+are handled by the strategy parser, such as {\tt INT} and
+{\tt double}.
+
+The execution of your method should result in the setting or in the
+updating of the {\tt Vgraph} structure that is passed to it. See its
+definition in {\tt vgraph.h} and read several simple graph separation
+methods, such as {\tt vgraph\_\lbt separate\_\lbt zr.c}, to figure out
+what all of its parameters mean.
+
+At the end of your method, always call, when the {\tt SCOTCH\_\lbt
+DEBUG\_\lbt VGRAPH2} debug flag is set, the {\tt vgraph\lbt Check}
+routine, to avoid the spreading of eventual bugs to other parts of
+the \libscotch\ library.
+\item
+Add the method to the parser tables. The files to update are
+{\tt vgraph\_\lbt separate\_\lbt st.c} and {\tt vgraph\_\lbt
+separate\_\lbt st.h}, where ``{\tt st}'' stands for ``strategy''.
+
+First, edit {\tt vgraph\_\lbt separate\_\lbt st.h}. In the {\tt
+Vgraph\lbt Separate\lbt St\lbt Method\lbt Type} enumeration,
+add a line for your new method {\tt VGRAPH\lbt SEPA\lbt ST\lbt
+METH\lbt XY}. Then, edit {\tt vgraph\_\lbt separate\_\lbt st.c},
+where all of the remaining actions take place.
+
+In the top of the file, add a {\tt \#include} directive to include
+{\tt vgraph\_\lbt separate\_\lbt xy.h}.
+
+If the method has parameters, create a {\tt vgraph\lbt separate\lbt
+default\lbt xy} C union, basing on an existing one, and fill it with
+the default values of your method parameters.
+
+In the {\tt vgraph\lbt separate\lbt st\lbt meth\lbt tab} method array,
+add a line for the new method. To do so, choose a free single-letter
+code that will be used to designate the new method in strategy strings.
+If the method has parameters, the last field should be a pointer to
+the default structure, else it should be set to {\tt NULL}.
+
+If the method has parameters, update the {\tt vgraph\lbt separate\lbt
+st\lbt para\lbt tab} parameter array. Add one data block per
+parameter. The first field is the name of the method to which the
+parameter applies, that is, {\tt VGRAPH\lbt SEPA\lbt ST\lbt
+METH\lbt XY}. The second field is the type of the parameter, which can
+be:
+\begin{itemize}
+\item
+{\tt STRATPARAMCASE}: the support type is an {\tt int}. It receives
+the index in the case string, given as last field of the parameter
+line, of the selected case character code;
+\item
+{\tt STRATPARAMDOUBLE}: the support type is a {\tt double} value;
+\item
+{\tt STRATPARAMINT}: the support type is an {\tt INT}, which
+is the generic integer type handled internally by \scotch. This type
+has variable extent, depending on compilation flags,
+as described in Section~\ref{sec-lib-inttypesize};
+\item
+{\tt STRATPARAMSTRING}: a (small) character string.
+\item
+{\tt STRATPARAMSTRAT}: strategy. For instance, the graph ordering
+method by nested dissection takes a vertex partitioning strategy as
+one of its parameters, to compute the vertex separators.
+\end{itemize}
+The fourth and fifth fields are the address of the location of the
+default structure and the address of the parameter within this default
+structure, respectively. From these two values can be computed at run
+time the offset of the parameter within any instance of the parameter
+structure, which is used to fill the actual structures in the parsed
+strategy evaluation tree.
+The value of the sixth parameter depends on the type of the
+parameter. It should be {\tt NULL} for {\tt STRAT\lbt PARAM\lbt
+DOUBLE} and {\tt STRAT\lbt PARAM\lbt INT} parameters, points to the
+string of available case letters for {\tt STRAT\lbt PARAM\lbt CASE}
+parameters, points to the target string buffer for {\tt STRAT\lbt
+PARAM\lbt STRING} parameters, and points to the relevant method
+parsing table for for {\tt STRAT\lbt PARAM\lbt STRAT} parameters.
+\item
+Edit the makefile of the \libscotch\ source directory to enable the
+compilation and linking of the method. Depending on \libscotch\
+versions, this makefile is either called {\tt Makefile} or {\tt
+make\_\lbt gen}.
+\item
+Compile in debug mode and experiment with your routine, by creating
+strategies that contain its single-letter code.
+\item
+To change the default strategy string used by the \libscotch\ library,
+update file {\tt library\_\lbt graph\_\lbt order.c}, since it is
+the graph ordering routine which makes use of graph vertex separation
+methods to compute separators for the nested dissection ordering method.
+\end{enumerate}
+
+\subsection{Licensing of new methods and of derived works}
+
+According to the terms of the GNU Lesser General Public License
+(LGPL)~\cite{lgpl}, under which the \scotch\ software package is
+distributed, the works that are carried out to improve and
+extend the \libscotch\ library must be licensed under the same
+terms. Basically, it means that you will have to distribute the
+sources of your new methods, along with the sources of \scotch, to any
+recipient of your modified version of the \libscotch, and that you
+grant these recipients the same rights of update and redistribution as
+the ones that are given to you under the terms of the LGPL. Please
+read it carefully to know what you can do and cannot do with the
+\scotch\ distribution.
+\\
+
+You should have received a copy of the GNU Lesser General Public
+License along with the \scotch\ distribution; if not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+MA 02111-1307, USA.

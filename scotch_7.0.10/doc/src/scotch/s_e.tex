@@ -1,0 +1,189 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                  %
+% Titre  : s_e.tex                 %
+% Sujet  : Manuel de l'utilisateur %
+%          du projet 'Scotch'      %
+%          Exemples d'utilisation  %
+% Auteur : Francois Pellegrini     %
+%                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Examples}
+\label{sec-examples}
+
+This section contains chosen examples destined to show how the programs
+of the \scotch\ project interoperate and can be combined.
+It is supposed that the current directory is directory
+``\texttt{scotch\_\scotchver}'' of the \scotch\ distribution.
+Character ``{\tt\bf \%}'' represents the shell prompt.
+\begin{itemize}
+\item
+Partition source graph \texttt{brol.grf} into $7$ parts, and save the
+result to file \texttt{/tmp/brol.map}.
+\\
+
+\noi
+{\tt
+{\bf\%} echo cmplt 7 > /tmp/k7.tgt\\
+{\bf\%} gmap brol.grf /tmp/k7.tgt /tmp/brol.map
+}
+\spa
+
+\noi
+This can also be done in a single piped command:
+
+\texttt{{\bf\%} echo cmplt 7 | gmap brol.grf - /tmp/brol.map}
+\spa
+
+\noi
+If compressed data handling is enabled, read the graph as a \texttt{gzip}
+compressed file, and output the mapping as a \texttt{bzip2} file, on the fly:
+
+\texttt{{\bf\%} echo cmplt 7 | gmap brol.grf.gz - /tmp/brol.map.bz2}
+\item
+Partition source graph \texttt{brol.grf} into two uneven parts of
+respective weights $\frac{4}{11}$ and $\frac{7}{11}$, and save
+the result to file \texttt{/tmp/brol.map}.
+\\
+
+\noi
+{\tt
+{\bf\%} echo cmpltw 2 4 7 > /tmp/k2w.tgt\\
+{\bf\%} gmap brol.grf /tmp/k2w.tgt /tmp/brol.map
+}
+\spa
+
+\noi
+This can also be done in a single piped command:
+
+\texttt{{\bf\%} echo cmpltw 2 4 7 | gmap brol.grf - /tmp/brol.map}
+\spa
+
+\noi
+If compressed data handling is enabled, use \texttt{gzip} compressed
+streams on the fly:
+
+\texttt{{\bf\%} echo cmpltw 2 4 7 | gmap brol.grf.gz - /tmp/brol.map.gz}
+\item
+Map a 32 by 32 bidimensional grid source graph onto a 256-node hypercube, and
+save the result to file \texttt{/tmp/brol.map}.
+\\
+
+\noi
+\texttt{{\bf\%} gmk\_m2 32 32 | gmap - tgt/h8.tgt /tmp/brol.map}
+\item
+Build the {\sc VTK} file \texttt{brol.vtk} that contains
+the display of a source graph the topology and geometry files of which
+are named \texttt{brol.grf} and \texttt{brol.xyz}, respectively, to be
+displayed using a visualization software such as \texttt{paraview}.
+\\
+
+\noi
+\texttt{{\bf\%} gout -Mn -Ov brol.grf brol.xyz - /tmp/brol.vtk}
+\spa
+
+\noi
+Although no mapping data is required because of the ``\texttt{-Mn}''
+option, note the presence of the dummy input mapping file name
+``\texttt{-}'', which is needed to specify the output visualization
+file name after it.
+\item
+Given the topology and geometry files \texttt{brol.grf} and
+\texttt{brol.xyz} of a source graph, map the graph on a 8 by 8
+bidimensional mesh and display the mapping result on a color screen by
+means of the public-domain \texttt{ghostview} PostScript previewer.
+\\
+
+\noi
+\texttt{{\bf\%} gmap brol.grf tgt/m8x8.tgt | gout brol.grf brol.xyz '-Op\{c,f,l\}' | ghostview -}
+\item
+Given the topology and geometry files \texttt{brol.grf} and
+\texttt{brol.xyz} of a source graph, partition the graph into 7 parts
+and create a VTK file to be displayed using a visualization software
+such as \texttt{paraview}.
+\\
+
+\noi
+\texttt{{\bf\%} gpart 7 brol.grf | gout brol.grf brol.xyz '-Ov' /tmp/brol\_k7.vtk}
+\item
+Build a 24-node Cube-Connected-Cycles graph target architecture which will be
+frequently used. Then, map compressed source file \texttt{brol.grf.gz} onto it,
+and save the result to file \texttt{/tmp/brol.map}.
+\\
+
+\noi
+{\tt
+{\bf\%} amk\_ccc 3 | acpl - /tmp/ccc3.tgt\\
+{\bf\%} gunzip -c brol.grf.gz | gmap - /tmp/ccc3.tgt /tmp/brol.map
+}
+\spa
+
+\noi
+To speed up target architecture loading in the future, the
+decomposition-defined target architecture is compiled by means of \texttt{acpl}.
+\item
+Build an architecture graph which is the subgraph of the $8$-node de~Bruijn
+graph restricted to vertices labeled $1$, $2$, $4$, $5$, $6$, map graph
+\texttt{brol.grf} onto it, and save the result to file \texttt{/tmp/brol.map}.
+\\
+
+\noi
+{\tt
+{\bf\%} (gmk\_ub2 3; echo 5 1 2 4 5 6) | amk\_grf -L |
+gmap brol.grf - /tmp/brol.map}
+\spa
+
+\noi
+Note how the two input streams of program \texttt{amk\_grf} (that is, the
+de~Bruijn source graph and the five-elements vertex label list) are
+concatenated into a single stream to be read from the standard input.
+%% \item
+%% Output the pattern of the adjacency matrix associated with graph
+%% \texttt{brol.grf.gz} to the encapsulated PostScript file
+%% \texttt{brol\_pattern.ps}.
+%% \\
+
+%% \noi
+%% {\tt
+%% {\bf\%} gunzip -c brol.grf.gz | gout - - - -Gn -Mn '-Om\{e\}'
+%% brol\_pattern.ps}
+%% \item
+%% Output the pattern of the factored reordered matrix associated with graph
+%% \texttt{brol.grf} to the encapsulated PostScript file \texttt{brol\_\lbt pattern.ps}.
+%% \\
+
+%% \noi
+%% {\tt
+%% {\bf\%} gord brol.grf -F- /dev/null | gout brol.grf - - -Gn -Mn '-Om\{e\}' brol\_\lbt pattern.ps}
+\item
+Compile and link the user application \texttt{brol.c} with the \libscotch\ library,
+using the default error handler.
+\\
+
+\noi
+{\tt
+{\bf\%} cc brol.c -o brol -lscotch -lscotcherr -lm}
+\spa
+
+\noi
+Note that the mathematical library should also be included, after
+all of the \scotch\ libraries.
+\item
+Recompile a program that used \metis\ so that it uses \scotch\ instead.
+\\
+
+\noi
+{\tt
+{\bf\%} cc brol.c -o brol -I\$\{metisdir\} -lscotchmetis -lscotch -lscotcherr -lmetis -lm}
+\spa
+
+\noi
+Note that the ``\texttt{-lscotch\lbt metis}'' option must be placed before the
+``\texttt{-lmetis}'' one, so that routines that are redefined by \scotch\ are
+selected instead of their \metis\ counterpart. When no other
+\metis\ routines than the ones redefined by \scotch\ are used, the
+``\texttt{-lmetis}'' option can be omitted. The ``\texttt{-I\$\{metisdir\}}''
+option may be necessary to provide the path to the original \texttt{metis.h}
+include file, which contains the prototypes of all of the \metis\ routines.
+
+\end{itemize}

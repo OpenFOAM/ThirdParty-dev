@@ -1,0 +1,86 @@
+NAME
+  dgord - compute sparse matrix orderings of graphs in parallel
+
+SYNOPSIS
+  dgord [options] [gfile] [ofile] [lfile]
+
+DESCRIPTION
+  The dgord program computes, in a parallel way, an ordering of a
+  Scotch source graph representing the pattern of some symmetric
+  sparse matrix.
+
+  Source graph file gfile is either a centralized graph file, or a set
+  of files representing fragments of a distributed graph. The resulting
+  ordering is stored in file ofile. Eventual logging information (such
+  as the one produced by option -v) is sent to file lfile. When file
+  names are not specified, data is read from standard input and
+  written to standard output. Standard streams can also be explicitely
+  represented by a dash '-'.
+
+  When the proper libraries have been included at compile time, dgord
+  can directly handle compressed graphs, both as input and output. A
+  stream is treated as compressed whenever its name is postfixed with
+  a compressed file extension, such as in 'brol.grf.bz2' or '-.gz'. The
+  compression formats which can be supported are the bzip2 format
+  ('.bz2'), the gzip format ('.gz'), and the lzma format ('.lzma').
+
+  dgord bases on implementations of the MPI interface to spread work
+  across the processing elements. It is therefore not likely to be run
+  directly, but instead through some launcher command such as mpirun.
+
+OPTIONS
+  -copt     Choose default ordering strategy according to one or
+              several options among:
+              b  enforce load balance as much as possible.
+              q  privilege quality over speed (default).
+              s  privilege speed over quality.
+              t  enforce safety.
+              x  enforce scalability.
+
+  -h          Display some help.
+
+  -mmfile   Save column block mapping data to file mfile. Mapping
+              data specifies, for each vertex, the index of the column
+              block to which this vertex belongs.
+
+  -ostrat   Use parallel graph ordering strategy strat (see
+              PT-Scotch user's manual for more information).
+
+  -rpnum    Set root process for centralized files (default is 0).
+
+  -ttfile   Save partitioning tree data to file tfile. Partitioning
+              tree data specifies, for each vertex, the index of the
+              first vertex of the parent block of the block to which
+              the vertex belongs. Altogether with the mapping data
+              provided in file mfile, it allows one to rebuild the
+              separator tree of the nested dissection process.
+
+  -V          Display program version and copyright.
+
+  -vverb    Set verbose mode to verb. It is a set of one of more
+              characters which can be:
+              s  strategy information.
+              t  timing information.
+
+EXAMPLES
+  Run dgord on 5 processing elements to reorder matrix graph brol.grf
+  and save the resulting ordering to file brol.ord, using the default
+  sequential graph ordering strategy:
+
+    $ mpirun -np 5 dgord brol.grf brol.ord
+
+  Run dgord on 5 processing elements to reorder the distributed matrix
+  stored on graph fragment files brol5-0.dgr to brol5-4.dgr, and save
+  the resulting ordering to file brol.ord (see dgscat(1) for an
+  explanation of the '%p' and '%r' sequences in names of distributed
+  graph fragments).
+
+    $ mpirun -np 5 dgord brol%p-%r.dgr brol.ord
+
+SEE ALSO
+  dgtst(1), dgscat(1), gmk_hy(1), gord(1).
+
+  PT-Scotch user's manual.
+
+AUTHOR
+  Francois Pellegrini <francois.pellegrini@labri.fr>

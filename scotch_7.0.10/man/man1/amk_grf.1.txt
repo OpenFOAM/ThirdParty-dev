@@ -1,0 +1,62 @@
+NAME
+  amk_grf - create target architecture from source graph
+
+SYNOPSIS
+  amk_grf [options] [gfile] [tfile]
+
+DESCRIPTION
+  The amk_grf program builds a decomposition-defined target
+  architecture tfile from a source graph gfile.
+
+  Target architectures define the topology of the target graphs used
+  by static mapping programs gmap(1) and dgmap(1). Target
+  architectures can be either algorithmically-defined, for common,
+  regular topologies, or decomposition-defined, such as the ones
+  produced by amk_grf.
+
+  When the proper libraries have been included at compile time, amk_grf
+  can directly handle compressed files, both as input and output. A
+  stream is treated as compressed whenever its name is postfixed with
+  a compressed file extension, such as in 'brol.tgt.bz2' or '-.gz'. The
+  compression formats which can be supported are the bzip2 format
+  ('.bz2'), the gzip format ('.gz'), and the lzma format ('.lzma').
+
+  Since decomposition-defined target architecture files have a size
+  which is quadratic in the number of target vertices, because of the
+  presence of a distance matrix structure, using compressed files to
+  store them may save a lot of space.
+
+OPTIONS
+  -bstrat   Apply bipartitioning strategy strat to compute the
+              recursive bipartition of the whole source graph into
+	      smaller target subdomains.
+
+  -h          Display some help.
+
+  -llfile   Only keep vertices the indices of which belong to the
+              space-separated list stored in lfile. This allows one
+              to create target architectures which can even be
+              disjoint subsets of a larger target architecture,
+              modeled as a graph.
+
+  -V          Display program version and copyright.
+
+EXAMPLE
+  Create a decomposition-defined target architecture from a 2D regular
+  grid source graph of dimension 3 times 5, and save it, as a compiled
+  target architecture, under the gzip(1) format, to file 'm3x5.tgt.gz'. 
+
+    $ gmk_m2 3 5 | amk_grf | acpl - m3x5.tgt.gz
+
+  Note that, in this precise case, it would be much preferable to use
+  directly the 'mesh2D' algorithmically-defined target architecture.
+
+    $ echo "mesh2D 3 5" > m3x5.tgt
+
+SEE ALSO
+  acpl(1), amk_ccc(1), atst(1), dgmap(1), gmap(1), gmtst(1).
+
+  Scotch user's manual.
+
+AUTHOR
+  Francois Pellegrini <francois.pellegrini@labri.fr>

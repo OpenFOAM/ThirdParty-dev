@@ -1,0 +1,50 @@
+NAME
+  gomtst - compute statistics on sparse matrix orderings
+
+SYNOPSIS
+  gotst [options] [gfile] [ofile] [lfile]
+
+DESCRIPTION
+  The gotst program computes, in a sequential way, statistics on a
+  sparse matrix ordering, such as fill-in, operation count, and
+  separator tree parameters: minimum, maximum, average height and
+  variance of its leaves.
+
+  Source graph file gfile can only be a centralized graph file. File
+  ofile represents the ordering of the symmetric sparse matrix the
+  pattern of which is represented by gfile. The resulting statistics
+  are stored in file lfile. When file names are not specified, data is
+  read from standard input and written to standard output. Standard
+  streams can also be explicitly represented by a dash '-'.
+
+  When the proper libraries have been included at compile time, gtst
+  can directly handle compressed graphs, both as input and output. A
+  stream is treated as compressed whenever its name is postfixed with
+  a compressed file extension, such as in 'brol.grf.bz2' or '-.gz'. The
+  compression formats which can be supported are the bzip2 format
+  ('.bz2'), the gzip format ('.gz'), and the lzma format ('.lzma').
+
+  Since gotst performs sequentially the symbolic factorization of
+  matrix gfile in order to compute fill-in and operation count
+  numbers, this program can take a long time or even run out of memory,
+  when applied to very large graphs.
+
+OPTIONS
+  -h          Display some help.
+
+  -v          Do not account for vertex weights when computing factorization costs.
+
+  -V          Display program version and copyright.
+
+EXAMPLE
+  Display statistics on ordering brol.ord of graph brol.grf:
+
+    $ gotst brol.grf brol.ord
+
+SEE ALSO
+  gord(1), gtst(1), dgord(1).
+
+  Scotch user's manual.
+
+AUTHOR
+  Francois Pellegrini <francois.pellegrini@labri.fr>

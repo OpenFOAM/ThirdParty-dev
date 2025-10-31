@@ -1,0 +1,43 @@
+NAME
+  atst - test the consistency of target architectures
+
+SYNOPSIS
+  atst [options] [afile] [lfile]
+
+DESCRIPTION
+  The atst program checks the consistency of a Scotch
+  decomposition-defined target architecture and, in case of success,
+  outputs some statistics regarding the number of target vertices and
+  the length of paths linking them. Target architectures define the
+  topology of the target graphs used by static mapping programs
+  gmap(1) and dgmap(1).
+
+  The resulting statistics are stored in file lfile. When file names
+  are not specified, data is read from standard input and written to
+  standard output. Standard streams can also be explicitly represented
+  by a dash '-'.
+
+  When the proper libraries have been included at compile time, atst
+  can directly handle compressed files, both as input and output. A
+  stream is treated as compressed whenever its name is postfixed with
+  a compressed file extension, such as in 'brol.tgt.bz2' or '-.gz'. The
+  compression formats which can be supported are the bzip2 format
+  ('.bz2'), the gzip format ('.gz'), and the lzma format ('.lzma').
+
+OPTIONS
+  -h          Display some help.
+
+  -V          Display program version and copyright.
+
+EXAMPLE
+  Test the consistency of architecture arch.tgt:
+
+    $ atst arch.tgt
+
+SEE ALSO
+  acpl(1), amk_ccc(1), amk_grf(1), dgmap(1), gmap(1), gmtst(1).
+
+  Scotch user's manual.
+
+AUTHOR
+  Francois Pellegrini <francois.pellegrini@labri.fr>
